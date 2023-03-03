@@ -1,4 +1,6 @@
 ﻿using Eco.Core.Utils;
+using Eco.Gameplay;
+using Eco.Gameplay.Components;
 using Eco.Gameplay.Objects;
 using Eco.Gameplay.Players;
 using Eco.Shared.Localization;
@@ -6,7 +8,7 @@ using Eco.Shared.Serialization;
 using Eco.Simulation.Time;
 using System;
 
-namespace Eco.Gameplay.Components
+namespace Beekeeping.Server
 {
     [Serialized]
     [RequireComponent(typeof(StatusComponent), null)]
@@ -20,31 +22,31 @@ namespace Eco.Gameplay.Components
 
         public override void Initialize()
         {
-            ((ThreadSafeActionBase<Action>)this.Parent.GetComponent<PluginModulesComponent>((string)null).OnChanged).Add(new Action(this.Test));
-            this.status = this.Parent.GetComponent<StatusComponent>((string)null).CreateStatusElement(-10);
-            this.UpdateStatus();
+            Parent.GetComponent<PluginModulesComponent>(null).OnChanged.Add(new Action(Test));
+            status = Parent.GetComponent<StatusComponent>(null).CreateStatusElement(-10);
+            UpdateStatus();
         }
 
         private void Test()
         {
-            this.isModulePresent = !this.Parent.GetComponent<PluginModulesComponent>((string)null).Inventory.IsEmpty;
-            this.initialize = WorldTime.Seconds;
+            isModulePresent = !Parent.GetComponent<PluginModulesComponent>(null).Inventory.IsEmpty;
+            initialize = WorldTime.Seconds;
         }
 
         public override void Tick()
         {
             base.Tick();
-            if (!this.isModulePresent || WorldTime.Seconds < this.initialize + 43200.0)
+            if (!isModulePresent || WorldTime.Seconds < initialize + 43200.0)
                 return;
-            this.UpdateStatus();
-            this.Parent.Destroy();
-            WorldObjectDebugUtil.Spawn("OnduOccupiedSauvageBeehiveObject", (User)null, this.Parent.Position3i);
-            this.isModulePresent = false;
+            UpdateStatus();
+            Parent.Destroy();
+            WorldObjectDebugUtil.Spawn("OnduOccupiedSauvageBeehiveObject", null, Parent.Position3i);
+            isModulePresent = false;
         }
 
         private void UpdateStatus()
         {
-            this.status?.SetStatusMessage(this.isModulePresent, Localizer.DoStr("If you put Royal Jelly in the vacant swarm, a queen bee will appear 12 hours later."));
+            status?.SetStatusMessage(isModulePresent, Localizer.DoStr("If you put Royal Jelly in the vacant swarm, a queen bee will appear 12 hours later."));
         }
     }
 }

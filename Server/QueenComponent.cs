@@ -1,8 +1,9 @@
-﻿using Eco.Gameplay.Objects;
+﻿using Eco.Gameplay.Components;
+using Eco.Gameplay.Objects;
 using Eco.Shared.Localization;
 using Eco.Shared.Serialization;
 
-namespace Eco.Gameplay.Components
+namespace Beekeeping.Server
 {
     [Serialized]
     public class QueenComponent : WorldObjectComponent
@@ -11,13 +12,13 @@ namespace Eco.Gameplay.Components
 
         public override void Initialize()
         {
-            this.status = this.Parent.GetComponent<StatusComponent>((string)null).CreateStatusElement(-30);
-            this.UpdateStatus();
+            status = Parent.GetComponent<StatusComponent>(null).CreateStatusElement(-30);
+            UpdateStatus();
         }
 
         private void UpdateStatus()
         {
-            this.status?.SetStatusMessage(true, Localizer.DoStr("Right click to retrieve the queen bee in this Swarm."));
+            status?.SetStatusMessage(true, Localizer.DoStr("Right click to retrieve the queen bee in this Swarm."));
         }
     }
 }
