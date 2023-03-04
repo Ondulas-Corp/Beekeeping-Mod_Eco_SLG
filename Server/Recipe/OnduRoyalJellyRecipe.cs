@@ -1,0 +1,44 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: Eco.Mods.TechTree.OnduRoyalJellyRecipe
+// Assembly: BeekeepingMod, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 0CFADE07-BC7B-4B9C-956D-CB3332005D4A
+// Assembly location: C:\Users\khisa\Downloads\beekeepingmod1.2.1\BeekeepingMod1.2.1\BeekeepingMod1.2.1.dll
+
+using Eco.Gameplay.Components;
+using Eco.Gameplay.Items;
+using Eco.Gameplay.Skills;
+using Eco.Shared.Localization;
+using System;
+using System.Collections.Generic;
+
+namespace Beekeeping.Server
+{
+    [RequiresSkill(typeof(BeekeepingSkill), 1)]
+    public class OnduRoyalJellyRecipe : RecipeFamily
+    {
+        public OnduRoyalJellyRecipe()
+        {
+            Recipes = new List<Recipe>()
+      {
+        new Recipe("Royal Jelly", Localizer.DoStr("Royal Jelly"), new IngredientElement[2]
+        {
+          new IngredientElement(typeof (OnduWaxItem), 1f, false),
+          new IngredientElement(typeof (OnduFullPotItem), 1f, false)
+        }, new CraftingElement[2]
+        {
+           new CraftingElement<OnduRoyalJellyItem>(1f),
+           new CraftingElement<OnduEmptyPotItem>(1f)
+        })
+      };
+            ExperienceOnCraft = 5.0f;
+            LaborInCalories = CreateLaborInCaloriesValue(30f, typeof(BeekeepingSkill));
+            CraftMinutes = CreateCraftTimeValue(typeof(OnduRoyalJellyRecipe), 0.5f, typeof(BeekeepingSkill), new Type[2]
+            {
+        typeof (BeekeepingFocusedSpeedTalent),
+        typeof (BeekeepingParallelSpeedTalent)
+            });
+            Initialize(Localizer.DoStr("Royal Jelly"), typeof(OnduRoyalJellyRecipe));
+            CraftingComponent.AddRecipe(typeof(OnduSmallHiveObject), this);
+        }
+    }
+}

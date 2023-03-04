@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33424.131
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Beekeeping", "Beekeeping.csproj", "{C856DD9A-E501-47D2-8AAD-EEC7F1D5EFC1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{40AB1222-B5A0-4085-B784-A5984A108125}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C856DD9A-E501-47D2-8AAD-EEC7F1D5EFC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C856DD9A-E501-47D2-8AAD-EEC7F1D5EFC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C856DD9A-E501-47D2-8AAD-EEC7F1D5EFC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C856DD9A-E501-47D2-8AAD-EEC7F1D5EFC1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {91F90160-07A3-45EC-B042-3BED0B42C9F0}
+	EndGlobalSection
+EndGlobal

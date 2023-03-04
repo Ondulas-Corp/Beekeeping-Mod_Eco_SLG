@@ -1,15 +1,14 @@
-﻿
-
+﻿using Eco.Gameplay.Components;
 using Eco.Gameplay.Objects;
-using Eco.Mods.TechTree;
 using Eco.Shared.Localization;
 using Eco.Shared.Math;
 using Eco.Shared.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 // A component that forces the player to move the small hives away from each other
-namespace Eco.Gameplay.Components
+namespace Beekeeping.Server
 {
     [Serialized]
     [RequireComponent(typeof(StatusComponent), null)]
@@ -24,7 +23,7 @@ namespace Eco.Gameplay.Components
         {
             get
             {
-                return this.noNeighbourBeehive;
+                return noNeighbourBeehive;
             }
         }
 
@@ -54,48 +53,48 @@ namespace Eco.Gameplay.Components
 
         public override void Initialize()
         {
-            this.status = this.Parent.GetComponent<StatusComponent>((string)null).CreateStatusElement(-50);
-            this.HasNeighbour();
-            this.UpdateStatus();
+            status = Parent.GetComponent<StatusComponent>(null).CreateStatusElement(-50);
+            HasNeighbour();
+            UpdateStatus();
         }
 
         public void ChunksChanged()
         {
-            bool flag = !this.HasNeighbour();
-            if (flag == this.noNeighbourBeehive)
+            bool flag = !HasNeighbour();
+            if (flag == noNeighbourBeehive)
                 return;
-            this.noNeighbourBeehive = flag;
-            this.UpdateStatus();
-            this.Parent.UpdateEnabledAndOperating();
-            this.Parent.SetDirty();
+            noNeighbourBeehive = flag;
+            UpdateStatus();
+            Parent.UpdateEnabledAndOperating();
+            Parent.SetDirty();
         }
 
         public IEnumerable<Vector3i> RelevantChunkPositions()
         {
             List<Vector3i> liste = new List<Vector3i>();
             int size = 4;
-            this.SpiralDestruction(size).ToList<WorldPosition3i>().ForEach((Action<WorldPosition3i>)(x =>
+            SpiralDestruction(size).ToList().ForEach(x =>
             {
-                float num = System.Math.Min((float)size * 0.5f, (float)size * 0.6f - WorldPosition3i.Distance(x, (WorldPosition3i)this.Parent.Position3i));
-                for (int index = 0; (double)index < (double)num; ++index)
+                float num = Math.Min(size * 0.5f, size * 0.6f - WorldPosition3i.Distance(x, (WorldPosition3i)Parent.Position3i));
+                for (int index = 0; index < (double)num; ++index)
                 {
-                    liste.Add(Eco.Shared.Voxel.World.ToChunkPosition((WrappedWorldPosition3i)(new Vector3i(x.x, x.y + index, x.z))));
+                    liste.Add(Eco.Shared.Voxel.World.ToChunkPosition((WrappedWorldPosition3i)new Vector3i(x.x, x.y + index, x.z)));
                     if ((uint)index > 0U)
-                        liste.Add(Eco.Shared.Voxel.World.ToChunkPosition((WrappedWorldPosition3i)(new Vector3i(x.x, x.y - index, x.z))));
+                        liste.Add(Eco.Shared.Voxel.World.ToChunkPosition((WrappedWorldPosition3i)new Vector3i(x.x, x.y - index, x.z)));
                 }
-            }));
-            return liste.Distinct<Vector3i>();
+            });
+            return liste.Distinct();
         }
 
         private bool HasNeighbour()
         {
             int size = 6;
             bool hasNeighbour = false;
-            this.SpiralDestruction(size).ToList<WorldPosition3i>().ForEach((Action<WorldPosition3i>)(x =>
+            SpiralDestruction(size).ToList().ForEach(x =>
             {
-                float num1 = System.Math.Min((float)size * 0.5f, (float)size * 0.6f - WorldPosition3i.Distance(x, (WorldPosition3i)this.Parent.Position3i));
+                float num1 = Math.Min(size * 0.5f, size * 0.6f - WorldPosition3i.Distance(x, (WorldPosition3i)Parent.Position3i));
                 WorldObjectHandle worldObjectHandle;
-                for (int index = 0; (double)index < (double)num1; ++index)
+                for (int index = 0; index < (double)num1; ++index)
                 {
                     int num2;
                     if (Eco.World.World.GetBlock((WrappedWorldPosition3i)((Vector3i)x + Vector3i.Up * index)) is WorldObjectBlock block)
@@ -104,7 +103,7 @@ namespace Eco.Gameplay.Components
                         if (worldObjectHandle.Object is OnduSmallHiveObject)
                         {
                             worldObjectHandle = block.WorldObjectHandle;
-                            num2 = worldObjectHandle.Object != this.Parent ? 1 : 0;
+                            num2 = worldObjectHandle.Object != Parent ? 1 : 0;
                             goto label_5;
                         }
                     }
@@ -113,7 +112,7 @@ namespace Eco.Gameplay.Components
                     if (num2 != 0)
                         hasNeighbour = true;
                 }
-                for (int index = 0; (double)index < (double)num1; ++index)
+                for (int index = 0; index < (double)num1; ++index)
                 {
                     int num2;
                     if (Eco.World.World.GetBlock((WrappedWorldPosition3i)((Vector3i)x + Vector3i.Down * index)) is WorldObjectBlock block)
@@ -122,7 +121,7 @@ namespace Eco.Gameplay.Components
                         if (worldObjectHandle.Object is OnduSmallHiveObject)
                         {
                             worldObjectHandle = block.WorldObjectHandle;
-                            num2 = worldObjectHandle.Object != this.Parent ? 1 : 0;
+                            num2 = worldObjectHandle.Object != Parent ? 1 : 0;
                             goto label_14;
                         }
                     }
@@ -131,13 +130,13 @@ namespace Eco.Gameplay.Components
                     if (num2 != 0)
                         hasNeighbour = true;
                 }
-            }));
+            });
             return hasNeighbour;
         }
 
         private void UpdateStatus()
         {
-            this.status?.SetStatusMessage(this.noNeighbourBeehive, Localizer.DoStr("No works if there is a small hive around (6 blocks diametre)."));
+            status?.SetStatusMessage(noNeighbourBeehive, Localizer.DoStr("No works if there is a small hive around (6 blocks diametre)."));
         }
 
         public IEnumerable<WorldPosition3i> SpiralDestruction(int size)
@@ -146,7 +145,7 @@ namespace Eco.Gameplay.Components
             Vector3i delta = new Vector3i(0, 0, -1);
             for (int i = size * size; i > 0; --i)
             {
-                yield return (WorldPosition3i)(this.Parent.Position3i + offset);
+                yield return (WorldPosition3i)(Parent.Position3i + offset);
                 if (offset.x == offset.z || offset.x < 0 && offset.x == -offset.z || offset.x > 0 && offset.x == 1 - offset.z)
                     delta = new Vector3i(-delta.z, 0, delta.x);
                 offset += delta;

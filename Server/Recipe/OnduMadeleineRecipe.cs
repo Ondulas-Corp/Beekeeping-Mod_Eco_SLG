@@ -1,0 +1,45 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: Eco.Mods.TechTree.OnduMadeleineRecipe
+// Assembly: BeekeepingMod, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 0CFADE07-BC7B-4B9C-956D-CB3332005D4A
+// Assembly location: C:\Users\khisa\Downloads\beekeepingmod1.2.1\BeekeepingMod1.2.1\BeekeepingMod1.2.1.dll
+
+using Eco.Gameplay.Components;
+using Eco.Gameplay.Items;
+using Eco.Gameplay.Skills;
+using Eco.Mods.TechTree;
+using Eco.Shared.Localization;
+using System;
+using System.Collections.Generic;
+
+namespace Beekeeping.Server
+{
+    [RequiresSkill(typeof(BakingSkill), 4)]
+    public class OnduMadeleineRecipe : RecipeFamily
+    {
+        public OnduMadeleineRecipe()
+        {
+            Recipes = new List<Recipe>()
+      {
+        new Recipe("Madeleine", Localizer.DoStr("Madeleine"), new IngredientElement[4]
+        {
+          new IngredientElement(typeof (OnduPurifiedHoneyItem), 1f, typeof (BakingSkill),  null),
+          new IngredientElement(typeof (SugarItem), 1f, typeof (BakingSkill),  null),
+          new IngredientElement(typeof (FlourItem), 1f, typeof (BakingSkill),  null),
+          new IngredientElement("Fat", 1f, typeof (BakingSkill),  null)
+        }, new CraftingElement[1]
+        {
+           new CraftingElement<OnduMadeleineItem>(1f)
+        })
+      };
+            LaborInCalories = CreateLaborInCaloriesValue(20f, typeof(BakingSkill));
+            CraftMinutes = CreateCraftTimeValue(typeof(OnduMadeleineRecipe), 2f, typeof(BakingSkill), new Type[2]
+            {
+        typeof (BakingFocusedSpeedTalent),
+        typeof (BakingParallelSpeedTalent)
+            });
+            Initialize(Localizer.DoStr("Madeleine"), typeof(OnduMadeleineRecipe));
+            CraftingComponent.AddRecipe(typeof(BakeryOvenObject), this);
+        }
+    }
+}

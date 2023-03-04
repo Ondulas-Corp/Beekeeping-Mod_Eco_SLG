@@ -4,25 +4,31 @@
 // MVID: 0CFADE07-BC7B-4B9C-956D-CB3332005D4A
 // Assembly location: C:\Users\khisa\Downloads\beekeepingmod1.2.1\BeekeepingMod1.2.1\BeekeepingMod1.2.1.dll
 
+using Beekeeping.Server;
 using Eco.Core.Plugins.Interfaces;
 using Eco.Core.Utils;
 using Eco.Gameplay;
 using Eco.Gameplay.Objects;
 using Eco.Gameplay.Players;
 using Eco.Gameplay.Property;
-using Eco.Mods.TechTree;
 using Eco.Shared.IoC;
 using Eco.Shared.Math;
 using Eco.World.Blocks;
 using System;
 using System.Linq;
+
 /* The OnduCheckObject is an object that appears only the first time the beekeeping mod is launched on a server. This avoids that a new hive generation is done at each server launch. 
  If you want to change the number of hives appearing at the time of generation, just change the data in the Randomizer.Next method */
- 
-public class BeeHiveGeneration : IModKitPlugin, IServerPlugin, IInitializablePlugin
+
+public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin
 {
     private Random randomizer = new Random();
     private int ruche = 0;
+
+    public string GetCategory()
+    {
+        return "Job";
+    }
 
     public string GetStatus()
     {
