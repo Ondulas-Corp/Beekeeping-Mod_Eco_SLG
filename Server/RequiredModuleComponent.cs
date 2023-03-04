@@ -5,12 +5,13 @@
 // Assembly location: C:\Users\khisa\Downloads\beekeepingmod1.2.1\BeekeepingMod1.2.1\BeekeepingMod1.2.1.dll
 
 using Eco.Core.Utils;
+using Eco.Gameplay.Components;
 using Eco.Gameplay.Objects;
 using Eco.Shared.Localization;
 using Eco.Shared.Serialization;
 using System;
 
-namespace Eco.Gameplay.Components
+namespace Beekeeping.Server
 {
     [Serialized]
     [RequireComponent(typeof(StatusComponent), null)]
@@ -25,32 +26,32 @@ namespace Eco.Gameplay.Components
         {
             get
             {
-                return this.isPresent;
+                return isPresent;
             }
         }
 
         public override void Initialize()
         {
-            ((ThreadSafeActionBase<Action>)this.Parent.GetComponent<PluginModulesComponent>((string)null).OnChanged).Add(new Action(this.IsBeePresent));
-            this.status = this.Parent.GetComponent<StatusComponent>((string)null).CreateStatusElement(-40);
-            this.IsBeePresent();
-            this.UpdateStatus();
+            Parent.GetComponent<PluginModulesComponent>(null).OnChanged.Add(new Action(IsBeePresent));
+            status = Parent.GetComponent<StatusComponent>(null).CreateStatusElement(-40);
+            IsBeePresent();
+            UpdateStatus();
         }
 
         public void IsBeePresent()
         {
-            bool flag = !this.Parent.GetComponent<PluginModulesComponent>((string)null).Inventory.IsEmpty;
-            if (this.isPresent == flag)
+            bool flag = !Parent.GetComponent<PluginModulesComponent>(null).Inventory.IsEmpty;
+            if (isPresent == flag)
                 return;
-            this.isPresent = flag;
-            this.UpdateStatus();
-            this.Parent.UpdateEnabledAndOperating();
-            this.Parent.SetDirty();
+            isPresent = flag;
+            UpdateStatus();
+            Parent.UpdateEnabledAndOperating();
+            Parent.SetDirty();
         }
 
         private void UpdateStatus()
         {
-            this.status?.SetStatusMessage(this.isPresent, Localizer.DoStr("No does not work if the hive does not have a module. You can find a queen bee in swarms that spawn in nature "));
+            status?.SetStatusMessage(isPresent, Localizer.DoStr("No does not work if the hive does not have a module. You can find a queen bee in swarms that spawn in nature "));
         }
     }
 }
