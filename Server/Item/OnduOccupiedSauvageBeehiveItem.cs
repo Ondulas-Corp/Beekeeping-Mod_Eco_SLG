@@ -7,6 +7,7 @@
 using Eco.Core.Items;
 using Eco.Gameplay.Items;
 using Eco.Shared.Localization;
+using Eco.Shared.Math;
 using Eco.Shared.Serialization;
 using System.ComponentModel;
 
@@ -23,5 +24,9 @@ namespace Beekeeping.Server
                 return Localizer.DoStr("Occupied Swarm. Contains a Queen Bee.");
             }
         }
+
+        public override DirectionAxisFlags RequiresSurfaceOnSides { get; } = 0
+                    | DirectionAxisFlags.Down
+                ;
     }
 }

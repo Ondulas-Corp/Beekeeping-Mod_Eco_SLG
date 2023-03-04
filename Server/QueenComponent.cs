@@ -2,13 +2,16 @@
 using Eco.Gameplay.Objects;
 using Eco.Shared.Localization;
 using Eco.Shared.Serialization;
+using Eco.Shared.Utils;
+using System;
+using System.Linq;
 
 namespace Beekeeping.Server
 {
     [Serialized]
     public class QueenComponent : WorldObjectComponent
     {
-        private StatusElement status;
+        private StatusElement? status;
 
         public override void Initialize()
         {

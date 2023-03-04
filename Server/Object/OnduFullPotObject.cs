@@ -18,7 +18,6 @@ namespace Beekeeping.Server
     [Serialized]
     [RequireComponent(typeof(PropertyAuthComponent), null)]
     [RequireComponent(typeof(HousingComponent), null)]
-    [RequireComponent(typeof(SolidAttachedSurfaceRequirementComponent), null)]
     public class OnduFullPotObject : WorldObject, IRepresentsItem
     {
         public override LocString DisplayName

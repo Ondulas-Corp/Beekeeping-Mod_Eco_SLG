@@ -16,7 +16,6 @@ namespace Beekeeping.Server
 {
     [Serialized]
     [RequireComponent(typeof(PropertyAuthComponent), null)]
-    [RequireComponent(typeof(SolidAttachedSurfaceRequirementComponent), null)]
     [RequireComponent(typeof(QueenBeeComponent), null)]
     [RequireComponent(typeof(PluginModulesComponent), null)]
     public class OnduInnocupiedSauvageBeehiveObject : WorldObject, IRepresentsItem

@@ -16,7 +16,6 @@ namespace Beekeeping.Server
 {
     [Serialized]
     [RequireComponent(typeof(PropertyAuthComponent), null)]
-    [RequireComponent(typeof(SolidAttachedSurfaceRequirementComponent), null)]
     [RequireComponent(typeof(PluginModulesComponent), null)]
     [RequireComponent(typeof(LinkComponent), null)]
     [RequireComponent(typeof(CraftingComponent), null)]

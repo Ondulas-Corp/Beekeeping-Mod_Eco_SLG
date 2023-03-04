@@ -29,14 +29,10 @@ namespace Beekeeping.Server
     {
         public static readonly HomeFurnishingValue HomeValue;
 
-        public override LocString DisplayDescription
-        {
-            get
-            {
-                return Localizer.DoStr("Mechanical Extractor. For The Honey");
-            }
-        }
-
+        public override LocString DisplayDescription => Localizer.DoStr("Mechanical Extractor. For The Honey");
+        public override DirectionAxisFlags RequiresSurfaceOnSides { get; } = 0
+                    | DirectionAxisFlags.Down
+                ;
         static OnduHoneyExtractMecanicalItem()
         {
             HomeFurnishingValue homeFurnishingValue = new HomeFurnishingValue();
@@ -51,22 +47,10 @@ namespace Beekeeping.Server
         }
 
         [TooltipChildren(new Type[] { })]
-        public HomeFurnishingValue HousingTooltip
-        {
-            get
-            {
-                return HomeValue;
-            }
-        }
+        public HomeFurnishingValue HousingTooltip => HomeValue;
 
         [Tooltip(7, new Type[] { })]
-        private LocString PowerConsumptionTooltip
-        {
-            get
-            {
-                return Localizer.Do(FormattableStringFactory.Create("Consumes: {0}w of {1} power", Text.Info(200), new MechanicalPower().Name));
-            }
-        }
+        private LocString PowerConsumptionTooltip => Localizer.Do(FormattableStringFactory.Create("Consumes: {0}w of {1} power", Text.Info(200), new MechanicalPower().Name));
 
         [Serialized]
         [TooltipChildren(new Type[] { })]

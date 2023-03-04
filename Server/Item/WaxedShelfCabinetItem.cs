@@ -9,6 +9,7 @@ using Eco.Gameplay.Housing.PropertyValues;
 using Eco.Gameplay.Items;
 using Eco.Gameplay.Systems.Tooltip;
 using Eco.Shared.Localization;
+using Eco.Shared.Math;
 using Eco.Shared.Serialization;
 using System;
 
@@ -22,14 +23,10 @@ namespace Beekeeping.Server
     {
         public static readonly HomeFurnishingValue HomeValue;
 
-        public override LocString DisplayDescription
-        {
-            get
-            {
-                return Localizer.DoStr("When a shelf and a cabinet aren't enough individually.");
-            }
-        }
-
+        public override LocString DisplayDescription => Localizer.DoStr("When a shelf and a cabinet aren't enough individually.");
+        public override DirectionAxisFlags RequiresSurfaceOnSides { get; } = 0
+                    | DirectionAxisFlags.Down
+                ;
         static WaxedShelfCabinetItem()
         {
             HomeFurnishingValue homeFurnishingValue = new HomeFurnishingValue();
@@ -41,12 +38,6 @@ namespace Beekeeping.Server
         }
 
         [TooltipChildren(new Type[] { })]
-        public HomeFurnishingValue HousingTooltip
-        {
-            get
-            {
-                return HomeValue;
-            }
-        }
+        public HomeFurnishingValue HousingTooltip => HomeValue;
     }
 }

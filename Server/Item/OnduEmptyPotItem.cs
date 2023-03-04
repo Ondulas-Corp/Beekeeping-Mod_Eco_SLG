@@ -14,12 +14,6 @@ namespace Beekeeping.Server
     [LocDisplayName("Empty Pot")]
     public class OnduEmptyPotItem : WorldObjectItem<OnduEmptyPotObject>
     {
-        public override LocString DisplayDescription
-        {
-            get
-            {
-                return Localizer.DoStr("An Empty pot.");
-            }
-        }
+        public override LocString DisplayDescription => Localizer.DoStr("An Empty pot.");
     }
 }

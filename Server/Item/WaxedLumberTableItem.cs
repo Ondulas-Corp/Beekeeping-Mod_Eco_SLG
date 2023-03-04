@@ -25,14 +25,10 @@ namespace Beekeeping.Server
     {
         public static readonly HomeFurnishingValue HomeValue;
 
-        public override LocString DisplayDescription
-        {
-            get
-            {
-                return Localizer.DoStr("A nice, sturdy waxed lumber table.");
-            }
-        }
-
+        public override LocString DisplayDescription => Localizer.DoStr("A nice, sturdy waxed lumber table.");
+        public override DirectionAxisFlags RequiresSurfaceOnSides { get; } = 0
+                    | DirectionAxisFlags.Down
+                ;
         static WaxedLumberTableItem()
         {
             HomeFurnishingValue homeFurnishingValue = new HomeFurnishingValue();
@@ -49,12 +45,6 @@ namespace Beekeeping.Server
         }
 
         [TooltipChildren(new Type[] { })]
-        public HomeFurnishingValue HousingTooltip
-        {
-            get
-            {
-                return HomeValue;
-            }
-        }
+        public HomeFurnishingValue HousingTooltip => HomeValue;
     }
 }

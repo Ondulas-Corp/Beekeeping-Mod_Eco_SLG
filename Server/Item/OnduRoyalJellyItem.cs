@@ -15,12 +15,6 @@ namespace Beekeeping.Server
     [Weight(1)]
     public class OnduRoyalJellyItem : Item
     {
-        public override LocString DisplayDescription
-        {
-            get
-            {
-                return Localizer.DoStr("To obtain a new queen bee ");
-            }
-        }
+        public override LocString DisplayDescription => Localizer.DoStr("To obtain a new queen bee ");
     }
 }

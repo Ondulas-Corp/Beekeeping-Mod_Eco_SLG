@@ -23,7 +23,6 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(PowerGridComponent), null)]
     [RequireComponent(typeof(PowerConsumptionComponent), null)]
     [RequireComponent(typeof(HousingComponent), null)]
-    [RequireComponent(typeof(SolidAttachedSurfaceRequirementComponent), null)]
     [RequireComponent(typeof(PluginModulesComponent), null)]
     [RequireComponent(typeof(RoomRequirementsComponent), null)]
     [RequireRoomContainment]
@@ -31,21 +30,9 @@ namespace Beekeeping.Server
     [RequireRoomMaterialTier(1.8f, new Type[] { typeof(BeekeepingLavishReqTalent), typeof(BeekeepingFrugalReqTalent) })]
     public class OnduHoneyExtractMecanicalObject : WorldObject, IRepresentsItem
     {
-        public override LocString DisplayName
-        {
-            get
-            {
-                return Localizer.DoStr("Mechanical Extractor");
-            }
-        }
+        public override LocString DisplayName => Localizer.DoStr("Mechanical Extractor");
 
-        public virtual Type RepresentedItemType
-        {
-            get
-            {
-                return typeof(OnduHoneyExtractMecanicalItem);
-            }
-        }
+        public virtual Type RepresentedItemType => typeof(OnduHoneyExtractMecanicalItem);
 
         protected override void Initialize()
         {

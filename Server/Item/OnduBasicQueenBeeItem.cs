@@ -18,13 +18,7 @@ namespace Beekeeping.Server
     [Tag("QueenBee", 1)]
     public class OnduBasicQueenBeeItem : EfficiencyModule
     {
-        public override LocString DisplayDescription
-        {
-            get
-            {
-                return Localizer.DoStr("Basic Queen bee. Found in wild beehives.");
-            }
-        }
+        public override LocString DisplayDescription => Localizer.DoStr("Basic Queen bee. Found in wild beehives.");
 
         public OnduBasicQueenBeeItem() :
                 base(

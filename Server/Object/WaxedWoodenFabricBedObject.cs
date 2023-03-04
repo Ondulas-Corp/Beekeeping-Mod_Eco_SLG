@@ -20,7 +20,6 @@ namespace Beekeeping.Server
     [Serialized]
     [RequireComponent(typeof(PropertyAuthComponent))]
     [RequireComponent(typeof(HousingComponent))]
-    [RequireComponent(typeof(SolidAttachedSurfaceRequirementComponent))]
     [RequireComponent(typeof(MountComponent), null)]
     [RequireComponent(typeof(RoomRequirementsComponent))]
     [RequireRoomContainment]

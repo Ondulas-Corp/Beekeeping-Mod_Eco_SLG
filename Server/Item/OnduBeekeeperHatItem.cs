@@ -18,28 +18,10 @@ namespace Beekeeping.Server
     [Tag("Clothes", 1)]
     public class OnduBeekeeperHatItem : ClothingItem
     {
-        public override LocString DisplayDescription
-        {
-            get
-            {
-                return Localizer.DoStr("Beekeeper Hat. Protect yourself some bees");
-            }
-        }
+        public override LocString DisplayDescription => Localizer.DoStr("Beekeeper Hat. Protect yourself some bees");
 
-        public override string Slot
-        {
-            get
-            {
-                return "Head";
-            }
-        }
+        public override string Slot => "Head";
 
-        public override bool Starter
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool Starter => false;
     }
 }

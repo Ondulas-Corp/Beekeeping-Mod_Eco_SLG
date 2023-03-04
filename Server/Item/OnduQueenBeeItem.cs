@@ -12,13 +12,7 @@ namespace Beekeeping.Server
     [Tag("QueenBee", 1)]
     public class OnduQueenBeeItem : EfficiencyModule
     {
-        public virtual LocString DisplayDescription
-        {
-            get
-            {
-                return Localizer.DoStr("Basic Upgrades. Found in wild beehives.");
-            }
-        }
+        public virtual LocString DisplayDescription => Localizer.DoStr("Basic Upgrades. Found in wild beehives.");
 
         public OnduQueenBeeItem() : base(
                 ModuleTypes.ResourceEfficiency | ModuleTypes.SpeedEfficiency,

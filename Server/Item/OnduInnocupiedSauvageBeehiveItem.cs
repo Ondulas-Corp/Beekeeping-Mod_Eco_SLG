@@ -17,12 +17,6 @@ namespace Beekeeping.Server
     [AllowPluginModules(ItemTypes = new Type[] { typeof(OnduRoyalJellyItem) })]
     public class OnduInnocupiedSauvageBeehiveItem : WorldObjectItem<OnduInnocupiedSauvageBeehiveObject>
     {
-        public override LocString DisplayDescription
-        {
-            get
-            {
-                return Localizer.DoStr("Vacant Swarm. Put royal jelly to obtain a new queen bee...");
-            }
-        }
+        public override LocString DisplayDescription => Localizer.DoStr("Vacant Swarm. Put royal jelly to obtain a new queen bee...");
     }
 }

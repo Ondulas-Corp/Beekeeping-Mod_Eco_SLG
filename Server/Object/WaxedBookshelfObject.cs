@@ -22,7 +22,6 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(LinkComponent), null)]
     [RequireComponent(typeof(HousingComponent), null)]
     [RequireComponent(typeof(PublicStorageComponent), null)]
-    [RequireComponent(typeof(SolidAttachedSurfaceRequirementComponent), null)]
     [RequireComponent(typeof(RoomRequirementsComponent), null)]
     [RequireRoomContainment]
     [RequireRoomMaterialTier(1.8f, new Type[] { })]

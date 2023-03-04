@@ -15,12 +15,6 @@ namespace Beekeeping.Server
     [Weight(50)]
     public class OnduWaxSheetItem : Item
     {
-        public override LocString DisplayDescription
-        {
-            get
-            {
-                return Localizer.DoStr("Wax Sheet.");
-            }
-        }
+        public override LocString DisplayDescription => Localizer.DoStr("Wax Sheet.");
     }
 }

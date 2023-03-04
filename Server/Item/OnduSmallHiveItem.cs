@@ -17,12 +17,6 @@ namespace Beekeeping.Server
     [AllowPluginModules(ItemTypes = new Type[] { typeof(OnduQueenBeeItem), typeof(OnduAdvancedQueenBeeItem), typeof(OnduBasicQueenBeeItem), typeof(OnduModernQueenBeeItem) })]
     public class OnduSmallHiveItem : WorldObjectItem<OnduSmallHiveObject>
     {
-        public override LocString DisplayDescription
-        {
-            get
-            {
-                return Localizer.DoStr("Small hive. Made for queen bees.");
-            }
-        }
+        public override LocString DisplayDescription => Localizer.DoStr("Small hive. Made for queen bees.");
     }
 }

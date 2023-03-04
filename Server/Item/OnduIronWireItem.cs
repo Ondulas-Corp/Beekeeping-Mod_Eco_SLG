@@ -15,12 +15,6 @@ namespace Beekeeping.Server
     [Weight(100)]
     public class OnduIronWireItem : Item
     {
-        public override LocString DisplayDescription
-        {
-            get
-            {
-                return Localizer.DoStr("Iron Wire.");
-            }
-        }
+        public override LocString DisplayDescription => Localizer.DoStr("Iron Wire.");
     }
 }

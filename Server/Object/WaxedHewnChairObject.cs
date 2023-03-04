@@ -19,7 +19,6 @@ namespace Beekeeping.Server
     [Serialized]
     [RequireComponent(typeof(PropertyAuthComponent), null)]
     [RequireComponent(typeof(HousingComponent), null)]
-    [RequireComponent(typeof(SolidAttachedSurfaceRequirementComponent), null)]
     [RequireComponent(typeof(MountComponent), null)]
     public class WaxedHewnChairObject : WorldObject, IRepresentsItem
     {

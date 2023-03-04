@@ -20,13 +20,10 @@ namespace Beekeeping.Server
     [AllowPluginModules(ItemTypes = new Type[] { typeof(OnduQueenBeeItem), typeof(OnduAdvancedQueenBeeItem), typeof(OnduBasicQueenBeeItem), typeof(OnduModernQueenBeeItem) })]
     public class OnduBreedingBeehiveItem : WorldObjectItem<OnduBreedingBeehiveObject>
     {
-        public override LocString DisplayDescription
-        {
-            get
-            {
-                return Localizer.DoStr("Breeding hive. It product some honey.");
-            }
-        }
+        public override LocString DisplayDescription => Localizer.DoStr("Breeding hive. It product some honey.");
+        public override DirectionAxisFlags RequiresSurfaceOnSides { get; } = 0
+                    | DirectionAxisFlags.Down
+                ;
 
         static OnduBreedingBeehiveItem()
         {

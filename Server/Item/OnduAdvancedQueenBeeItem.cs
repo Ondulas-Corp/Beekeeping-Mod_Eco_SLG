@@ -3,6 +3,7 @@ using Eco.Gameplay.Items;
 using Eco.Gameplay.Modules;
 using Eco.Shared.Localization;
 using Eco.Shared.Serialization;
+using Eco.Shared.Utils;
 
 namespace Beekeeping.Server
 {
@@ -12,13 +13,7 @@ namespace Beekeeping.Server
     [Tag("QueenBee", 1)]
     public class OnduAdvancedQueenBeeItem : EfficiencyModule
     {
-        public override LocString DisplayDescription
-        {
-            get
-            {
-                return Localizer.DoStr("Advanced Upgrade. Found in wild beehives");
-            }
-        }
+        public override LocString DisplayDescription => Localizer.DoStr("Advanced Upgrade. Found in wild beehives");
 
         public OnduAdvancedQueenBeeItem() : base(
             ModuleTypes.ResourceEfficiency | ModuleTypes.SpeedEfficiency,

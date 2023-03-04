@@ -9,6 +9,7 @@ using Eco.Gameplay.Housing.PropertyValues;
 using Eco.Gameplay.Items;
 using Eco.Gameplay.Systems.Tooltip;
 using Eco.Shared.Localization;
+using Eco.Shared.Math;
 using Eco.Shared.Serialization;
 using System;
 
@@ -21,14 +22,10 @@ namespace Beekeeping.Server
     {
         public static readonly HomeFurnishingValue HomeValue;
 
-        public override LocString DisplayDescription
-        {
-            get
-            {
-                return Localizer.DoStr("A place to store knowledge and information; leads to the town hall.");
-            }
-        }
-
+        public override LocString DisplayDescription => Localizer.DoStr("A place to store knowledge and information; leads to the town hall.");
+        public override DirectionAxisFlags RequiresSurfaceOnSides { get; } = 0
+                    | DirectionAxisFlags.Down
+                ;
         static WaxedBookshelfItem()
         {
             HomeFurnishingValue homeFurnishingValue = new HomeFurnishingValue();
@@ -40,12 +37,6 @@ namespace Beekeeping.Server
         }
 
         [TooltipChildren(new Type[] { })]
-        public HomeFurnishingValue HousingTooltip
-        {
-            get
-            {
-                return HomeValue;
-            }
-        }
+        public HomeFurnishingValue HousingTooltip => HomeValue;
     }
 }

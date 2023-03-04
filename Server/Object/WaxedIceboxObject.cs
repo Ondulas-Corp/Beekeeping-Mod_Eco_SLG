@@ -21,7 +21,6 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(LinkComponent), null)]
     [RequireComponent(typeof(HousingComponent), null)]
     [RequireComponent(typeof(PublicStorageComponent), null)]
-    [RequireComponent(typeof(SolidAttachedSurfaceRequirementComponent), null)]
     public class WaxedIceboxObject : WorldObject, IRepresentsItem
     {
         public override LocString DisplayName
