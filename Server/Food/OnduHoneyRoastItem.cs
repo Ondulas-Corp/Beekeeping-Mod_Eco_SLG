@@ -44,7 +44,7 @@ namespace Beekeeping.Server.Food
                     new IngredientElement(typeof(BakedRoastItem), 1, typeof(AdvancedCookingSkill)),
                     new IngredientElement(typeof(MeatStockItem), 1, typeof(AdvancedCookingSkill)),
                     new IngredientElement(typeof(SimpleSyrupItem), 1, typeof(AdvancedCookingSkill)),
-                    new IngredientElement("Fat", 1, typeof(BakingSkill))
+                    new IngredientElement("Fat", 1, typeof(AdvancedCookingSkill))
                 },
 
                 items: new List<CraftingElement>
@@ -54,7 +54,7 @@ namespace Beekeeping.Server.Food
             Recipes = new List<Recipe> { recipe };
             ExperienceOnCraft = 1;
 
-            LaborInCalories = CreateLaborInCaloriesValue(20, typeof(AdvancedCookingSkill));
+            LaborInCalories = CreateLaborInCaloriesValue(45, typeof(AdvancedCookingSkill));
 
             CraftMinutes = CreateCraftTimeValue(
                 beneficiary: typeof(OnduHoneyRoastRecipe),
@@ -65,7 +65,7 @@ namespace Beekeeping.Server.Food
 
             Initialize(displayText: Localizer.DoStr("Honey Roast"), recipeType: typeof(OnduHoneyRoastRecipe));
 
-            CraftingComponent.AddRecipe(tableType: typeof(BakeryOvenObject), recipe: this);
+            CraftingComponent.AddRecipe(tableType: typeof(StoveObject), recipe: this);
         }
     }
 }

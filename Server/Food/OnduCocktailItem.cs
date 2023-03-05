@@ -40,7 +40,7 @@ namespace Beekeeping.Server.Food
                 displayName: Localizer.DoStr("Blueberry Cocktail"),
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(OnduPurifiedHoneyItem), 2, typeof(AdvancedCookingSkill)),
+                    new IngredientElement(typeof(OnduPurifiedHoneyItem), 1, typeof(AdvancedCookingSkill)),
                     new IngredientElement(typeof(SugarItem), 4, typeof(AdvancedCookingSkill)),
                     new IngredientElement(typeof(YeastItem), 2, typeof(AdvancedCookingSkill)),
                     new IngredientElement(typeof(HuckleberryExtractItem), 3, typeof(AdvancedCookingSkill)),
@@ -53,7 +53,7 @@ namespace Beekeeping.Server.Food
             Recipes = new List<Recipe> { recipe };
             ExperienceOnCraft = 1;
 
-            LaborInCalories = CreateLaborInCaloriesValue(20, typeof(AdvancedCookingSkill));
+            LaborInCalories = CreateLaborInCaloriesValue(45, typeof(AdvancedCookingSkill));
 
             CraftMinutes = CreateCraftTimeValue(
                 beneficiary: typeof(OnduCocktailRecipe),

@@ -56,7 +56,7 @@ namespace Beekeeping.Server.Food
             Recipes = new List<Recipe> { recipe };
             ExperienceOnCraft = 1;
 
-            LaborInCalories = CreateLaborInCaloriesValue(20, typeof(AdvancedBakingSkill));
+            LaborInCalories = CreateLaborInCaloriesValue(45, typeof(AdvancedBakingSkill));
 
             CraftMinutes = CreateCraftTimeValue(
                 beneficiary: typeof(OnduFruitCakeRecipe),

@@ -44,10 +44,9 @@ namespace Beekeeping.Server.Food
                 ingredients: new List<IngredientElement>
                 {
                     new IngredientElement(typeof(OnduPurifiedHoneyItem), 2, typeof(AdvancedCookingSkill)),
-                    new IngredientElement(typeof(InfusedOilItem), 1, typeof(AdvancedCookingSkill)),
+                    new IngredientElement(typeof(InfusedOilItem), 2, typeof(AdvancedCookingSkill)),
                     new IngredientElement(typeof(VegetableMedleyItem), 2, typeof(AdvancedCookingSkill)),
-                    new IngredientElement(typeof(SalmonItem), 2, typeof(AdvancedCookingSkill)),
-                    new IngredientElement(typeof(InfusedOilItem), 1, typeof(AdvancedCookingSkill))
+                    new IngredientElement(typeof(SalmonItem), 2, typeof(AdvancedCookingSkill))
                 },
 
                 items: new List<CraftingElement>
