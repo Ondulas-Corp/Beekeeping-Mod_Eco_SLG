@@ -4,6 +4,7 @@
 // MVID: 0CFADE07-BC7B-4B9C-956D-CB3332005D4A
 // Assembly location: C:\Users\khisa\Downloads\beekeepingmod1.2.1\BeekeepingMod1.2.1\BeekeepingMod1.2.1.dll
 
+using Beekeeping.Server.Module;
 using Eco.Gameplay.Components;
 using Eco.Gameplay.Components.Auth;
 using Eco.Gameplay.Interactions;
@@ -45,27 +46,24 @@ namespace Beekeeping.Server
 
         public override InteractResult OnActRight(InteractionContext context)
         {
-            ItemStack itemStack = context.Player.User.Inventory.Clothing.NonEmptyStacks.Where(stack => (string)stack.Item.DisplayName == "Beekeeper Hat").FirstOrDefault();
             if (!swithing)
             {
-                if (itemStack != null)
+                context.Player.User.Inventory.TryModify(changeSet =>
                 {
-                    context.Player.User.Inventory.TryModify(changeSet =>
-                    {
-                        swithing = true;
-                        int num = new Random().Next(1, 16);
-                        if (num == 15)
-                            changeSet.AddItem(typeof(OnduModernQueenBeeItem), null);
-                        else if (num > 0 && num < 10)
-                            changeSet.AddItem(typeof(OnduQueenBeeItem), null);
-                        else if (num == 10 || num == 11 || num == 12)
-                            changeSet.AddItem(typeof(OnduBasicQueenBeeItem), null);
-                        else if (num == 13 || num == 14)
-                            changeSet.AddItem(typeof(OnduAdvancedQueenBeeItem), null);
-                        new StringBuilder().Append((string)Localizer.DoStr("You received a Queen Bee !"));
-                    }, context.Player.User);
-                    return GetComponent<BeeComponent>(null).Interact(context);
-                }
+                    swithing = true;
+                    int num = new Random().Next(1, 16);
+                    if (num == 15)
+                        changeSet.AddItem(typeof(OnduModernQueenBeeItem), null);
+                    else if (num > 0 && num < 10)
+                        changeSet.AddItem(typeof(OnduQueenBeeItem), null);
+                    else if (num == 10 || num == 11 || num == 12)
+                        changeSet.AddItem(typeof(OnduBasicQueenBeeItem), null);
+                    else if (num == 13 || num == 14)
+                        changeSet.AddItem(typeof(OnduAdvancedQueenBeeItem), null);
+                    new StringBuilder().Append((string)Localizer.DoStr("You received a Queen Bee !"));
+                }, context.Player.User);
+                return GetComponent<BeeComponent>(null).Interact(context);
+
                 context.Player.Msg(Localizer.Format("You can't get the queen bee back without a Beekeeper Mask."), (NotificationStyle)8);
                 return InteractResult.Success;
             }
