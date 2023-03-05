@@ -47,7 +47,7 @@ namespace Beekeeping.Server.Food
                     new IngredientElement(typeof(SimmeredMeatItem), 2, typeof(AdvancedCookingSkill)),
                     new IngredientElement(typeof(CornmealItem), 2, typeof(AdvancedCookingSkill)),
                     new IngredientElement(typeof(VegetableMedleyItem), 2, typeof(AdvancedCookingSkill)),
-                    new IngredientElement(typeof(BoiledRiceItem), 2, typeof(AdvancedCookingSkill))
+                    new IngredientElement(typeof(BoiledRiceItem), 1, typeof(AdvancedCookingSkill))
                 },
 
                 items: new List<CraftingElement>
