@@ -1,6 +1,6 @@
-﻿using Beekeeping.Server.Module;
+﻿using Beekeeping.Server.Benefit;
+using Beekeeping.Server.Module;
 using Beekeeping.Server.Object;
-using Beekeeping.Server.Skill.Benefit;
 using Eco.Gameplay.Components;
 using Eco.Gameplay.Items;
 using Eco.Gameplay.Skills;

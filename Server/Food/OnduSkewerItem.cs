@@ -43,7 +43,7 @@ namespace Beekeeping.Server.Food
                 ingredients: new List<IngredientElement>
                 {
                     new IngredientElement(typeof(OnduPurifiedHoneyItem), 1, typeof(CookingSkill)),
-                    new IngredientElement(typeof(MeatStockItem), 1, typeof(CookingSkill), false),
+                    new IngredientElement(typeof(MeatStockItem), 1, false),
                     new IngredientElement(typeof(PreparedMeatItem), 2, typeof(CookingSkill))
                 },
 
