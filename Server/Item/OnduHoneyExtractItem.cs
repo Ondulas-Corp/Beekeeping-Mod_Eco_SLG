@@ -4,6 +4,7 @@
 // MVID: 0CFADE07-BC7B-4B9C-956D-CB3332005D4A
 // Assembly location: C:\Users\khisa\Downloads\beekeepingmod1.2.1\BeekeepingMod1.2.1\BeekeepingMod1.2.1.dll
 
+using Beekeeping.Server.Module;
 using Eco.Gameplay.Housing.PropertyValues;
 using Eco.Gameplay.Items;
 using Eco.Gameplay.Modules;
@@ -21,7 +22,7 @@ namespace Beekeeping.Server
 {
     [Serialized]
     [LocDisplayName("Manual Extractor")]
-    [AllowPluginModules(ItemTypes = new Type[] { typeof(SmeltingUpgradeItem) }, Tags = new string[] { "BasicUpgrade" })]
+    [AllowPluginModules(ItemTypes = new Type[] { typeof(OnduQueenBeeItem), typeof(OnduAdvancedQueenBeeItem), typeof(OnduBasicQueenBeeItem), typeof(OnduModernQueenBeeItem) })]
     public class OnduHoneyExtractItem : WorldObjectItem<OnduHoneyExtractObject>, IPersistentData
     {
         public static readonly HomeFurnishingValue HomeValue;
