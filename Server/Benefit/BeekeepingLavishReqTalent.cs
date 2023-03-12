@@ -8,7 +8,7 @@ using Eco.Mods.TechTree;
 using Eco.Shared.Serialization;
 using System;
 
-namespace Beekeeping.Server
+namespace Beekeeping.Server.Benefit
 {
     [Serialized]
     public class BeekeepingLavishReqTalent : LavishWorkspaceTalent

@@ -10,7 +10,7 @@ using Eco.Shared.Serialization;
 using System;
 using System.Diagnostics;
 
-namespace Beekeeping.Server
+namespace Beekeeping.Server.Benefit
 {
     [Serialized]
     [LocDisplayName("Frugal Workspace: Beekeeping")]
