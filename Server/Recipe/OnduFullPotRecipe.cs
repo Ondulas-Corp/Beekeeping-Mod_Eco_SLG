@@ -25,7 +25,7 @@ namespace Beekeeping.Server
       };
             ExperienceOnCraft = 0.5f;
             LaborInCalories = CreateLaborInCaloriesValue(30f, typeof(BeekeepingSkill));
-            CraftMinutes = CreateCraftTimeValue(typeof(OnduFullPotRecipe), 240f, typeof(BeekeepingSkill), new Type[2]
+            CraftMinutes = CreateCraftTimeValue(typeof(OnduFullPotRecipe), 120f, typeof(BeekeepingSkill), new Type[2]
             {
         typeof (BeekeepingFocusedSpeedTalent),
         typeof (BeekeepingParallelSpeedTalent)

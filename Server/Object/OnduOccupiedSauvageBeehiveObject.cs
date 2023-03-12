@@ -64,8 +64,9 @@ namespace Beekeeping.Server
                 }, context.Player.User);
                 return GetComponent<BeeComponent>(null).Interact(context);
 
-                context.Player.Msg(Localizer.Format("You can't get the queen bee back without a Beekeeper Mask."), (NotificationStyle)8);
-                return InteractResult.Success;
+                // If use with beekeeper hat
+                // context.Player.Msg(Localizer.Format("You can't get the queen bee back without a Beekeeper Mask."), (NotificationStyle)8);
+                // return InteractResult.Success;
             }
             context.Player.Msg(Localizer.Format("Queen Bee has already been taken."), (NotificationStyle)8);
             return InteractResult.Success;

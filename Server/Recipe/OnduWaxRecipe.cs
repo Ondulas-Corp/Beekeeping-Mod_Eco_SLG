@@ -15,30 +15,40 @@ using System.Collections.Generic;
 
 namespace Beekeeping.Server
 {
-    [RequiresSkill(typeof(SmeltingSkill), 0)]
+    [RequiresSkill(typeof(BeekeepingSkill), 1)]
     public class OnduWaxRecipe : RecipeFamily
     {
         public OnduWaxRecipe()
         {
-            Recipes = new List<Recipe>()
-      {
-        new Recipe("Wax", Localizer.DoStr("Wax"), new IngredientElement[1]
-        {
-          new IngredientElement(typeof (OnduWaxFrameItem), 1f, false)
-        }, new CraftingElement[1]
-        {
-           new CraftingElement<OnduWaxItem>(2f)
-        })
-      };
+            var recipe = new Recipe();
+            recipe.Init(
+                name: "Wax",
+                displayName: Localizer.DoStr("Wax"),
+                ingredients: new List<IngredientElement>
+                {
+                    new IngredientElement(typeof(OnduWaxFrameItem), 1)
+                },
+
+                items: new List<CraftingElement>
+                {
+                    new CraftingElement<OnduWaxItem>(2)
+                });
+            Recipes = new List<Recipe> { recipe };
             ExperienceOnCraft = 0.5f;
-            LaborInCalories = CreateLaborInCaloriesValue(30f, typeof(BeekeepingSkill));
-            CraftMinutes = CreateCraftTimeValue(typeof(OnduWaxRecipe), 0.5f, typeof(BeekeepingSkill), new Type[2]
-            {
-        typeof (BeekeepingFocusedSpeedTalent),
-        typeof (BeekeepingParallelSpeedTalent)
-            });
-            Initialize(Localizer.DoStr("Wax"), typeof(OnduWaxRecipe));
-            CraftingComponent.AddRecipe(typeof(BloomeryObject), this);
+
+            LaborInCalories = CreateLaborInCaloriesValue(30, typeof(BeekeepingSkill));
+
+            CraftMinutes = CreateCraftTimeValue(
+                beneficiary: typeof(OnduWaxRecipe),
+                start: 0.5f,
+                skillType: typeof(BeekeepingSkill),
+                typeof(BeekeepingFocusedSpeedTalent),
+                typeof(BeekeepingParallelSpeedTalent));
+
+            Initialize(displayText: Localizer.DoStr("Wax"), recipeType: typeof(OnduWaxRecipe));
+
+            CraftingComponent.AddRecipe(tableType: typeof(OnduHoneyExtractObject), recipe: this);
+            CraftingComponent.AddRecipe(tableType: typeof(OnduHoneyExtractMecanicalObject), recipe: this);
         }
     }
 }
