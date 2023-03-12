@@ -41,7 +41,7 @@ namespace Beekeeping.Server.Food
                 displayName: Localizer.DoStr("Purified Honey"),
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(OnduFullPotItem), 1, typeof(BakingSkill))
+                    new IngredientElement(typeof(OnduFullPotItem), 1, typeof(BeekeepingSkill))
                 },
 
                 items: new List<CraftingElement>
@@ -61,7 +61,7 @@ namespace Beekeeping.Server.Food
                 typeof(BeekeepingFocusedSpeedTalent),
                 typeof(BeekeepingParallelSpeedTalent));
 
-            Initialize(displayText: Localizer.DoStr("Purified Honey"), recipeType: typeof(OnduPancakeRecipe));
+            Initialize(displayText: Localizer.DoStr("Purified Honey"), recipeType: typeof(OnduPurifiedHoneyRecipe));
 
             CraftingComponent.AddRecipe(tableType: typeof(OnduHoneyExtractObject), recipe: this);
         }
@@ -78,7 +78,7 @@ namespace Beekeeping.Server.Food
                 displayName: Localizer.DoStr("Purified Honey"),
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(OnduFullPotItem), 1, typeof(BakingSkill))
+                    new IngredientElement(typeof(OnduFullPotItem), 1, typeof(BeekeepingSkill))
                 },
 
                 items: new List<CraftingElement>

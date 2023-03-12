@@ -25,7 +25,7 @@ namespace Beekeeping.Server
 {
     [Serialized]
     [LocDisplayName("Mechanical Extractor")]
-    [AllowPluginModules(ItemTypes = new Type[] { typeof(OnduQueenBeeItem), typeof(OnduAdvancedQueenBeeItem), typeof(OnduBasicQueenBeeItem), typeof(OnduModernQueenBeeItem) })]
+    [AllowPluginModules(ItemTypes = new Type[] { typeof(AdvancedUpgradeLvl1Item), typeof(AdvancedUpgradeLvl2Item), typeof(AdvancedUpgradeLvl3Item), typeof(AdvancedUpgradeLvl4Item) })]
     public class OnduHoneyExtractMecanicalItem : WorldObjectItem<OnduHoneyExtractMecanicalObject>, IPersistentData
     {
         public static readonly HomeFurnishingValue HomeValue;

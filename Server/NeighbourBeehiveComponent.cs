@@ -89,7 +89,7 @@ namespace Beekeeping.Server
 
         private bool HasNeighbour()
         {
-            int size = 6;
+            int size = 4;
             bool hasNeighbour = false;
             SpiralDestruction(size).ToList().ForEach(x =>
             {
@@ -137,7 +137,7 @@ namespace Beekeeping.Server
 
         private void UpdateStatus()
         {
-            status?.SetStatusMessage(noNeighbourBeehive, Localizer.DoStr("No works if there is a beehive around (6 blocks diametre)."));
+            status?.SetStatusMessage(noNeighbourBeehive, Localizer.DoStr("No works if there is a beehive around (2 blocks apart)."));
         }
 
         public IEnumerable<WorldPosition3i> SpiralDestruction(int size)
