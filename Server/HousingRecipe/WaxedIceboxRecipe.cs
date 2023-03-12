@@ -15,7 +15,7 @@ using System.Collections.Generic;
 
 namespace Beekeeping.Server.HousingRecipe
 {
-    [RequiresSkill(typeof(CarpentrySkill), 7)]
+    [RequiresSkill(typeof(CarpentrySkill), 4)]
     public class WaxedIceboxRecipe : RecipeFamily
     {
         public WaxedIceboxRecipe()

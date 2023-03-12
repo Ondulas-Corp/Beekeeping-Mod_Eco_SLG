@@ -25,7 +25,7 @@ namespace Beekeeping.Server
         {
           new IngredientElement("WoodBoard", 14f, typeof (CarpentrySkill), typeof (CarpentryLavishResourcesTalent)),
           new IngredientElement(typeof (IronBarItem), 2f, typeof (CarpentrySkill), typeof (CarpentryLavishResourcesTalent)),
-          new IngredientElement(typeof (PlantFibersItem), 30f, typeof (CarpentrySkill), typeof (CarpentryLavishResourcesTalent))
+          new IngredientElement(typeof (HewnLogItem), 5, typeof (CarpentrySkill), typeof (CarpentryLavishResourcesTalent))
         }, new CraftingElement[1]
         {
            new CraftingElement<OnduBreedingBeehiveItem>(1f)

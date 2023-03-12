@@ -32,7 +32,7 @@ namespace Beekeeping.Server
         })
       };
             ExperienceOnCraft = 2.0f;
-            LaborInCalories = CreateLaborInCaloriesValue(1000f, typeof(MechanicsSkill));
+            LaborInCalories = CreateLaborInCaloriesValue(300f, typeof(MechanicsSkill));
             CraftMinutes = CreateCraftTimeValue(typeof(OnduHoneyExtractMecanicalRecipe), 6f, typeof(MechanicsSkill), new Type[2]
             {
         typeof (MechanicsFocusedSpeedTalent),

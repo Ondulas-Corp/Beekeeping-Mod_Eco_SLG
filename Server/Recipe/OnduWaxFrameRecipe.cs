@@ -19,26 +19,35 @@ namespace Beekeeping.Server
     {
         public OnduWaxFrameRecipe()
         {
-            Recipes = new List<Recipe>()
-      {
-        new Recipe("WaxFrame", Localizer.DoStr("Wax Frame"), new IngredientElement[2]
-        {
-          new IngredientElement(typeof (OnduFrameItem), 1f, false),
-          new IngredientElement(typeof (OnduWaxSheetItem), 1f, false)
-        }, new CraftingElement[1]
-        {
-           new CraftingElement<OnduWaxFrameItem>(1f)
-        })
-      };
+            var recipe = new Recipe();
+            recipe.Init(
+                name: "WaxFrame",
+                displayName: Localizer.DoStr("Wax Frame"),
+                ingredients: new List<IngredientElement>
+                {
+                    new IngredientElement(typeof(OnduFrameItem), 1),
+                    new IngredientElement(typeof(OnduWaxSheetItem), 1)
+                },
+
+                items: new List<CraftingElement>
+                {
+                    new CraftingElement<OnduWaxFrameItem>()
+                });
+            Recipes = new List<Recipe> { recipe };
             ExperienceOnCraft = 0.5f;
-            LaborInCalories = CreateLaborInCaloriesValue(40f, typeof(BeekeepingSkill));
-            CraftMinutes = CreateCraftTimeValue(typeof(OnduWaxFrameRecipe), 240f, typeof(BeekeepingSkill), new Type[2]
-            {
-        typeof (BeekeepingFocusedSpeedTalent),
-        typeof (BeekeepingParallelSpeedTalent)
-            });
-            Initialize(Localizer.DoStr("Wax Frame"), typeof(OnduWaxFrameRecipe));
-            CraftingComponent.AddRecipe(typeof(OnduBreedingBeehiveObject), this);
+
+            LaborInCalories = CreateLaborInCaloriesValue(40, typeof(BeekeepingSkill));
+
+            CraftMinutes = CreateCraftTimeValue(
+                beneficiary: typeof(OnduWaxFrameRecipe),
+                start: 120f,
+                skillType: typeof(BeekeepingSkill),
+                typeof(BeekeepingFocusedSpeedTalent),
+                typeof(BeekeepingParallelSpeedTalent));
+
+            Initialize(displayText: Localizer.DoStr("Wax Frame"), recipeType: typeof(OnduWaxFrameRecipe));
+
+            CraftingComponent.AddRecipe(tableType: typeof(OnduBreedingBeehiveObject), recipe: this);
         }
     }
 }
