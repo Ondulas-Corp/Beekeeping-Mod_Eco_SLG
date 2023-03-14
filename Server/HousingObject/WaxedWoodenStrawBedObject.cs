@@ -20,6 +20,7 @@ namespace Beekeeping.Server.HousingObject
     [Serialized]
     [RequireComponent(typeof(PropertyAuthComponent))]
     [RequireComponent(typeof(HousingComponent))]
+    [RequireComponent(typeof(SolidAttachedSurfaceRequirementComponent), null)]
     [RequireComponent(typeof(MountComponent))]
     public class WaxedWoodenStrawBedObject : WorldObject, IRepresentsItem
     {

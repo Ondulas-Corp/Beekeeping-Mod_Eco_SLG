@@ -23,6 +23,7 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(HoneyComponent), null)]
     [RequireComponent(typeof(NeighbourBeehiveComponent), null)]
     [RequireComponent(typeof(NeighbourSmallhiveComponent), null)]
+    [RequireComponent(typeof(SolidAttachedSurfaceRequirementComponent), null)]
     public class OnduSmallHiveObject : WorldObject, IRepresentsItem
     {
         public override LocString DisplayName

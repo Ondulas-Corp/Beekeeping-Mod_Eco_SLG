@@ -24,6 +24,7 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(SolidAttachedSurfaceRequirementComponent), null)]
     [RequireComponent(typeof(BeeComponent), null)]
     [RequireComponent(typeof(QueenComponent), null)]
+    [RequireComponent(typeof(SolidAttachedSurfaceRequirementComponent), null)]
     public class OnduOccupiedSauvageBeehiveObject : WorldObject, IRepresentsItem
     {
         private bool swithing = false;
