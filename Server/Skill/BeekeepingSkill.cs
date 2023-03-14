@@ -35,13 +35,13 @@ namespace Beekeeping.Server
         public static AdditiveStrategy AdditiveStrategy = new AdditiveStrategy(new float[8]
         {
             0.0f,
-            0.5f,
-            0.55f,
-            0.6f,
-            0.65f,
-            0.7f,
-            0.75f,
-            0.8f
+            0.2f,
+            0.25f,
+            0.3f,
+            0.35f,
+            0.4f,
+            0.45f,
+            0.5f
         });
 
         public override LocString DisplayDescription => Localizer.DoStr("A skill for the breeding of bees.");
