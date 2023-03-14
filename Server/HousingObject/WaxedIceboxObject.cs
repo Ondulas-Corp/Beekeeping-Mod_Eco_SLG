@@ -5,11 +5,13 @@
 // Assembly location: C:\Users\khisa\Downloads\beekeepingmod1.2.1\BeekeepingMod1.2.1\BeekeepingMod1.2.1.dll
 
 using Beekeeping.Server.HousingItem;
+using Eco.Core.Items;
 using Eco.Gameplay.Components;
 using Eco.Gameplay.Components.Auth;
 using Eco.Gameplay.Housing;
 using Eco.Gameplay.Items;
 using Eco.Gameplay.Objects;
+using Eco.Mods.TechTree;
 using Eco.Shared.Items;
 using Eco.Shared.Localization;
 using Eco.Shared.Serialization;
@@ -21,39 +23,25 @@ namespace Beekeeping.Server.HousingObject
     [RequireComponent(typeof(PropertyAuthComponent), null)]
     [RequireComponent(typeof(LinkComponent), null)]
     [RequireComponent(typeof(HousingComponent), null)]
+    [RequireComponent(typeof(SolidAttachedSurfaceRequirementComponent), null)]
     [RequireComponent(typeof(PublicStorageComponent), null)]
+    [Ecopedia("Housing Objects", "Kitchen", subPageName: "Icebox Item")]
     public class WaxedIceboxObject : WorldObject, IRepresentsItem
     {
-        public override LocString DisplayName
-        {
-            get
-            {
-                return Localizer.DoStr("Waxed Icebox");
-            }
-        }
+        public override LocString DisplayName => Localizer.DoStr("Waxed Icebox");
 
-        public virtual TableTextureMode TableTexture
-        {
-            get
-            {
-                return (TableTextureMode)1;
-            }
-        }
+        public virtual TableTextureMode TableTexture => (TableTextureMode)1;
 
-        public virtual Type RepresentedItemType
-        {
-            get
-            {
-                return typeof(WaxedIceboxItem);
-            }
-        }
+        public virtual Type RepresentedItemType => typeof(WaxedIceboxItem);
 
         protected override void Initialize()
         {
             GetComponent<HousingComponent>(null).HomeValue = WaxedIceboxItem.HomeValue;
             PublicStorageComponent component = GetComponent<PublicStorageComponent>(null);
-            component.Initialize(8);
-            component.Storage.AddInvRestriction(new NotCarriedRestriction());
+            component.Initialize(16);
+            component.ShelfLifeMultiplier = 1.2f;
+            component.Storage.AddInvRestriction(new FoodStorageRestriction());
+            component.Storage.AddInvRestriction(new StackLimitRestriction(200));
         }
     }
 }

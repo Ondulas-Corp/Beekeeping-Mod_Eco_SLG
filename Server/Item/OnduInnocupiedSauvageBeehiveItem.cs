@@ -8,6 +8,7 @@ using Eco.Gameplay.Items;
 using Eco.Gameplay.Modules;
 using Eco.Shared.Localization;
 using Eco.Shared.Serialization;
+using Eco.Shared.Math;
 using System;
 
 namespace Beekeeping.Server
@@ -18,5 +19,9 @@ namespace Beekeeping.Server
     public class OnduInnocupiedSauvageBeehiveItem : WorldObjectItem<OnduInnocupiedSauvageBeehiveObject>
     {
         public override LocString DisplayDescription => Localizer.DoStr("Vacant Swarm. Put royal jelly to obtain a new queen bee...");
+
+        public override DirectionAxisFlags RequiresSurfaceOnSides { get; } = 0
+                    | DirectionAxisFlags.Down
+                ;
     }
 }

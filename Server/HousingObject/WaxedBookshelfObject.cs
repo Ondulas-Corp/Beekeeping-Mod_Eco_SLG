@@ -24,6 +24,7 @@ namespace Beekeeping.Server.HousingObject
     [RequireComponent(typeof(HousingComponent), null)]
     [RequireComponent(typeof(PublicStorageComponent), null)]
     [RequireComponent(typeof(RoomRequirementsComponent), null)]
+    [RequireComponent(typeof(SolidAttachedSurfaceRequirementComponent), null)]
     [RequireRoomContainment]
     [RequireRoomMaterialTier(1.8f, new Type[] { })]
     public class WaxedBookshelfObject : WorldObject, IRepresentsItem

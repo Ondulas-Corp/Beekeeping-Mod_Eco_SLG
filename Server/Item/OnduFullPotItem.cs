@@ -4,18 +4,22 @@
 // MVID: 0CFADE07-BC7B-4B9C-956D-CB3332005D4A
 // Assembly location: C:\Users\khisa\Downloads\beekeepingmod1.2.1\BeekeepingMod1.2.1\BeekeepingMod1.2.1.dll
 
+using Eco.Core.Items;
 using Eco.Gameplay.Housing.PropertyValues;
 using Eco.Gameplay.Items;
+using Eco.Gameplay.Objects;
 using Eco.Gameplay.Systems.Tooltip;
 using Eco.Shared.Localization;
 using Eco.Shared.Math;
 using Eco.Shared.Serialization;
 using System;
+using System.Collections.Generic;
 
 namespace Beekeeping.Server
 {
     [Serialized]
     [LocDisplayName("Honey Pot")]
+    [Ecopedia("Housing Objects", "Kitchen", createAsSubPage: true)]
     [Weight(100)]
     public class OnduFullPotItem : WorldObjectItem<OnduFullPotObject>
     {
@@ -33,6 +37,10 @@ namespace Beekeeping.Server
             homeFurnishingValue.TypeForRoomLimit = Localizer.DoStr("HoneyPot");
             homeFurnishingValue.DiminishingReturnPercent = 0.7f;
             HomeValue = homeFurnishingValue;
+            WorldObject.AddOccupancy<OnduFullPotObject>(new List<BlockOccupancy>()
+            {
+                new BlockOccupancy(new Vector3i(0, 0, 0))
+            });
         }
 
         [TooltipChildren(new Type[] { })]

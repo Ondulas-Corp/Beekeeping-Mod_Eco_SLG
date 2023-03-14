@@ -26,6 +26,7 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(HousingComponent), null)]
     [RequireComponent(typeof(PluginModulesComponent), null)]
     [RequireComponent(typeof(RoomRequirementsComponent), null)]
+    [RequireComponent(typeof(SolidAttachedSurfaceRequirementComponent), null)]
     [RequireRoomContainment]
     [RequireRoomVolume(35)]
     [RequireRoomMaterialTier(1.8f, new Type[] { typeof(BeekeepingLavishReqTalent), typeof(BeekeepingFrugalReqTalent) })]

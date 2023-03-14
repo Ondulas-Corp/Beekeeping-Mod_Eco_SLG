@@ -18,6 +18,7 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(PropertyAuthComponent), null)]
     [RequireComponent(typeof(QueenBeeComponent), null)]
     [RequireComponent(typeof(PluginModulesComponent), null)]
+    [RequireComponent(typeof(SolidAttachedSurfaceRequirementComponent), null)]
     public class OnduInnocupiedSauvageBeehiveObject : WorldObject, IRepresentsItem
     {
         public override LocString DisplayName

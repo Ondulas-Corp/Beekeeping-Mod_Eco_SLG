@@ -21,6 +21,7 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(CraftingComponent), null)]
     [RequireComponent(typeof(RequiredModuleComponent), null)]
     [RequireComponent(typeof(HoneyComponent), null)]
+    [RequireComponent(typeof(SolidAttachedSurfaceRequirementComponent), null)]
     [RequireComponent(typeof(NeighbourBeehiveComponent), null)]
     [RequireComponent(typeof(NeighbourSmallhiveComponent), null)]
     public class OnduBreedingBeehiveObject : WorldObject, IRepresentsItem

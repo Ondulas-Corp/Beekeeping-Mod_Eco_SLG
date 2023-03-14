@@ -8,6 +8,7 @@ using Beekeeping.Server.Module;
 using Eco.Gameplay.Items;
 using Eco.Gameplay.Modules;
 using Eco.Shared.Localization;
+using Eco.Shared.Math;
 using Eco.Shared.Serialization;
 using System;
 
@@ -19,5 +20,9 @@ namespace Beekeeping.Server
     public class OnduSmallHiveItem : WorldObjectItem<OnduSmallHiveObject>
     {
         public override LocString DisplayDescription => Localizer.DoStr("Small hive. Made for queen bees.");
+
+        public override DirectionAxisFlags RequiresSurfaceOnSides { get; } = 0
+                    | DirectionAxisFlags.Down
+                ;
     }
 }

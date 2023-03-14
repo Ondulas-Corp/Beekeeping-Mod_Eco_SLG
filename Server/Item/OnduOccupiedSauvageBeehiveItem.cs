@@ -17,13 +17,7 @@ namespace Beekeeping.Server
     [LocDisplayName("Occupied Swarm")]
     public class OnduOccupiedSauvageBeehiveItem : WorldObjectItem<OnduOccupiedSauvageBeehiveObject>
     {
-        public override LocString DisplayDescription
-        {
-            get
-            {
-                return Localizer.DoStr("Occupied Swarm. Contains a Queen Bee.");
-            }
-        }
+        public override LocString DisplayDescription => Localizer.DoStr("Occupied Swarm. Contains a Queen Bee.");
 
         public override DirectionAxisFlags RequiresSurfaceOnSides { get; } = 0
                     | DirectionAxisFlags.Down

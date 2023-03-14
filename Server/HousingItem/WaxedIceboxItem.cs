@@ -10,9 +10,11 @@ using Eco.Gameplay.Housing.PropertyValues;
 using Eco.Gameplay.Items;
 using Eco.Gameplay.Objects;
 using Eco.Gameplay.Systems.Tooltip;
+using Eco.Mods.TechTree;
 using Eco.Shared.Localization;
 using Eco.Shared.Math;
 using Eco.Shared.Serialization;
+using Eco.Shared.Utils;
 using System;
 using System.Collections.Generic;
 
@@ -26,10 +28,15 @@ namespace Beekeeping.Server.HousingItem
     {
         public static readonly HomeFurnishingValue HomeValue;
 
+        [Tooltip(50)]
+        public TooltipSection UpdateTooltip()
+            => new TooltipSection(Localizer.Do($"{Localizer.DoStr("Increases")} total shelf life by: {Text.InfoLight(Text.Percent(0.2f))}").Dash());
+
         public override LocString DisplayDescription => Localizer.DoStr("A waxed box of ice. It's in the name!");
         public override DirectionAxisFlags RequiresSurfaceOnSides { get; } = 0
                     | DirectionAxisFlags.Down
                 ;
+
         static WaxedIceboxItem()
         {
             HomeFurnishingValue homeFurnishingValue = new HomeFurnishingValue();
