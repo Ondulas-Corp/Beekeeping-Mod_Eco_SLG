@@ -33,6 +33,7 @@ namespace Beekeeping.Server.Food
     }
 
     [RequiresSkill(typeof(AdvancedCookingSkill), 7)]
+    [Ecopedia("Food", "Cooking", subPageName: "HoneyRoast Item")]
     public class OnduSalmonHoneyRecipe : RecipeFamily
     {
         public OnduSalmonHoneyRecipe()

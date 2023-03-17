@@ -32,6 +32,7 @@ namespace Beekeeping.Server.Food
     }
 
     [RequiresSkill(typeof(AdvancedCookingSkill), 6)]
+    [Ecopedia("Food", "Cooking", subPageName: "Tajine Item")]
     public class OnduTajineRecipe : RecipeFamily
     {
         public OnduTajineRecipe()

@@ -4,6 +4,7 @@
 // MVID: 0CFADE07-BC7B-4B9C-956D-CB3332005D4A
 // Assembly location: C:\Users\khisa\Downloads\beekeepingmod1.2.1\BeekeepingMod1.2.1\BeekeepingMod1.2.1.dll
 
+using Eco.Core.Items;
 using Eco.Gameplay.Components;
 using Eco.Gameplay.Items;
 using Eco.Gameplay.Players;
@@ -21,6 +22,7 @@ namespace Beekeeping.Server.Food
     [Serialized]
     [LocDisplayName("Fruit Cake")]
     [Weight(450)]
+    [Ecopedia("Food", "Baking", createAsSubPage: true)]
     public class OnduFruitCakeItem : FoodItem
     {
         public override LocString DisplayNamePlural => Localizer.DoStr("Fruit Cake");
@@ -31,6 +33,7 @@ namespace Beekeeping.Server.Food
     }
 
     [RequiresSkill(typeof(AdvancedBakingSkill), 6)]
+    [Ecopedia("Food", "Baking", subPageName: "FruitCake Item")]
     public class OnduFruitCakeRecipe : RecipeFamily
     {
         public OnduFruitCakeRecipe()

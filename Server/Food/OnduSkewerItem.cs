@@ -32,6 +32,7 @@ namespace Beekeeping.Server.Food
     }
 
     [RequiresSkill(typeof(CookingSkill), 3)]
+    [Ecopedia("Food", "Cooking", subPageName: "SkewerMeatandHoney Item")]
     public class OnduSkewerRecipe : RecipeFamily
     {
         public OnduSkewerRecipe()
