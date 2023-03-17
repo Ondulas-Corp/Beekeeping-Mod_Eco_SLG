@@ -5,6 +5,7 @@
 // Assembly location: C:\Users\khisa\Downloads\beekeepingmod1.2.1\BeekeepingMod1.2.1\BeekeepingMod1.2.1.dll
 
 using Beekeeping.Server.Benefit;
+using Eco.Core.Items;
 using Eco.Gameplay.Components;
 using Eco.Gameplay.Items;
 using Eco.Gameplay.Players;
@@ -21,16 +22,18 @@ namespace Beekeeping.Server.Food
     [Serialized]
     [LocDisplayName("Purified honey")]
     [Weight(100)]
+    [Ecopedia("Food", "BeeKeeping", createAsSubPage: true)]
     public class OnduPurifiedHoneyItem : FoodItem
     {
         public override LocString DisplayNamePlural => Localizer.DoStr("Purified honey");
         public override LocString DisplayDescription => Localizer.DoStr("Concentrated honey, ready-to-eat.");
         public override float Calories => 350;
         public override Nutrients Nutrition => new Nutrients() { Carbs = 9, Fat = 0, Protein = 0, Vitamins = 3 };
-        protected override int BaseShelfLife => (int)TimeUtil.HoursToSeconds(72);
+        protected override int BaseShelfLife => (int)TimeUtil.HoursToSeconds(99999);
     }
 
     [RequiresSkill(typeof(BeekeepingSkill), 1)]
+    [Ecopedia("Food", "BeeKeeping", subPageName: "PurifiedHoney Item")]
     public class OnduPurifiedHoneyRecipe : RecipeFamily
     {
         public OnduPurifiedHoneyRecipe()
@@ -68,6 +71,7 @@ namespace Beekeeping.Server.Food
     }
 
     [RequiresSkill(typeof(BeekeepingSkill), 1)]
+    [Ecopedia("Food", "BeeKeeping", subPageName: "PurifiedHoney2 Item")]
     public class OnduPurifiedHoneyRecipe2 : RecipeFamily
     {
         public OnduPurifiedHoneyRecipe2()
