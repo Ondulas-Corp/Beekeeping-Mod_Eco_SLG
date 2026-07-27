@@ -11,42 +11,85 @@ using System;
 namespace Beekeeping.Server
 {
     [Serialized]
-    [RequireComponent(typeof(StatusComponent), null)]
+    [RequireComponent(typeof(StatusComponent))]
     public class QueenBeeComponent : WorldObjectComponent
     {
         [Serialized]
         public bool isModulePresent = false;
+
         [Serialized]
         public double initialize = WorldTime.Seconds;
+
+        [Serialized]
+        public double transformationTime = 0; // When the transformation will occur
+
         private StatusElement status;
+        private static readonly Random random = new Random();
 
         public override void Initialize()
         {
-            Parent.GetComponent<PluginModulesComponent>(null).OnChanged.Add(new Action(Test));
-            status = Parent.GetComponent<StatusComponent>(null).CreateStatusElement(-10);
+            var pluginModules = Parent.GetComponent<PluginModulesComponent>();
+            pluginModules.OnChanged.Add(new Action(OnModuleChanged));
+
+            status = Parent.GetComponent<StatusComponent>().CreateStatusElement(-10);
             UpdateStatus();
         }
 
-        private void Test()
+        private void OnModuleChanged()
         {
-            isModulePresent = !Parent.GetComponent<PluginModulesComponent>(null).Inventory.IsEmpty;
-            initialize = WorldTime.Seconds;
+            var pluginModules = Parent.GetComponent<PluginModulesComponent>();
+            isModulePresent = !pluginModules.Inventory.IsEmpty;
+
+            if (isModulePresent)
+            {
+                initialize = WorldTime.Seconds;
+                
+                // Random time between 6-16 in-game hours (21600-57600 seconds)
+                double randomHours = 6 + (random.NextDouble() * 10); // 6 to 16 hours
+                transformationTime = initialize + (randomHours * 3600); // Convert to seconds
+            }
+            
+            // Always update status when module changes
+            UpdateStatus();
         }
 
         public override void Tick()
         {
             base.Tick();
-            if (!isModulePresent || WorldTime.Seconds < initialize + 43200.0)
+
+            if (!isModulePresent || WorldTime.Seconds < transformationTime)
                 return;
-            UpdateStatus();
+
+            // Perform transformation
             Parent.Destroy();
-            WorldObjectDebugUtil.Spawn("OnduOccupiedSauvageBeehiveObject", null, Parent.Position3i);
+
+            // Replace hive with the new "occupied" version
+            WorldObjectManager.ForceAdd(
+                typeof(OccupiedSauvageBeehiveObject),
+                null,
+                Parent.Position3i,
+                Parent.Rotation
+            );
+
             isModulePresent = false;
         }
 
         private void UpdateStatus()
         {
-            status?.SetStatusMessage(isModulePresent, Localizer.DoStr("If you put Royal Jelly in the vacant swarm, a queen bee will appear 12 hours later."));
+            if (isModulePresent)
+            {
+                status?.SetStatusMessage(
+                    true,
+                    Localizer.DoStr("Royal jelly is attracting a queen bee...")
+                );
+            }
+            else
+            {
+                status?.SetStatusMessage(
+                    false,
+                    Localizer.DoStr("Place royal jelly here to attract a wild queen bee (6-16 hours).")
+                );
+            }
         }
     }
 }
