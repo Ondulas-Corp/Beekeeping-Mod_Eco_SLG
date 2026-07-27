@@ -336,6 +336,14 @@ public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin
                 return;
             }
 
+            // Refresh hive count from world state before spawning (guards against overlapping batches)
+            ClusterManager.UpdateExistingHives(targetCluster);
+            if (targetCluster.CurrentHiveCount >= MAX_HIVES_PER_CLUSTER)
+            {
+                targetCluster.RegenerationInProgress = false;
+                return;
+            }
+
             var hivePos = instance.FindSuitableHivePosition(targetCluster.CenterPosition, existingHives);
             if (hivePos.HasValue)
             {
