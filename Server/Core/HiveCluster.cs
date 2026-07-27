@@ -9,28 +9,22 @@ public class HiveCluster
     [Serialized] public int MaxPlantCount { get; set; }
     [Serialized] public int CurrentPlantCount { get; set; }
     [Serialized] public bool IsAlive { get; set; }
-    [Serialized, ThreadSafe] public List<double> PendingRegenerationTimes { get; set; }
     [Serialized, ThreadSafe] public List<Vector3i> ExistingHivePositions { get; set; }
     [Serialized] public double LastHealthCheck { get; set; }
     [Serialized] public double LastRegenerationCheck { get; set; }
-    [Serialized] public bool RegenerationTriggered { get; set; }
     [Serialized] public double LastHarvestTime { get; set; }
     [Serialized] public bool RegenerationInProgress { get; set; } = false;
 
     public HiveCluster()
     {
-        PendingRegenerationTimes = new List<double>();
         ExistingHivePositions = new List<Vector3i>();
         IsAlive = true;
         LastHealthCheck = 0;
         LastRegenerationCheck = 0;
-        RegenerationTriggered = false;
         LastHarvestTime = 0;
     }
 
     public int CurrentHiveCount => ExistingHivePositions.Count;
-    public int PendingHiveCount => PendingRegenerationTimes.Count;
-    public int TotalFutureHives => CurrentHiveCount + PendingHiveCount;
     
     public int PlantBasedCapacity
     {
