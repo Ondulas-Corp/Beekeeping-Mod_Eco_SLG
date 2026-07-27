@@ -39,7 +39,7 @@ namespace Beekeeping.Server
                 new Recipe("Propolis", Localizer.DoStr("Propolis"), new IngredientElement[2]
                 {
                     new IngredientElement(typeof(ForagerBeeItem), 1f, true),
-                    new IngredientElement("Resin", 2f, typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingLavishResourcesTalent))
+                    new IngredientElement("NaturalFiber", 2f, typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingLavishResourcesTalent))
                 }, new CraftingElement[1]
                 {
                     new CraftingElement<PropolisItem>(1f)
