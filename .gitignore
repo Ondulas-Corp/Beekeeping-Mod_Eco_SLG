@@ -387,3 +387,6 @@ FodyWeavers.xsd
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# Eco mod references (DLLs extraits du serveur, non versionnés)
+Refs/
