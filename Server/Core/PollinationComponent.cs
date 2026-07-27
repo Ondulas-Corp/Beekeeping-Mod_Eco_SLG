@@ -24,15 +24,9 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(HoneyComponent))]
     public class PollinationComponent : WorldObjectComponent
     {
-        // Debug mode settings
-        private const bool DEBUG_MODE = false; // Set to true to enable debug messages
-		private const float NORMAL_GROWTH_BOOST_PERCENT = 15f;   // 15% faster growth overall
-		private const float DEBUG_GROWTH_BOOST_PERCENT  = 86300f; // Crops mature in ~100 seconds (5% per tick)
-        
-        
-        // Configuration
-        private const int POLLINATION_RADIUS = 10; // Block radius of effect
-        private const float TICK_INTERVAL_SECONDS = 5f; // Check every 5 seconds
+        private const bool DEBUG_MODE = false;
+        private const float DEBUG_GROWTH_BOOST_PERCENT = 86300f; // Crops mature in ~100 seconds (5% per tick)
+        private const float TICK_INTERVAL_SECONDS = 5f;
         
         [Serialized] private double nextTickTime = 0;
         [Serialized] private int lastCropsAffected = 0;
@@ -97,21 +91,21 @@ namespace Beekeeping.Server
 			
 			LogDebug($"=== Starting pollination scan ===");
 			LogDebug($"Hive position: {center}");
-			LogDebug($"Scanning radius: {POLLINATION_RADIUS} blocks");
+			LogDebug($"Scanning radius: {BeeHiveGeneration.Config.PollinationRadius} blocks");
 
 			int totalPlantsFound = 0;
 			int cropsIdentified = 0;
 
 			// Search for crops in a circular area
-			for (int x = -POLLINATION_RADIUS; x <= POLLINATION_RADIUS; x++)
+			for (int x = -BeeHiveGeneration.Config.PollinationRadius; x <= BeeHiveGeneration.Config.PollinationRadius; x++)
 			{
-				for (int z = -POLLINATION_RADIUS; z <= POLLINATION_RADIUS; z++)
+				for (int z = -BeeHiveGeneration.Config.PollinationRadius; z <= BeeHiveGeneration.Config.PollinationRadius; z++)
 				{
 					// Check if position is within circular radius
-					if (x * x + z * z > POLLINATION_RADIUS * POLLINATION_RADIUS)
+					if (x * x + z * z > BeeHiveGeneration.Config.PollinationRadius * BeeHiveGeneration.Config.PollinationRadius)
 						continue;
 
-					for (int y = -POLLINATION_RADIUS; y <= POLLINATION_RADIUS; y++)
+					for (int y = -BeeHiveGeneration.Config.PollinationRadius; y <= BeeHiveGeneration.Config.PollinationRadius; y++)
 					{
 						var pos = center + new Vector3i(x, y, z);
 						var plant = EcoSim.PlantSim.GetPlant(pos);
@@ -151,7 +145,6 @@ namespace Beekeeping.Server
 			
 		}
 
-        // Cached reference to the "Crop" tag — resolved on first use, after game data is loaded.
         private static Tag cropTag;
         private static Tag CropTag => cropTag ??= TagManager.Tag("Crop");
 
@@ -219,7 +212,7 @@ namespace Beekeeping.Server
 			else
 			{
 				// Normal: 15% faster grow overall
-				boostedTicksToMature = normalTicksToMature / (1f + (NORMAL_GROWTH_BOOST_PERCENT / 100f));
+				boostedTicksToMature = normalTicksToMature / (1f + (BeeHiveGeneration.Config.GrowthBoostPercent / 100f));
 				
 			}
 			
@@ -307,7 +300,7 @@ namespace Beekeeping.Server
             if (status == null) return;
 
             string statusMessage;
-            float boostPercent = DEBUG_MODE ? DEBUG_GROWTH_BOOST_PERCENT : NORMAL_GROWTH_BOOST_PERCENT;
+            float boostPercent = DEBUG_MODE ? DEBUG_GROWTH_BOOST_PERCENT : BeeHiveGeneration.Config.GrowthBoostPercent;
             
             if (!Enabled)
             {
@@ -315,14 +308,14 @@ namespace Beekeeping.Server
             }
             else if (lastCropsAffected > 0)
             {
-                statusMessage = $"Pollinating {lastCropsAffected} crops within {POLLINATION_RADIUS} blocks (+{boostPercent:F0}% growth)";
+                statusMessage = $"Pollinating {lastCropsAffected} crops within {BeeHiveGeneration.Config.PollinationRadius} blocks (+{boostPercent:F0}% growth)";
 
                 if (DEBUG_MODE)
                     statusMessage += " [DEBUG MODE]";
             }
             else
             {
-                statusMessage = $"Active — no growing crops within {POLLINATION_RADIUS} blocks";
+                statusMessage = $"Active — no growing crops within {BeeHiveGeneration.Config.PollinationRadius} blocks";
             }
 
             status.SetStatusMessage(Enabled && lastCropsAffected > 0, Localizer.DoStr(statusMessage));
