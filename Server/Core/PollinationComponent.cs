@@ -1,5 +1,6 @@
 using Eco.Core.Controller;
 using Eco.Gameplay.Components;
+using Eco.Gameplay.Items;
 using Eco.Gameplay.Objects;
 using Eco.Shared.Localization;
 using Eco.Shared.Math;
@@ -150,6 +151,10 @@ namespace Beekeeping.Server
 			
 		}
 
+        // Cached reference to the "Crop" tag — resolved on first use, after game data is loaded.
+        private static Tag cropTag;
+        private static Tag CropTag => cropTag ??= TagManager.Tag("Crop");
+
         private bool IsCropPlant(Plant plant)
         {
             if (plant == null || plant.Dead)
@@ -159,35 +164,13 @@ namespace Beekeeping.Server
             if (species == null)
                 return false;
 
-            // Check if the plant can actually survive in this biome
-            // If it's struggling (low habitability), don't boost it
             if (!CanPlantSurviveHere(plant))
                 return false;
 
-            var speciesTypeName = species.GetType().Name.ToLower();
-            var speciesDisplayName = species.DisplayName.NotTranslated.ToLower();
-
-            // Check if it's a crop by type name patterns
-            bool isCrop = speciesTypeName.Contains("crop") ||
-			             speciesTypeName.Contains("agave") ||
-						 speciesTypeName.Contains("huckleberry") ||
-                         speciesTypeName.Contains("wheat") ||
-                         speciesTypeName.Contains("corn") ||
-                         speciesTypeName.Contains("beet") ||
-                         speciesTypeName.Contains("beans") ||
-                         speciesTypeName.Contains("tomato") ||
-                         speciesTypeName.Contains("potato") ||
-                         speciesTypeName.Contains("pumpkin") ||
-                         speciesTypeName.Contains("cotton") ||
-                         speciesTypeName.Contains("rice") ||
-                         speciesTypeName.Contains("papaya") ||
-                         speciesTypeName.Contains("pineapple") ||
-                         speciesTypeName.Contains("taro") ||
-                         speciesTypeName.Contains("sunflower") ||
-                         speciesTypeName.Contains("camas") ||
-                         speciesDisplayName.Contains("crop");
-
-            return isCrop;
+            // A plant is a crop if any item it drops carries the Eco "Crop" tag.
+            // This covers all current and future crops without hardcoding names.
+            var tag = CropTag;
+            return tag != null && species.ResourceList.Any(r => r.ResourceType != null && r.ResourceType.HasTag(tag));
         }
 
         private bool CanPlantSurviveHere(Plant plant)
