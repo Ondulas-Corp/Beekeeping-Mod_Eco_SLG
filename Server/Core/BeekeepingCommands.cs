@@ -48,13 +48,23 @@ namespace Beekeeping.Server
                 typeof(HoneycombShelf3LeftDarkItem),
             };
 
-            int given = 0;
+            int given = 0, skipped = 0;
             foreach (var type in items)
             {
-                user.Inventory.AddItemsNonUnique(type, 1, user);
-                given++;
+                try
+                {
+                    user.Inventory.AddItemsNonUnique(type, 1, user);
+                    given++;
+                }
+                catch (InvalidOperationException)
+                {
+                    skipped++;
+                }
             }
-            chatClient.MsgLoc($"Gave {given} Beekeeping items.");
+            if (skipped > 0)
+                chatClient.MsgLoc($"Gave {given} Beekeeping items. {skipped} skipped (inventory full).");
+            else
+                chatClient.MsgLoc($"Gave {given} Beekeeping items.");
         }
 
         [ChatSubCommand("Util", "Shows all available beekeeping commands and their descriptions.", "BeekeepingHelp", ChatAuthorizationLevel.Admin)]
