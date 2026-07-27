@@ -47,7 +47,10 @@ namespace Beekeeping.Server
     using Eco.Gameplay.Items.Recipes;
     using Eco.Mods.TechTree;
     using Beekeeping.Server.Module;
-    using Eco.Mods.TechTree;
+    using static Eco.Gameplay.Components.PartsComponent;
+    using Eco.Gameplay.Housing;
+    using Eco.Gameplay.Housing.PropertyValues;
+    using static Eco.Gameplay.Housing.PropertyValues.HomeFurnishingValue;
 
     /// <summary>
     /// <para>Server side recipe definition for "BeeHive".</para>
@@ -112,14 +115,15 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(PropertyAuthComponent))]
     [RequireComponent(typeof(LinkComponent))]
     [RequireComponent(typeof(CraftingComponent))]
+    [RequireComponent(typeof(PartsComponent))]
+    [RequireComponent(typeof(SmokeComponent))]
+    [RequireComponent(typeof(RepairBountyComponent))]
     [RequireComponent(typeof(HoneyComponent))]
-	[RequireComponent(typeof(FuelSupplyComponent))]
-	[RequireComponent(typeof(FuelConsumptionComponent))]
     [RequireComponent(typeof(NeighborBeeHiveComponent))]
     [RequireComponent(typeof(OccupancyRequirementComponent))]
     [RequireComponent(typeof(ForSaleComponent))]
-	[RequireComponent(typeof(PluginModulesComponent))]
-	[RequireComponent(typeof(PublicStorageComponent))]
+    [RequireComponent(typeof(PluginModulesComponent))]
+    [RequireComponent(typeof(PublicStorageComponent))]
     [Tag("Usable")]
     [Ecopedia("Work Stations", "Beekeeping", subPageName: "Bee Hive Item")]
     public partial class BeeHiveObject : WorldObject, IRepresentsItem
@@ -127,32 +131,30 @@ namespace Beekeeping.Server
         public virtual Type RepresentedItemType => typeof(BeeHiveItem);
         public override LocString DisplayName => Localizer.DoStr("Bee Hive");
 
-		protected override void Initialize()
-		{
-			this.ModsPreInitialize();
-			
-			// Initialize fuel system for Bee Colony Cores
-			this.GetComponent<FuelSupplyComponent>().Initialize(1, new string[] { "BeeColonyCore", "QueenBee" });
-			this.GetComponent<FuelConsumptionComponent>().Initialize(10);
-			
-			// Initialize storage for bees
-			var storage = this.GetComponent<PublicStorageComponent>();
-			storage.Initialize(5); // 5 slots for bee storage
-			storage.Storage.AddInvRestriction(new StackLimitRestriction(20)); // 20 per slot
-			storage.Storage.AddInvRestriction(new NotCarriedRestriction()); // can't store blocks or large items
-			storage.Storage.AddInvRestriction(new SpecificItemTypesRestriction(new Type[] { 
-				typeof(BeeEggsItem), 
-				typeof(WorkerBeeItem), 
-				typeof(ForagerBeeItem), 
-				typeof(QueenBeeItem),
-				typeof(FrameItem),
-				typeof(BeeColonyCoreItem)
-			}));
-			storage.ShelfLifeMultiplier = 1.8f; // Increases bee duration by 80%
-			
-			base.Initialize();
-			this.ModsPostInitialize();
-		}
+        protected override void Initialize()
+        {
+            this.ModsPreInitialize();
+
+            this.GetComponent<PartsComponent>().Config(
+                () => Localizer.DoStr("The queen bee ages while the hive produces. Replace her before she dies or the hive will stop working."),
+                new PartInfo[] { new() { TypeName = nameof(QueenBeeItem), Quantity = 1 } });
+
+            var storage = this.GetComponent<PublicStorageComponent>();
+            storage.Initialize(5);
+            storage.Storage.AddInvRestriction(new StackLimitRestriction(20));
+            storage.Storage.AddInvRestriction(new NotCarriedRestriction());
+            storage.Storage.AddInvRestriction(new SpecificItemTypesRestriction(new Type[] {
+                typeof(BeeEggsItem),
+                typeof(WorkerBeeItem),
+                typeof(ForagerBeeItem),
+                typeof(FrameItem),
+                typeof(BeeColonyCoreItem)
+            }));
+            storage.ShelfLifeMultiplier = 1.8f;
+
+            base.Initialize();
+            this.ModsPostInitialize();
+        }
 
         /// <summary>Hook for mods to customize WorldObject before initialization. You can change housing values here.</summary>
         partial void ModsPreInitialize();
@@ -166,18 +168,20 @@ namespace Beekeeping.Server
     [Ecopedia("Work Stations", "Beekeeping", createAsSubPage: true)]
     [Weight(1500)] // Heavier than small hive since it's more advanced
 	[AllowPluginModules(Tags = new[] { "BasicUpgrade" }, ItemTypes = new[] { typeof(BeekeepingUpgradeItem) })]
-    public partial class BeeHiveItem : WorldObjectItem<BeeHiveObject>
+    public partial class BeeHiveItem : WorldObjectItem<BeeHiveObject>, IPersistentData
     {
-		[NewTooltip(CacheAs.SubType, 50)] public static LocString UpdateTooltip() => Localizer.Do($"Can store bees and Increases their lifespan by: {Text.InfoLight(Text.Percent(0.8f))}").Dash();
-        protected override OccupancyContext GetOccupancyContext => new SideAttachedContext( 0  | DirectionAxisFlags.Down , WorldObject.GetOccupancyInfo(this.WorldObjectType));
-		
-		public override HomeFurnishingValue HomeValue => homeValue;
+        [NewTooltip(CacheAs.SubType, 50)] public static LocString UpdateTooltip() => Localizer.Do($"Can store bees and Increases their lifespan by: {Text.InfoLight(Text.Percent(0.8f))}").Dash();
+        protected override OccupancyContext GetOccupancyContext => new SideAttachedContext(0 | DirectionAxisFlags.Down, WorldObject.GetOccupancyInfo(this.WorldObjectType));
+
+        [Serialized, SyncToView, NewTooltipChildren(CacheAs.Instance, flags: TTFlags.AllowNonControllerTypeForChildren)] public object PersistentData { get; set; }
+
+        public override HomeFurnishingValue HomeValue => homeValue;
         public static readonly HomeFurnishingValue homeValue = new HomeFurnishingValue()
         {
-            ObjectName = typeof(BeeHiveObject).UILink(),
-            Category = HousingConfig.GetRoomCategory("Outdoor"),
-			BaseValue                               = 2,
-            TypeForRoomLimit = Localizer.DoStr("Beehive"),
+            ObjectName                  = typeof(BeeHiveObject).UILink(),
+            Category                    = HousingConfig.GetRoomCategory("Outdoor"),
+            BaseValue                   = 2,
+            TypeForRoomLimit            = Localizer.DoStr("Beehive"),
             DiminishingReturnMultiplier = 0.3f
         };
 

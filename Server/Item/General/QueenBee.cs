@@ -1,14 +1,11 @@
 using Eco.Core.Items;
 using Eco.Gameplay.Components;
+using Eco.Gameplay.DynamicValues;
 using Eco.Gameplay.Items;
 using Eco.Gameplay.Items.Recipes;
 using Eco.Gameplay.Skills;
 using Eco.Shared.Localization;
 using Eco.Shared.Serialization;
-using Eco.Core.Controller;
-using Eco.Gameplay.Players;
-using Eco.Shared.Utils;
-using Eco.Shared.Time;
 using System;
 using System.Collections.Generic;
 
@@ -19,20 +16,17 @@ namespace Beekeeping.Server
     /// </summary>
     [Serialized]
     [LocDisplayName("Queen Bee")]
-    [LocDescription("The supreme ruler of the hive. A rare and valuable bee that will spoil over time without proper care.")]
+    [LocDescription("The supreme ruler of the hive. She gradually ages as she lays eggs — replace her before she dies or the hive will stop working.")]
     [Weight(50)]
     [MaxStackSize(1)]
     [Tag("QueenBee")]
-    [Tag("Spoilable")]
-	[Fuel(12500)]
     [Ecopedia("Items", "Products", subPageName: "Queen Bee")]
-    public class QueenBeeItem : FoodItem
+    public class QueenBeeItem : PartItem
     {
-        public override LocString DisplayNamePlural => Localizer.DoStr("Queen Bees");
-        public override float Calories => 0f; // No nutritional value
-        public override Nutrients Nutrition => new Nutrients() { Carbs = 0f, Fat = 0f, Protein = 0f, Vitamins = 0f };
-        
-        public override float BaseShelfLife            => (float)TimeUtil.HoursToSeconds(120);
+        public override LocString DisplayNamePlural  => Localizer.DoStr("Queen Bees");
+        public override LocString BrokenDescription  => Localizer.DoStr("The queen bee has died. The hive is disabled until a new queen is installed.");
+        public override IDynamicValue SkilledRepairCost => skilledRepairCost;
+        static readonly IDynamicValue skilledRepairCost = new ConstantValue(1);
     }
 
     /// <summary>

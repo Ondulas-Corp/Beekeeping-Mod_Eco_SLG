@@ -80,7 +80,7 @@ namespace Beekeeping.Server
         public override void Tick()
         {
             base.Tick();
-            
+
             if (needsUpdate)
             {
                 CheckFloweredStatus();
@@ -88,6 +88,10 @@ namespace Beekeeping.Server
                 needsUpdate = false;
                 Parent.UpdateEnabledAndOperating();
             }
+
+            // Age the queen only while the hive is actively producing (plants present)
+            if (IsFlowered)
+                Parent.GetComponent<PartsComponent>()?.ConsumeDurabilityAccumulated(null, 0.1);
         }
 
         private void CheckFloweredStatus()
