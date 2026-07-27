@@ -121,6 +121,7 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(PropertyAuthComponent))]
     [RequireComponent(typeof(OccupancyRequirementComponent))]
     [RequireComponent(typeof(ForSaleComponent))]
+    [RequireComponent(typeof(HousingComponent))]
     [Tag("Usable")]
     [Ecopedia("Housing Objects", "Living Room", subPageName: "Honeycomb Shelf Item")]
     public partial class HoneycombShelfObject : WorldObject, IRepresentsItem
@@ -131,6 +132,7 @@ namespace Beekeeping.Server
         protected override void Initialize()
         {
             this.ModsPreInitialize();
+            this.GetComponent<HousingComponent>().HomeValue = HoneycombShelfItem.homeValue;
             base.Initialize();
             this.ModsPostInitialize();
         }

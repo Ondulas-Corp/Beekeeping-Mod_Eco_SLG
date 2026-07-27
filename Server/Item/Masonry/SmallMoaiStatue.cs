@@ -99,6 +99,7 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(PropertyAuthComponent))]
     [RequireComponent(typeof(OccupancyRequirementComponent))]
     [RequireComponent(typeof(ForSaleComponent))]
+    [RequireComponent(typeof(HousingComponent))]
     [Tag("Usable")]
     [Ecopedia("Items", "Decorative", subPageName: "Small Moai Statue Object")]
     public partial class SmallMoaiStatueObject : WorldObject, IRepresentsItem
@@ -109,6 +110,7 @@ namespace Beekeeping.Server
         protected override void Initialize()
         {
             this.ModsPreInitialize();
+            this.GetComponent<HousingComponent>().HomeValue = SmallMoaiStatueItem.homeValue;
             base.Initialize();
             this.ModsPostInitialize();
         }
