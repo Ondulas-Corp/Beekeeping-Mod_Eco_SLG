@@ -1,8 +1,10 @@
 ﻿using Eco.Gameplay;
+using Eco.Gameplay.Items;
 using Eco.Gameplay.Players;
 using Eco.Gameplay.Property;
 using Eco.Gameplay.Systems.Chat;
 using Eco.Gameplay.Systems.Messaging.Chat.Commands;
+using Eco.Shared.Localization;
 using Eco.Shared.Math;
 using Eco.World.Blocks;
 using Eco.Gameplay.Objects;
@@ -48,23 +50,11 @@ namespace Beekeeping.Server
                 typeof(HoneycombShelf3LeftDarkItem),
             };
 
-            int given = 0, skipped = 0;
+            var label = Localizer.Do($"Beekeeping mod items");
             foreach (var type in items)
-            {
-                try
-                {
-                    user.Inventory.AddItemsNonUnique(type, 1, user);
-                    given++;
-                }
-                catch (InvalidOperationException)
-                {
-                    skipped++;
-                }
-            }
-            if (skipped > 0)
-                chatClient.MsgLoc($"Gave {given} Beekeeping items. {skipped} skipped (inventory full).");
-            else
-                chatClient.MsgLoc($"Gave {given} Beekeeping items.");
+                InventoryUtils.AddItemsWithVoidStorageFallback(label, user, Item.Get(type), 1);
+
+            chatClient.MsgLoc($"Gave {items.Length} Beekeeping items.");
         }
 
         [ChatSubCommand("Util", "Shows all available beekeeping commands and their descriptions.", "BeekeepingHelp", ChatAuthorizationLevel.Admin)]
