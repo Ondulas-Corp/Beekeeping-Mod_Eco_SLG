@@ -110,6 +110,7 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(PropertyAuthComponent))]
     [RequireComponent(typeof(OccupancyRequirementComponent))]
     [RequireComponent(typeof(ForSaleComponent))]
+    [RequireComponent(typeof(HousingComponent))]
     [RequireComponent(typeof(PaintableComponent))]
     [Tag("Usable")]
     [Ecopedia("Items", "Products", subPageName: "Stone Vessel Item")]
@@ -121,6 +122,7 @@ namespace Beekeeping.Server
         protected override void Initialize()
         {
             this.ModsPreInitialize();
+            this.GetComponent<HousingComponent>().HomeValue = StoneVesselItem.homeValue;
             base.Initialize();
             this.ModsPostInitialize();
         }

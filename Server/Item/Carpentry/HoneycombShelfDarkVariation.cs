@@ -18,12 +18,17 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(PropertyAuthComponent))]
     [RequireComponent(typeof(OccupancyRequirementComponent))]
     [RequireComponent(typeof(ForSaleComponent))]
+    [RequireComponent(typeof(HousingComponent))]
     [Tag("Usable")]
     public partial class HoneycombShelf1DarkObject : WorldObject, IRepresentsItem
     {
         public virtual Type RepresentedItemType => typeof(HoneycombShelf1DarkItem);
         public override LocString DisplayName => Localizer.DoStr("Honeycomb Shelf 1 Dark");
-        protected override void Initialize() { base.Initialize(); }
+        protected override void Initialize()
+        {
+            this.GetComponent<HousingComponent>().HomeValue = HoneycombShelf1DarkItem.homeValue;
+            base.Initialize();
+        }
     }
 
     [Serialized]
@@ -48,12 +53,17 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(PropertyAuthComponent))]
     [RequireComponent(typeof(OccupancyRequirementComponent))]
     [RequireComponent(typeof(ForSaleComponent))]
+    [RequireComponent(typeof(HousingComponent))]
     [Tag("Usable")]
     public partial class HoneycombShelf2LeftDarkObject : WorldObject, IRepresentsItem
     {
         public virtual Type RepresentedItemType => typeof(HoneycombShelf2LeftDarkItem);
         public override LocString DisplayName => Localizer.DoStr("Honeycomb Shelf 2 Left Dark");
-        protected override void Initialize() { base.Initialize(); }
+        protected override void Initialize()
+        {
+            this.GetComponent<HousingComponent>().HomeValue = HoneycombShelf2LeftDarkItem.homeValue;
+            base.Initialize();
+        }
     }
 
     [Serialized]
@@ -78,12 +88,17 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(PropertyAuthComponent))]
     [RequireComponent(typeof(OccupancyRequirementComponent))]
     [RequireComponent(typeof(ForSaleComponent))]
+    [RequireComponent(typeof(HousingComponent))]
     [Tag("Usable")]
     public partial class HoneycombShelf2RightDarkObject : WorldObject, IRepresentsItem
     {
         public virtual Type RepresentedItemType => typeof(HoneycombShelf2RightDarkItem);
         public override LocString DisplayName => Localizer.DoStr("Honeycomb Shelf 2 Right Dark");
-        protected override void Initialize() { base.Initialize(); }
+        protected override void Initialize()
+        {
+            this.GetComponent<HousingComponent>().HomeValue = HoneycombShelf2RightDarkItem.homeValue;
+            base.Initialize();
+        }
     }
 
     [Serialized]
@@ -108,12 +123,17 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(PropertyAuthComponent))]
     [RequireComponent(typeof(OccupancyRequirementComponent))]
     [RequireComponent(typeof(ForSaleComponent))]
+    [RequireComponent(typeof(HousingComponent))]
     [Tag("Usable")]
     public partial class HoneycombShelf3LeftDarkObject : WorldObject, IRepresentsItem
     {
         public virtual Type RepresentedItemType => typeof(HoneycombShelf3LeftDarkItem);
         public override LocString DisplayName => Localizer.DoStr("Honeycomb Shelf 3 Left Dark");
-        protected override void Initialize() { base.Initialize(); }
+        protected override void Initialize()
+        {
+            this.GetComponent<HousingComponent>().HomeValue = HoneycombShelf3LeftDarkItem.homeValue;
+            base.Initialize();
+        }
     }
 
     [Serialized]
@@ -137,12 +157,17 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(PropertyAuthComponent))]
     [RequireComponent(typeof(OccupancyRequirementComponent))]
     [RequireComponent(typeof(ForSaleComponent))]
+    [RequireComponent(typeof(HousingComponent))]
     [Tag("Usable")]
     public partial class HoneycombShelfDarkObject : WorldObject, IRepresentsItem
     {
         public virtual Type RepresentedItemType => typeof(HoneycombShelfDarkItem);
         public override LocString DisplayName => Localizer.DoStr("Honeycomb Shelf Dark");
-        protected override void Initialize() { base.Initialize(); }
+        protected override void Initialize()
+        {
+            this.GetComponent<HousingComponent>().HomeValue = HoneycombShelfDarkItem.homeValue;
+            base.Initialize();
+        }
     }
 
     [Serialized]

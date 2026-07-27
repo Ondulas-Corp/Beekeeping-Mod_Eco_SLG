@@ -109,6 +109,7 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(PropertyAuthComponent))]
     [RequireComponent(typeof(OccupancyRequirementComponent))]
     [RequireComponent(typeof(ForSaleComponent))]
+    [RequireComponent(typeof(HousingComponent))]
     [Tag("Usable")]
     [Ecopedia("Items", "Products", subPageName: "Empty Pot Item")]
     public partial class EmptyPotObject : WorldObject, IRepresentsItem
@@ -119,6 +120,7 @@ namespace Beekeeping.Server
         protected override void Initialize()
         {
             this.ModsPreInitialize();
+            this.GetComponent<HousingComponent>().HomeValue = EmptyPotItem.homeValue;
             base.Initialize();
             this.ModsPostInitialize();
         }
