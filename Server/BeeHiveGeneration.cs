@@ -457,32 +457,28 @@ public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin, IConfigura
 
             var x = (int)(clusterCenter.X + System.Math.Cos(angle) * distance);
             var z = (int)(clusterCenter.Z + System.Math.Sin(angle) * distance);
-            var y = clusterCenter.Y;
 
-            for (int checkY = y + 10; checkY >= y - 10; checkY--)
+            // Use the actual terrain surface instead of scanning ±10 blocks from center Y
+            int surfaceY = Eco.World.World.GetTopSolidBlockY(new Vector2i(x, z));
+            var groundBlock = Eco.World.World.GetBlock(new Vector3i(x, surfaceY, z));
+            if (groundBlock is DirtBlock && !(groundBlock is DesertSandBlock))
             {
-                var groundBlock = Eco.World.World.GetBlock(new Vector3i(x, checkY, z));
-                if (groundBlock is DirtBlock && !(groundBlock is DesertSandBlock))
+                var hivePos = new Vector3i(x, surfaceY + 1, z);
+                var aboveBlock = Eco.World.World.GetBlock(hivePos);
+                if (aboveBlock == null || aboveBlock is EmptyBlock)
                 {
-                    var hivePos = new Vector3i(x, checkY + 1, z);
-
-                    var aboveBlock = Eco.World.World.GetBlock(hivePos);
-                    if (aboveBlock == null || aboveBlock is EmptyBlock)
+                    bool tooClose = false;
+                    foreach (var existing in existingHives)
                     {
-                        bool tooClose = false;
-                        foreach (var existing in existingHives)
+                        if (Vector3i.Distance(hivePos, existing) < 8)
                         {
-                            if (Vector3i.Distance(hivePos, existing) < 8)
-                            {
-                                tooClose = true;
-                                break;
-                            }
+                            tooClose = true;
+                            break;
                         }
-
-                        if (!tooClose)
-                            return hivePos;
                     }
-                    break;
+
+                    if (!tooClose)
+                        return hivePos;
                 }
             }
         }
