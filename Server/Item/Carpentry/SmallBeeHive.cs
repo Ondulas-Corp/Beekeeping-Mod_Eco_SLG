@@ -127,6 +127,8 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(PublicStorageComponent))]
     [RequireComponent(typeof(PollinationComponent))]
     [Tag("Usable")]
+    [RepairRequiresSkill(typeof(BeekeepingSkill), 1)]
+    [RepairRequiresSkill(typeof(SelfImprovementSkill), 5)]
     [Ecopedia("Work Stations", "Beekeeping", subPageName: "Small Bee Hive Item")]
     public partial class SmallBeeHiveObject : WorldObject, IRepresentsItem
     {
