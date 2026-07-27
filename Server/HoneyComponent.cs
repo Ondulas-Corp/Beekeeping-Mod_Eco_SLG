@@ -1,128 +1,148 @@
 ﻿using Eco.Gameplay.Components;
 using Eco.Gameplay.Objects;
+using Eco.Gameplay.Plants;
 using Eco.Shared.Localization;
 using Eco.Shared.Math;
 using Eco.Shared.Serialization;
-using Eco.Shared.Voxel;
 using Eco.Simulation;
-using System;
+using Eco.World;
 using System.Collections.Generic;
 using System.Linq;
-
-/* Component used to detect if there are enough plants around a breeding beehive. 
- If you want to increase or decrease the number of plants needed, just change the value of the condition in line 104 */
 
 namespace Beekeeping.Server
 {
     [Serialized]
-    [RequireComponent(typeof(StatusComponent), null)]
-    [RequireComponent(typeof(ChunkSubscriberComponent), null)]
+    [RequireComponent(typeof(StatusComponent))]
+    [RequireComponent(typeof(ChunkSubscriberComponent))]
     public class HoneyComponent : WorldObjectComponent, IChunkSubscriber
     {
-        [Serialized]
-        private bool IsFlowered = false;
+        [Serialized] private bool IsFlowered = false;
+        [Serialized] private int lastPlantCount = 0;
+        [Serialized] private bool needsUpdate = true;
+
         private StatusElement status;
 
-        public override bool Enabled
-        {
-            get
-            {
-                return IsFlowered;
-            }
-        }
+        // How often (in seconds) to check for plants nearby
+        public float UpdateFrequencySec => 30f;
 
-        public float UpdateFrequencySec
-        {
-            get
-            {
-                return 2f;
-            }
-        }
-
-        public float MaxQueuedChunkUpdateTime
-        {
-            get
-            {
-                return 300f;
-            }
-        }
+        public float MaxQueuedChunkUpdateTime => 300f;
 
         public double QueuedChunkUpdateTime { get; set; }
 
         public double LastChunkUpdateTime { get; set; }
 
-        public bool ResetUpdateTimeOnEveryChange { get; }
+        public bool ResetUpdateTimeOnEveryChange => false;
 
-        public bool IgnorePlantUpdates { get; }
+        public bool IgnorePlantUpdates => false;
+
+        // Component is enabled only when there are sufficient plants
+        public override bool Enabled => IsFlowered;
 
         public override void Initialize()
         {
-            status = Parent.GetComponent<StatusComponent>(null).CreateStatusElement(-60);
-            Test();
+            base.Initialize();
+            var statusComp = Parent.GetComponent<StatusComponent>();
+            if (statusComp != null)
+                status = statusComp.CreateStatusElement(priority: -60);
+
+            CheckFloweredStatus();
             UpdateStatus();
         }
 
         public void ChunksChanged()
         {
-            Test();
-            UpdateStatus();
-            Parent.UpdateEnabledAndOperating();
+            needsUpdate = true;
+            Parent.SetDirty();
         }
 
         public IEnumerable<Vector3i> RelevantChunkPositions()
         {
-            List<Vector3i> liste = new List<Vector3i>();
-            int size = 10;
-            SpiralDestruction(size).ToList().ForEach(x =>
+            var radius = 10;
+            var center = Parent.Position3i;
+            var positions = new List<Vector3i>();
+
+            for (int x = -radius; x <= radius; x++)
             {
-                float num = Math.Min(size * 0.5f, size * 0.6f - WorldPosition3i.Distance(x, (WorldPosition3i)Parent.Position3i));
-                for (int index = 0; index < (double)num; ++index)
+                for (int y = -radius; y <= radius; y++)
                 {
-                    liste.Add(World.ToChunkPosition((WrappedWorldPosition3i)new Vector3i(x.x, x.y + index, x.z)));
-                    if ((uint)index > 0U)
-                        liste.Add(World.ToChunkPosition((WrappedWorldPosition3i)new Vector3i(x.x, x.y - index, x.z)));
+                    for (int z = -radius; z <= radius; z++)
+                    {
+                        var pos = center + new Vector3i(x, y, z);
+                        positions.Add(World.ToChunkPosition(pos));
+                    }
                 }
-            });
-            return liste.Distinct();
+            }
+            return positions.Distinct();
         }
 
-        private void Test()
+        public override void Tick()
         {
-            int nbrplant = 0;
-            int size = 10;
-            IsFlowered = false;
-            SpiralDestruction(size).ToList().ForEach(x =>
+            base.Tick();
+            
+            if (needsUpdate)
             {
-                float num = Math.Min(size * 0.5f, size * 0.6f - WorldPosition3i.Distance(x, (WorldPosition3i)Parent.Position3i));
-                for (int index = 0; index < (double)num; ++index)
+                CheckFloweredStatus();
+                UpdateStatus();
+                needsUpdate = false;
+                Parent.UpdateEnabledAndOperating();
+            }
+        }
+
+        private void CheckFloweredStatus()
+        {
+            int plantCount = 0;
+            int radius = 10;
+            var center = Parent.Position3i;
+
+            // Count plants in a circular area around the hive
+            for (int x = -radius; x <= radius; x++)
+            {
+                for (int z = -radius; z <= radius; z++)
                 {
-                    if (EcoSim.PlantSim.GetPlant((WorldPosition3i)((Vector3i)x + Vector3i.Up * index)) != null)
-                        ++nbrplant;
-                    if (EcoSim.PlantSim.GetPlant((WorldPosition3i)((Vector3i)x + Vector3i.Down * index)) != null)
-                        ++nbrplant;
+                    // Skip positions outside circular radius for better performance
+                    if (x * x + z * z > radius * radius)
+                        continue;
+
+                    for (int y = -radius; y <= radius; y++)
+                    {
+                        var pos = center + new Vector3i(x, y, z);
+                        var plant = EcoSim.PlantSim.GetPlant(pos);
+                        
+                        if (plant != null)
+                        {
+                            plantCount++;
+                        }
+                    }
                 }
-            });
-            if (nbrplant <= 40)
-                return;
-            IsFlowered = true;
+            }
+
+            lastPlantCount = plantCount;
+            
+            // Minimum 100 plants needed for pollen
+            IsFlowered = plantCount >= 100;
         }
 
         private void UpdateStatus()
         {
-            status?.SetStatusMessage(IsFlowered, Localizer.DoStr("Enough plants around for pollen (40 plants minimun)."));
-        }
+            if (status == null) return;
 
-        public IEnumerable<WorldPosition3i> SpiralDestruction(int size)
-        {
-            Vector3i offset = new Vector3i(0, 0, 0);
-            Vector3i delta = new Vector3i(0, 0, -1);
-            for (int i = size * size; i > 0; --i)
+            string statusMessage;
+            
+            if (IsFlowered)
             {
-                yield return (WorldPosition3i)(Parent.Position3i + offset);
-                if (offset.x == offset.z || offset.x < 0 && offset.x == -offset.z || offset.x > 0 && offset.x == 1 - offset.z)
-                    delta = new Vector3i(-delta.z, 0, delta.x);
-                offset += delta;
+                statusMessage = $"Sufficient pollen sources: {lastPlantCount} plants found (100+ required)";
             }
+            else if (lastPlantCount == 0)
+            {
+                statusMessage = "No plants found nearby! Plant flowers or other vegetation within 10 blocks for honey production.";
+            }
+            else
+            {
+                int needed = 100 - lastPlantCount;
+                statusMessage = $"Insufficient pollen: {lastPlantCount}/100 plants found. Plant {needed} more flowers or plants within 10 blocks.";
+            }
+
+            status.SetStatusMessage(IsFlowered, Localizer.DoStr(statusMessage));
         }
     }
 }
