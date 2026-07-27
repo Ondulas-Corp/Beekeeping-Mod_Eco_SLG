@@ -16,14 +16,56 @@ namespace Beekeeping.Server
     [ChatCommandHandler]
     public class BeekeepingCommands
     {
+        [ChatSubCommand("Util", "Give 1 of each Beekeeping mod item to your inventory.", "BeekeepingItems", ChatAuthorizationLevel.Admin)]
+        public static void GiveAllItems(IChatClient chatClient)
+        {
+            var user = chatClient as User;
+            if (user == null) { chatClient.MsgLoc($"Must be used by a player."); return; }
+
+            var items = new Type[]
+            {
+                // Beekeeping resources
+                typeof(HoneyItem), typeof(BeewaxItem), typeof(PureWaxItem),
+                typeof(RoyalJellyItem), typeof(PropolisItem),
+                typeof(BeeColonyCoreItem), typeof(FrameItem), typeof(WaxFrameItem),
+                // Wild hive items
+                typeof(OccupiedSauvageBeehiveItem), typeof(VacantSauvageBeehiveItem),
+                // Crafting station & tool
+                typeof(HoneyExtractMechanicalItem), typeof(EmptyPotItem),
+                // Player hives
+                typeof(BeeHiveItem), typeof(SmallBeeHiveItem),
+                // Decorative
+                typeof(BeeStatueItem), typeof(DecorativeHoneyPotItem),
+                typeof(BigMoaiStatueItem), typeof(MediumMoaiStatueItem), typeof(SmallMoaiStatueItem),
+                typeof(StoneVesselItem),
+                // Honeycomb shelves (light)
+                typeof(HoneycombShelfItem), typeof(HoneycombShelf1Item),
+                typeof(HoneycombShelf2LeftItem), typeof(HoneycombShelf2RightItem),
+                typeof(HoneycombShelf3LeftItem),
+                // Honeycomb shelves (dark)
+                typeof(HoneycombShelfDarkItem), typeof(HoneycombShelf1DarkItem),
+                typeof(HoneycombShelf2LeftDarkItem), typeof(HoneycombShelf2RightDarkItem),
+                typeof(HoneycombShelf3LeftDarkItem),
+            };
+
+            int given = 0;
+            foreach (var type in items)
+            {
+                user.Inventory.AddItemsNonUnique(type, 1, user);
+                given++;
+            }
+            chatClient.MsgLoc($"Gave {given} Beekeeping items.");
+        }
+
         [ChatSubCommand("Util", "Shows all available beekeeping commands and their descriptions.", "BeekeepingHelp", ChatAuthorizationLevel.Admin)]
         public static void BeekeepingHelp(IChatClient chatClient)
         {
             chatClient.MsgLoc($"=== BEEKEEPING CLUSTER SYSTEM COMMANDS ===");
             chatClient.MsgLoc($"");
             chatClient.MsgLoc($"/ClusterStatus - Real-time ecosystem overview with health stats");
-            chatClient.MsgLoc($"/ResetCluster - DESTROY all wild hives and regenerate ecosystem");
+            chatClient.MsgLoc($"/ResetCluster confirm - DESTROY all wild hives and regenerate ecosystem");
             chatClient.MsgLoc($"/TestRegeneration - Test the regeneration system by simulating harvest");
+            chatClient.MsgLoc($"/BeekeepingItems - Give 1 of each mod item to your inventory");
             chatClient.MsgLoc($"");
             chatClient.MsgLoc($"Use /ClusterStatus after harvesting hives to see real-time updates.");
         }
@@ -148,8 +190,14 @@ namespace Beekeeping.Server
         }
 
         [ChatSubCommand("Util", "DESTROYS all wild hives and completely regenerates the cluster ecosystem.", "ResetCluster", ChatAuthorizationLevel.Admin)]
-        public static void ResetCluster(IChatClient chatClient)
+        public static void ResetCluster(IChatClient chatClient, string confirm = "")
         {
+            if (confirm != "confirm")
+            {
+                chatClient.MsgLoc($"WARNING: This will destroy ALL wild hives and regenerate the ecosystem from scratch.");
+                chatClient.MsgLoc($"Type /ResetCluster confirm to proceed.");
+                return;
+            }
             chatClient.MsgLoc($"=== RESETTING ENTIRE CLUSTER ECOSYSTEM ===");
             chatClient.MsgLoc($"WARNING: This will destroy ALL wild hives and regenerate everything!");
             
