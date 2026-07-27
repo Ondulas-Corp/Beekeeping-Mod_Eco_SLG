@@ -139,12 +139,55 @@ public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin
 				catch { }
 			}
 
-			// Check for empty clusters and schedule regeneration
-			CheckAndRegenerateEmptyClusters();
+			// Check: If save file exists but no wild hives found, do a reset
+			if (existingWildHives == 0)
+			{
+				if (DEBUG_MODE)
+				{
+					try
+					{
+						var allUsers = Eco.Gameplay.Players.UserManager.Users;
+						foreach (var user in allUsers)
+						{
+							if (user.IsAdmin && user.Player != null)
+							{
+								user.Player.MsgLocStr($"[BEEKEEPING] Save file exists but no hives found - performing reset...");
+							}
+						}
+					}
+					catch { }
+				}
+				
+				// Clear old clusters and create fresh ones
+				hiveClusters.Clear();
+				hiveClusters = ClusterManager.CreateInitialClusters();
+				ClusterManager.SaveClusterCenters(hiveClusters);
+				
+				if (DEBUG_MODE)
+				{
+					try
+					{
+						var allUsers = Eco.Gameplay.Players.UserManager.Users;
+						foreach (var user in allUsers)
+						{
+							if (user.IsAdmin && user.Player != null)
+							{
+								user.Player.MsgLocStr($"[BEEKEEPING] Created {hiveClusters.Count} new clusters");
+							}
+						}
+					}
+					catch { }
+				}
+			}
+			else
+			{
+				// Normal case - check for empty clusters and schedule regeneration
+				CheckAndRegenerateEmptyClusters();
+			}
 		}
-		else if (existingWildHives == 0 && savedCenters.Count == 0)
+		else
 		{
-			// First time initialization - no hives and no saved clusters
+			// NO SAVE FILE - perform full reset
 			if (DEBUG_MODE)
 			{
 				try
@@ -154,17 +197,44 @@ public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin
 					{
 						if (user.IsAdmin && user.Player != null)
 						{
-							user.Player.MsgLocStr($"[BEEKEEPING] First time setup - creating fresh ecosystem...");
+							user.Player.MsgLocStr($"[BEEKEEPING] No save file found - performing full reset...");
 						}
 					}
 				}
 				catch { }
 			}
-
-			// No save data and no hives - create fresh (same as /ResetCluster)
+			
+			// Remove all existing wild hives
+			var allWildHives = worldObjectManager.All
+				.Where(obj => obj.GetType() == typeof(OccupiedSauvageBeehiveObject) || 
+							 obj.GetType() == typeof(VacantSauvageBeehiveObject))
+				.ToList();
+			
+			foreach (var hive in allWildHives)
+			{
+				hive.Destroy();
+			}
+			
+			if (DEBUG_MODE)
+			{
+				try
+				{
+					var allUsers = Eco.Gameplay.Players.UserManager.Users;
+					foreach (var user in allUsers)
+					{
+						if (user.IsAdmin && user.Player != null)
+						{
+							user.Player.MsgLocStr($"[BEEKEEPING] Removed {allWildHives.Count} wild hives");
+						}
+					}
+				}
+				catch { }
+			}
+			
+			// Create fresh clusters
 			hiveClusters = ClusterManager.CreateInitialClusters();
 			ClusterManager.SaveClusterCenters(hiveClusters);
-
+			
 			if (DEBUG_MODE)
 			{
 				try
@@ -175,27 +245,6 @@ public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin
 						if (user.IsAdmin && user.Player != null)
 						{
 							user.Player.MsgLocStr($"[BEEKEEPING] Created {hiveClusters.Count} new clusters");
-						}
-					}
-				}
-				catch { }
-			}
-		}
-		else
-		{
-			// Existing hives found but no save file - skipping cluster creation
-			// This handles the case where the mod is installed on an existing server
-			if (DEBUG_MODE)
-			{
-				try
-				{
-					var allUsers = Eco.Gameplay.Players.UserManager.Users;
-					foreach (var user in allUsers)
-					{
-						if (user.IsAdmin && user.Player != null)
-						{
-							user.Player.MsgLocStr($"[BEEKEEPING] Existing hives found but no save file - skipping cluster creation");
-							user.Player.MsgLocStr($"[BEEKEEPING] Run /ResetCluster to initialize the cluster system");
 						}
 					}
 				}
