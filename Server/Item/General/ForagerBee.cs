@@ -44,9 +44,10 @@ namespace Beekeeping.Server
         {
             Recipes = new List<Recipe>()
             {
-                new Recipe("ForagerBee", Localizer.DoStr("Forager Bee"), new IngredientElement[1]
+                new Recipe("ForagerBee", Localizer.DoStr("Forager Bee"), new IngredientElement[2]
                 {
-                    new IngredientElement(typeof(WorkerBeeItem), 1f, false)
+                    new IngredientElement(typeof(WorkerBeeItem), 1f, false),
+                    new IngredientElement(typeof(BeePollenItem), 1f, typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingLavishResourcesTalent))
                 }, new CraftingElement[1]
                 {
                     new CraftingElement<ForagerBeeItem>(1f)

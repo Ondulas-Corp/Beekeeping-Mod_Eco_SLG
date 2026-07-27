@@ -80,6 +80,13 @@ namespace Beekeeping.Server
 						itemsObtained.Add($"{waxCount} {Item.Get<BeewaxItem>().DisplayName}");
                     }
 
+                    // 17% chance to get 1 Queen Bee
+                    if (RandomUtil.Range(1, 101) <= 17)
+                    {
+                        changeSet.AddItemsNonUnique(typeof(QueenBeeItem), 1);
+                        itemsObtained.Add($"1 {Item.Get<QueenBeeItem>().DisplayName}");
+                    }
+
 					string message = $"You harvested: {string.Join(", ", itemsObtained)}";
                     player.Msg(Localizer.DoStr(message), NotificationStyle.InfoBox);
 

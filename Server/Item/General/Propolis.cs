@@ -36,14 +36,13 @@ namespace Beekeeping.Server
         {
             Recipes = new List<Recipe>()
             {
-                new Recipe("Propolis", Localizer.DoStr("Propolis"), new IngredientElement[3]
+                new Recipe("Propolis", Localizer.DoStr("Propolis"), new IngredientElement[2]
                 {
                     new IngredientElement(typeof(ForagerBeeItem), 1f, true),
-					new IngredientElement(typeof(BeewaxItem), 2f, typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingLavishResourcesTalent)),
-                    new IngredientElement("NaturalFiber", 3f, typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingLavishResourcesTalent))
+                    new IngredientElement("Resin", 2f, typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingLavishResourcesTalent))
                 }, new CraftingElement[1]
                 {
-                    new CraftingElement<PropolisItem>(2f)
+                    new CraftingElement<PropolisItem>(1f)
                 })
             };
             ExperienceOnCraft = 0.6f;

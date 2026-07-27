@@ -77,7 +77,8 @@ namespace Beekeeping.Server
                 {
                     new IngredientElement("WoodBoard", 10, typeof(CarpentrySkill)),
                     new IngredientElement(typeof(IronBarItem), 1, typeof(CarpentrySkill)),
-                    new IngredientElement(typeof(NailItem), 8, typeof(CarpentrySkill))
+                    new IngredientElement(typeof(NailItem), 8, typeof(CarpentrySkill)),
+                    new IngredientElement(typeof(QueenBeeItem), 1, true)
                 },
 
                 // Define our recipe output items.
@@ -119,11 +120,12 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(PartsComponent))]
     [RequireComponent(typeof(SmokeComponent))]
     [RequireComponent(typeof(RepairBountyComponent))]
+    [RequireComponent(typeof(FuelSupplyComponent))]
+    [RequireComponent(typeof(FuelConsumptionComponent))]
     [RequireComponent(typeof(HoneyComponent))]
     [RequireComponent(typeof(NeighborBeeHiveComponent))]
     [RequireComponent(typeof(OccupancyRequirementComponent))]
     [RequireComponent(typeof(ForSaleComponent))]
-    [RequireComponent(typeof(PluginModulesComponent))]
     [RequireComponent(typeof(PublicStorageComponent))]
     [RequireComponent(typeof(PollinationComponent))]
     [Tag("Usable")]
@@ -142,6 +144,9 @@ namespace Beekeeping.Server
             this.GetComponent<PartsComponent>().Config(
                 () => Localizer.DoStr("The queen bee ages while the hive produces. Replace her when she dies."),
                 new PartInfo[] { new() { TypeName = nameof(QueenBeeItem), Quantity = 1 } });
+
+            this.GetComponent<FuelSupplyComponent>().Initialize(1, new string[] { "BeeColonyCore" });
+            this.GetComponent<FuelConsumptionComponent>().Initialize(10);
 
             var storage = this.GetComponent<PublicStorageComponent>();
             storage.Initialize(5);
@@ -172,7 +177,6 @@ namespace Beekeeping.Server
 	[Tag("Housing")]
     [Ecopedia("Work Stations", "Beekeeping", createAsSubPage: true)]
     [Weight(1000)] // Defines how heavy SmallBeeHive is.
-	[AllowPluginModules(Tags = new[] { "BasicUpgrade" }, ItemTypes = new[] { typeof(BeekeepingUpgradeItem) })]
     public partial class SmallBeeHiveItem : WorldObjectItem<SmallBeeHiveObject>, IPersistentData
     {
         [NewTooltip(CacheAs.SubType, 50)] public static LocString UpdateTooltip() => Localizer.Do($"Can store bees and Increases their lifespan by: {Text.InfoLight(Text.Percent(0.8f))}").Dash();

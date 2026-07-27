@@ -1,4 +1,4 @@
-﻿// Copyright (c) Strange Loop Games. All rights reserved.
+// Copyright (c) Strange Loop Games. All rights reserved.
 // See LICENSE file in the project root for full license information.
 // Frame-related items and recipes
 
@@ -6,67 +6,42 @@ namespace Beekeeping.Server
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
-    using Eco.Gameplay.Blocks;
     using Eco.Gameplay.Components;
-    using Eco.Gameplay.DynamicValues;
     using Eco.Gameplay.Items;
-    using Eco.Gameplay.Objects;
-    using Eco.Gameplay.Players;
     using Eco.Gameplay.Skills;
-    using Eco.Gameplay.Settlements;
-    using Eco.Gameplay.Systems;
-    using Eco.Gameplay.Systems.TextLinks;
     using Eco.Shared.Localization;
     using Eco.Shared.Serialization;
-    using Eco.Shared.Utils;
     using Eco.Core.Items;
-    using Eco.World;
-    using Eco.World.Blocks;
-    using Eco.Gameplay.Pipes;
     using Eco.Core.Controller;
     using Eco.Gameplay.Items.Recipes;
     using Eco.Mods.TechTree;
 
-    /// <summary>
-    /// <para>Server side recipe definition for "WaxFrame".</para>
-    /// <para>More information about RecipeFamily objects can be found at https://docs.play.eco/api/server/eco.gameplay/Eco.Gameplay.Items.RecipeFamily.html</para>
-    /// </summary>
-    /// <remarks>
-    /// This is an auto-generated class. Don't modify it! All your changes will be wiped with next update! Use Mods* partial methods instead for customization. 
-    /// If you wish to modify this class, please create a new partial class or follow the instructions in the "UserCode" folder to override the entire file.
-    /// </remarks>
-	[RequiresSkill(typeof(Eco.Mods.TechTree.BeekeepingSkill), 1)]
-    [Ecopedia("Items", "Products", subPageName: "Wax Frame from Worker Bee")]
-    public partial class WaxFrameFromWorkerBeeRecipe : RecipeFamily
+    [RequiresSkill(typeof(BeekeepingSkill), 1)]
+    [Ecopedia("Items", "Products", subPageName: "Wax Frame")]
+    public partial class WaxFrameRecipe : RecipeFamily
     {
-        public WaxFrameFromWorkerBeeRecipe()
+        public WaxFrameRecipe()
         {
             var recipe = new Recipe();
             recipe.Init(
-                name: "WaxFrameFromWorkerBee",  //noloc
-                displayName: Localizer.DoStr("Wax Frame from Worker Bee"),
-
+                name: "WaxFrame",  //noloc
+                displayName: Localizer.DoStr("Wax Frame"),
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(WorkerBeeItem), 1, typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingLavishResourcesTalent)),
+                    new IngredientElement(typeof(WorkerBeeItem), 1, typeof(BeekeepingSkill), typeof(BeekeepingLavishResourcesTalent)),
                     new IngredientElement(typeof(FrameItem), 1, true)
                 },
-
                 items: new List<CraftingElement>
                 {
-                    new CraftingElement<WaxFrameItem>(1) // 2 wax frames
+                    new CraftingElement<WaxFrameItem>(1)
                 });
             this.Recipes = new List<Recipe> { recipe };
             this.ExperienceOnCraft = 0.5f;
-            
-            this.LaborInCalories = CreateLaborInCaloriesValue(80, typeof(Eco.Mods.TechTree.BeekeepingSkill));
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(WaxFrameFromWorkerBeeRecipe), start: 3f, skillType: typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingFocusedSpeedTalent), typeof(Eco.Mods.TechTree.BeekeepingParallelSpeedTalent));
-
+            this.LaborInCalories = CreateLaborInCaloriesValue(80, typeof(BeekeepingSkill));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(WaxFrameRecipe), start: 3f, skillType: typeof(BeekeepingSkill), typeof(BeekeepingFocusedSpeedTalent), typeof(BeekeepingParallelSpeedTalent));
             this.ModsPreInitialize();
-            this.Initialize(displayText: Localizer.DoStr("Wax Frame from Worker Bee"), recipeType: typeof(WaxFrameFromWorkerBeeRecipe));
+            this.Initialize(displayText: Localizer.DoStr("Wax Frame"), recipeType: typeof(WaxFrameRecipe));
             this.ModsPostInitialize();
-
             CraftingComponent.AddRecipe(tableType: typeof(SmallBeeHiveObject), recipeFamily: this);
         }
 
@@ -74,40 +49,32 @@ namespace Beekeeping.Server
         partial void ModsPostInitialize();
     }
 
-    /// <summary>
-    /// <para>Server side recipe definition for "Wax Frame from Forager Bee".</para>
-    /// </summary>
-    [RequiresSkill(typeof(Eco.Mods.TechTree.BeekeepingSkill), 4)]
-    [Ecopedia("Items", "Products", subPageName: "Wax Frame from Forager Bee")]
-    public partial class WaxFrameFromForagerBeeRecipe : RecipeFamily
+    [RequiresSkill(typeof(BeekeepingSkill), 4)]
+    [Ecopedia("Items", "Products", subPageName: "Wax Frame Advanced")]
+    public partial class WaxFrameAdvancedRecipe : RecipeFamily
     {
-        public WaxFrameFromForagerBeeRecipe()
+        public WaxFrameAdvancedRecipe()
         {
             var recipe = new Recipe();
             recipe.Init(
-                name: "WaxFrameFromForagerBee",  //noloc
-                displayName: Localizer.DoStr("Wax Frame from Forager Bee"),
-
+                name: "WaxFrameAdvanced",  //noloc
+                displayName: Localizer.DoStr("Wax Frame (Advanced)"),
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(ForagerBeeItem), 1, typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingLavishResourcesTalent)),
-                    new IngredientElement(typeof(FrameItem), 3, true)
+                    new IngredientElement(typeof(WorkerBeeItem), 2, typeof(BeekeepingSkill), typeof(BeekeepingLavishResourcesTalent)),
+                    new IngredientElement(typeof(FrameItem), 2, true)
                 },
-
                 items: new List<CraftingElement>
                 {
                     new CraftingElement<WaxFrameItem>(3)
                 });
             this.Recipes = new List<Recipe> { recipe };
-            this.ExperienceOnCraft = 0.7f;
-            
-            this.LaborInCalories = CreateLaborInCaloriesValue(50, typeof(Eco.Mods.TechTree.BeekeepingSkill));
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(WaxFrameFromForagerBeeRecipe), start: 3f, skillType: typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingFocusedSpeedTalent), typeof(Eco.Mods.TechTree.BeekeepingParallelSpeedTalent));
-
+            this.ExperienceOnCraft = 0.8f;
+            this.LaborInCalories = CreateLaborInCaloriesValue(60, typeof(BeekeepingSkill));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(WaxFrameAdvancedRecipe), start: 3f, skillType: typeof(BeekeepingSkill), typeof(BeekeepingFocusedSpeedTalent), typeof(BeekeepingParallelSpeedTalent));
             this.ModsPreInitialize();
-            this.Initialize(displayText: Localizer.DoStr("Wax Frame from Forager Bee"), recipeType: typeof(WaxFrameFromForagerBeeRecipe));
+            this.Initialize(displayText: Localizer.DoStr("Wax Frame (Advanced)"), recipeType: typeof(WaxFrameAdvancedRecipe));
             this.ModsPostInitialize();
-
             CraftingComponent.AddRecipe(tableType: typeof(BeeHiveObject), recipeFamily: this);
         }
 
@@ -115,62 +82,12 @@ namespace Beekeeping.Server
         partial void ModsPostInitialize();
     }
 
-    /// <summary>
-    /// <para>Server side recipe definition for "Wax Frame from Queen Bee".</para>
-    /// </summary>
-    [RequiresSkill(typeof(Eco.Mods.TechTree.BeekeepingSkill), 6)]
-    [Ecopedia("Items", "Products", subPageName: "Wax Frame from Queen Bee")]
-    public partial class WaxFrameFromQueenBeeRecipe : RecipeFamily
-    {
-        public WaxFrameFromQueenBeeRecipe()
-        {
-            var recipe = new Recipe();
-            recipe.Init(
-                name: "WaxFrameFromQueenBee",  //noloc
-                displayName: Localizer.DoStr("Wax Frame from Queen Bee"),
-
-                ingredients: new List<IngredientElement>
-                {
-                    new IngredientElement(typeof(QueenBeeItem), 1, typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingLavishResourcesTalent)),
-                    new IngredientElement(typeof(FrameItem), 6, true)
-                },
-
-                items: new List<CraftingElement>
-                {
-                    new CraftingElement<WaxFrameItem>(6)
-                });
-            this.Recipes = new List<Recipe> { recipe };
-            this.ExperienceOnCraft = 1.0f;
-            
-            this.LaborInCalories = CreateLaborInCaloriesValue(50, typeof(Eco.Mods.TechTree.BeekeepingSkill));
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(WaxFrameFromQueenBeeRecipe), start: 3f, skillType: typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingFocusedSpeedTalent), typeof(Eco.Mods.TechTree.BeekeepingParallelSpeedTalent));
-
-            this.ModsPreInitialize();
-            this.Initialize(displayText: Localizer.DoStr("Wax Frame from Queen Bee"), recipeType: typeof(WaxFrameFromQueenBeeRecipe));
-            this.ModsPostInitialize();
-
-            CraftingComponent.AddRecipe(tableType: typeof(BeeHiveObject), recipeFamily: this);
-        }
-
-        partial void ModsPreInitialize();
-        partial void ModsPostInitialize();
-    }
-
-    /// <summary>
-    /// <para>Server side item definition for the "WaxFrame" item.</para>
-    /// <para>More information about Item objects can be found at https://docs.play.eco/api/server/eco.gameplay/Eco.Gameplay.Items.Item.html</para>
-    /// </summary>
-    /// <remarks>
-    /// This is an auto-generated class. Don't modify it! All your changes will be wiped with next update! Use Mods* partial methods instead for customization. 
-    /// If you wish to modify this class, please create a new partial class or follow the instructions in the "UserCode" folder to override the entire file.
-    /// </remarks>
-    [Serialized] // Tells the save/load system this object needs to be serialized. 
-    [LocDisplayName("Wax Frame")] // Defines the localized name of the item.
-    [Weight(400)] // Defines how heavy WaxFrame is.
+    [Serialized]
+    [LocDisplayName("Wax Frame")]
+    [Weight(400)]
     [Ecopedia("Items", "Products", createAsSubPage: true)]
-    [LocDescription("Wax Frame. Contains the wax.")] //The tooltip description for the item.
+    [LocDescription("A frame coated in beeswax, ready for honey extraction.")]
     public partial class WaxFrameItem : Item
     {
     }
-
 }

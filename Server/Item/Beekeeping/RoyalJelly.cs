@@ -48,12 +48,9 @@ namespace Beekeeping.Server
             recipe.Init(
                 name: "RoyalJelly",  //noloc
                 displayName: Localizer.DoStr("Royal Jelly"),
-
-                // Defines the ingredients needed to craft this recipe. An ingredient items takes the following inputs
-                // type of the item, the amount of the item, the skill required, and the talent used.
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(PureWaxItem), 1, typeof(BeekeepingSkill), typeof(BeekeepingLavishResourcesTalent)),
+                    new IngredientElement(typeof(WorkerBeeItem), 3, typeof(BeekeepingSkill), typeof(BeekeepingLavishResourcesTalent)),
                     new IngredientElement(typeof(HoneyItem), 1, typeof(BeekeepingSkill), typeof(BeekeepingLavishResourcesTalent))
                 },
 
@@ -101,7 +98,7 @@ namespace Beekeeping.Server
     [LocDisplayName("Royal Jelly")] // Defines the localized name of the item.
     [Weight(1)] // Defines how heavy RoyalJelly is.
     [Ecopedia("Items", "Products", createAsSubPage: true)]
-    [LocDescription("Premium ingredient made from wax and honey. Used in high-end confectionery and baking recipes.")] //The tooltip description for the item.
+    [LocDescription("A secretion produced by worker bees to nourish larvae and the queen. Essential for queen bee rearing.")] //The tooltip description for the item.
     public partial class RoyalJellyItem : Item
     {
     }

@@ -39,17 +39,18 @@ namespace Beekeeping.Server
         {
             Recipes = new List<Recipe>()
             {
-                new Recipe("QueenBee", Localizer.DoStr("Queen Bee"), new IngredientElement[1]
+                new Recipe("QueenBee", Localizer.DoStr("Queen Bee"), new IngredientElement[2]
                 {
-                    new IngredientElement(typeof(ForagerBeeItem), 1f, false)
+                    new IngredientElement(typeof(BeeEggsItem), 3f, false),
+                    new IngredientElement(typeof(RoyalJellyItem), 2f, false)
                 }, new CraftingElement[1]
                 {
                     new CraftingElement<QueenBeeItem>(1f)
                 })
             };
-            ExperienceOnCraft = 1.0f;
-            LaborInCalories = CreateLaborInCaloriesValue(30f, typeof(Eco.Mods.TechTree.BeekeepingSkill));
-            CraftMinutes = CreateCraftTimeValue(typeof(QueenBeeRecipe), 7f, typeof(Eco.Mods.TechTree.BeekeepingSkill), new Type[2]
+            ExperienceOnCraft = 2.0f;
+            LaborInCalories = CreateLaborInCaloriesValue(60f, typeof(Eco.Mods.TechTree.BeekeepingSkill));
+            CraftMinutes = CreateCraftTimeValue(typeof(QueenBeeRecipe), 10f, typeof(Eco.Mods.TechTree.BeekeepingSkill), new Type[2]
             {
                 typeof(Eco.Mods.TechTree.BeekeepingFocusedSpeedTalent),
                 typeof(Eco.Mods.TechTree.BeekeepingParallelSpeedTalent)

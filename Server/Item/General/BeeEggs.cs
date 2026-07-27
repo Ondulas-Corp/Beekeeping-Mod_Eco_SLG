@@ -14,9 +14,6 @@ using System.Collections.Generic;
 
 namespace Beekeeping.Server
 {
-    /// <summary>
-    /// <para>Server side item definition for the "Bee Eggs" item.</para>
-    /// </summary>
     [Serialized]
     [LocDisplayName("Bee Eggs")]
     [LocDescription("Fresh bee eggs that will spoil over time. Found in wild beehives.")]
@@ -28,85 +25,51 @@ namespace Beekeeping.Server
     public class BeeEggsItem : FoodItem
     {
         public override LocString DisplayNamePlural => Localizer.DoStr("Bee Eggs");
-        public override float Calories => 0f; // No nutritional value
+        public override float Calories => 0f;
         public override Nutrients Nutrition => new Nutrients() { Carbs = 0f, Fat = 0f, Protein = 0f, Vitamins = 0f };
-        
-        public override float BaseShelfLife            => (float)TimeUtil.HoursToSeconds(48);
+        public override float BaseShelfLife => (float)TimeUtil.HoursToSeconds(48);
     }
 
-    /// <summary>
-    /// <para>Server side recipe definition for "Bee Eggs from Compost".</para>
-    /// </summary>
+    // Bootstrap: needs a BeeColonyCore (from wild hive) to seed the colony — one-time dependency on the wild ecosystem
     [RequiresSkill(typeof(Eco.Mods.TechTree.BeekeepingSkill), 1)]
-    public class BeeEggsFromCompostRecipe : RecipeFamily
+    public class BeeEggsBootstrapRecipe : RecipeFamily
     {
-        public BeeEggsFromCompostRecipe()
+        public BeeEggsBootstrapRecipe()
         {
             Recipes = new List<Recipe>()
             {
-                new Recipe("BeeEggsFromCompost", Localizer.DoStr("Bee Eggs"), new IngredientElement[1]
+                new Recipe("BeeEggsBootstrap", Localizer.DoStr("Bee Eggs (Bootstrap)"), new IngredientElement[2]
                 {
-                    new IngredientElement(typeof(Eco.Mods.TechTree.CompostItem), 1f, false)
+                    new IngredientElement(typeof(BeeColonyCoreItem), 1f, false),
+                    new IngredientElement("Petals", 4f, typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingLavishResourcesTalent))
                 }, new CraftingElement[1]
                 {
-                    new CraftingElement<BeeEggsItem>(3f)
+                    new CraftingElement<BeeEggsItem>(6f)
                 })
             };
-            ExperienceOnCraft = 0.2f;
-            LaborInCalories = CreateLaborInCaloriesValue(50f, typeof(Eco.Mods.TechTree.BeekeepingSkill));
-            CraftMinutes = CreateCraftTimeValue(typeof(BeeEggsFromCompostRecipe), 12f, typeof(Eco.Mods.TechTree.BeekeepingSkill), new Type[2]
+            ExperienceOnCraft = 0.5f;
+            LaborInCalories = CreateLaborInCaloriesValue(60f, typeof(Eco.Mods.TechTree.BeekeepingSkill));
+            CraftMinutes = CreateCraftTimeValue(typeof(BeeEggsBootstrapRecipe), 8f, typeof(Eco.Mods.TechTree.BeekeepingSkill), new Type[2]
             {
                 typeof(Eco.Mods.TechTree.BeekeepingFocusedSpeedTalent),
                 typeof(Eco.Mods.TechTree.BeekeepingParallelSpeedTalent)
             });
-            Initialize(Localizer.DoStr("Bee Eggs"), typeof(BeeEggsFromCompostRecipe));
+            Initialize(Localizer.DoStr("Bee Eggs (Bootstrap)"), typeof(BeeEggsBootstrapRecipe));
             CraftingComponent.AddRecipe(typeof(SmallBeeHiveObject), this);
         }
     }
 
-    /// <summary>
-    /// <para>Server side recipe definition for "Bee Eggs from Spoiled Food".</para>
-    /// </summary>
+    // Entretien: petal-only upkeep once the colony is running
     [RequiresSkill(typeof(Eco.Mods.TechTree.BeekeepingSkill), 1)]
-    public class BeeEggsFromSpoiledFoodRecipe : RecipeFamily
+    public class BeeEggsRecipe : RecipeFamily
     {
-        public BeeEggsFromSpoiledFoodRecipe()
+        public BeeEggsRecipe()
         {
             Recipes = new List<Recipe>()
             {
-                new Recipe("BeeEggsFromSpoiledFood", Localizer.DoStr("Bee Eggs"), new IngredientElement[1]
+                new Recipe("BeeEggs", Localizer.DoStr("Bee Eggs"), new IngredientElement[1]
                 {
-                    new IngredientElement(typeof(Eco.Mods.TechTree.SpoiledFoodItem), 5f, false)
-                }, new CraftingElement[1]
-                {
-                    new CraftingElement<BeeEggsItem>(1f)
-                })
-            };
-            ExperienceOnCraft = 0.2f;
-            LaborInCalories = CreateLaborInCaloriesValue(50f, typeof(Eco.Mods.TechTree.BeekeepingSkill));
-            CraftMinutes = CreateCraftTimeValue(typeof(BeeEggsFromSpoiledFoodRecipe), 12f, typeof(Eco.Mods.TechTree.BeekeepingSkill), new Type[2]
-            {
-                typeof(Eco.Mods.TechTree.BeekeepingFocusedSpeedTalent),
-                typeof(Eco.Mods.TechTree.BeekeepingParallelSpeedTalent)
-            });
-            Initialize(Localizer.DoStr("Bee Eggs"), typeof(BeeEggsFromSpoiledFoodRecipe));
-            CraftingComponent.AddRecipe(typeof(SmallBeeHiveObject), this);
-        }
-    }
-
-    /// <summary>
-    /// <para>Server side recipe definition for "Bee Eggs from Petals".</para>
-    /// </summary>
-    [RequiresSkill(typeof(Eco.Mods.TechTree.BeekeepingSkill), 1)]
-    public class BeeEggsFromPetalsRecipe : RecipeFamily
-    {
-        public BeeEggsFromPetalsRecipe()
-        {
-            Recipes = new List<Recipe>()
-            {
-                new Recipe("BeeEggsFromPetals", Localizer.DoStr("Bee Eggs"), new IngredientElement[1]
-                {
-                    new IngredientElement("Petals", 4f, false)
+                    new IngredientElement("Petals", 4f, typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingLavishResourcesTalent))
                 }, new CraftingElement[1]
                 {
                     new CraftingElement<BeeEggsItem>(2f)
@@ -114,12 +77,12 @@ namespace Beekeeping.Server
             };
             ExperienceOnCraft = 0.2f;
             LaborInCalories = CreateLaborInCaloriesValue(50f, typeof(Eco.Mods.TechTree.BeekeepingSkill));
-            CraftMinutes = CreateCraftTimeValue(typeof(BeeEggsFromPetalsRecipe), 12f, typeof(Eco.Mods.TechTree.BeekeepingSkill), new Type[2]
+            CraftMinutes = CreateCraftTimeValue(typeof(BeeEggsRecipe), 5f, typeof(Eco.Mods.TechTree.BeekeepingSkill), new Type[2]
             {
                 typeof(Eco.Mods.TechTree.BeekeepingFocusedSpeedTalent),
                 typeof(Eco.Mods.TechTree.BeekeepingParallelSpeedTalent)
             });
-            Initialize(Localizer.DoStr("Bee Eggs"), typeof(BeeEggsFromPetalsRecipe));
+            Initialize(Localizer.DoStr("Bee Eggs"), typeof(BeeEggsRecipe));
             CraftingComponent.AddRecipe(typeof(SmallBeeHiveObject), this);
         }
     }
