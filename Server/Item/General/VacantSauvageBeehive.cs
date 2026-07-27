@@ -27,6 +27,7 @@ namespace Beekeeping.Server
 
     // Vacant Swarm (InnocupiedSauvageBeehive)
     [Serialized]
+    [RequireComponent(typeof(StatusComponent))]
     [RequireComponent(typeof(QueenBeeComponent))]
     [RequireComponent(typeof(PluginModulesComponent))]
 	[RequireComponent(typeof(OccupancyRequirementComponent))]

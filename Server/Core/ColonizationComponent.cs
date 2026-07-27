@@ -1,6 +1,7 @@
 using Eco.Core.Controller;
 using Eco.Gameplay.Components;
 using Eco.Gameplay.Objects;
+using Eco.Shared.Localization;
 using Eco.Shared.Math;
 using Eco.Shared.Serialization;
 using Eco.Simulation.Time;
@@ -15,33 +16,62 @@ public class ColonizationComponent : WorldObjectComponent
     [Serialized] public double ColonizationTime { get; set; }
     [Serialized] public bool IsScheduled { get; set; } = false;
 
+    private StatusElement status;
+    private double nextStatusTick;
+    private const double STATUS_TICK_INTERVAL = 60.0;
+
 	public override void Initialize()
 	{
 		base.Initialize();
-		
+
+        var statusComp = Parent.GetComponent<StatusComponent>();
+        if (statusComp != null)
+            status = statusComp.CreateStatusElement();
+
 		if (!IsScheduled)
 		{
-			// First time - schedule new colonization
 			ScheduleColonization();
 			IsScheduled = true;
 		}
 		else
 		{
-			// After restart - check if colonization time has passed
 			var currentTime = WorldTime.Seconds;
 			if (currentTime >= ColonizationTime)
-			{
-				// Time already passed during downtime - convert immediately
-				_ = ConvertToOccupiedAsync(0.1); // Convert in 100ms
-			}
+				_ = ConvertToOccupiedAsync(0.1);
 			else
-			{
-				// Time hasn't passed yet - reschedule remaining time
-				var remainingTime = ColonizationTime - currentTime;
-				_ = ConvertToOccupiedAsync(remainingTime);
-			}
+				_ = ConvertToOccupiedAsync(ColonizationTime - currentTime);
 		}
+
+        UpdateStatus();
 	}
+
+    public override void Tick()
+    {
+        if (WorldTime.Seconds < nextStatusTick) return;
+        nextStatusTick = WorldTime.Seconds + STATUS_TICK_INTERVAL;
+        UpdateStatus();
+    }
+
+    private void UpdateStatus()
+    {
+        if (status == null) return;
+
+        var remaining = ColonizationTime - WorldTime.Seconds;
+        string msg;
+
+        if (remaining <= 0)
+            msg = "A swarm of bees is about to arrive!";
+        else if (remaining < 3600)
+            msg = $"Bees colonizing in ~{(int)(remaining / 60)}m";
+        else
+        {
+            int h = (int)(remaining / 3600);
+            int m = (int)((remaining % 3600) / 60);
+            msg = m > 0 ? $"Bees colonizing in ~{h}h {m}m" : $"Bees colonizing in ~{h}h";
+        }
+
+        status.SetStatusMessage(true, Localizer.DoStr(msg));
+    }
 
 	private void ScheduleColonization()
 	{
