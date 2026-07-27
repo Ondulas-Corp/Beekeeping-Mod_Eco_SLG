@@ -1,146 +1,202 @@
 # Beekeeping Mod — Eco SLG
 
-Mod open source d'apiculture pour le jeu [Eco](https://play.eco/). Il introduit un écosystème de ruches sauvages autonome, une filière de crafting autour du miel et de la cire, ainsi qu'une arbre de compétences dédié.
+An open-source beekeeping mod for [Eco](https://play.eco/). It introduces a self-sustaining wild hive ecosystem, a full crafting chain built around honey and wax, and a dedicated skill tree.
 
 ---
 
-## Fonctionnalités
+## Features
 
-### Écosystème de ruches sauvages
+### Wild Hive Ecosystem
 
-Le cœur du mod est un système de clusters qui gère la population de ruches sauvages sur la carte de façon autonome.
+The core of the mod is a cluster system that autonomously manages the wild hive population across the map.
 
-**Ruches**
-- `VacantSauvageBeehive` — ruche vacante, colonisable naturellement après 30 min à 6 h (délai aléatoire)
-- `OccupiedSauvageBeehive` — ruche occupée, récoltable par les joueurs
+**Hive types**
+- `VacantSwarm` — a vacant swarm that naturally colonizes into an occupied hive after a random delay (configurable, default 30 min – 6 h)
+- `OccupiedSwarm` — an occupied hive that players can harvest for honey, wax, and bee products
 
 **Clusters**
-- Les ruches sont regroupées en clusters (rayon : 60 blocs, espacement minimum entre clusters : 50 blocs)
-- Chaque cluster peut contenir jusqu'à 5 ruches
-- La **santé végétale** du cluster (ratio `CurrentPlantCount / MaxPlantCount`) détermine sa capacité maximale :
+- Hives are grouped into clusters (default radius: 60 blocks, minimum spacing between clusters: 50 blocks)
+- Each cluster supports up to 5 hives (configurable)
+- A cluster's **plant health** (`CurrentPlantCount / MaxPlantCount`) determines its maximum capacity:
 
-| Santé végétale | Capacité |
+| Plant health | Capacity |
 |---|---|
-| ≥ 85 % | 5 ruches |
-| ≥ 68 % | 4 ruches |
-| ≥ 51 % | 3 ruches |
-| ≥ 34 % | 2 ruches |
-| ≥ 17 % | 1 ruche |
-| < 17 % | Cluster mort (pas de régénération) |
+| ≥ 85 % | 5 hives |
+| ≥ 68 % | 4 hives |
+| ≥ 51 % | 3 hives |
+| ≥ 34 % | 2 hives |
+| ≥ 17 % | 1 hive |
+| < 17 % | Dead cluster (no regeneration) |
 
-**Régénération**
-- Quand un cluster tombe à ≤ 2 ruches, 1 à 5 nouvelles ruches sont programmées pour apparaître dans un délai de 1 à 20 heures (mode production)
-- Les ruches apparaissent sur des blocs de terre libres à l'intérieur du rayon du cluster
-- L'état des clusters est sauvegardé dans un fichier et reconstruit au redémarrage du serveur
+> The death threshold is configurable (default 8 %).
+
+**Regeneration**
+- When a cluster drops to ≤ 2 hives, 1–5 new hives are scheduled to appear within 1–20 hours (configurable)
+- Hives spawn on free dirt blocks within the cluster radius — using actual terrain surface height, so hilly terrain is handled correctly
+- Cluster state is saved to disk and rebuilt on server restart
+
+**Pollination**
+- Player-placed hives boost crop growth within a configurable radius (default: 10 blocks, +15 % speed)
 
 ---
 
-### Items & crafting
+### Items & Crafting
 
-**Matières premières**
-- `Honey`, `BeeWax`, `BeePollen`, `Propolis`, `RoyalJelly`
-- `QueenBee`, `WorkerBee`, `ForagerBee`
+**Raw materials**
+- `Honey`, `BeeWax`, `BeePollen`, `Propolis`, `RoyalJelly`, `BeeColonyCore`
+- `QueenBee`, `WorkerBee`, `ForagerBee`, `BeeEggs`
 - `Frame`, `WaxFrame`, `EmptyPot`
 
-**Transformés**
-- `HoneySugar`, `Purewax`, `BiodieselFromWax`
+**Processed goods**
+- `HoneySugar`, `PureWax`, `BiodieselFromWax`, `SimpleSyrupFromHoney`
 
-**Nourriture** (23 recettes)
-`BerryHoneyCake`, `CandiedFruit`, `HardHoneyCandy`, `HerbalHoneyTea`, `HoneyBeanCake`, `HoneyBeer`, `HoneyBread`, `HoneyGlazedMushrooms`, `HoneyGlazedVegetables`, `HoneyPastries`, `HoneyWheatRolls`, `HoneycombCandy`, `Mead`, `RoyalCandy`, `RoyalHoneyCake`, `RoyalHoneyTart`, `SweetCharredFish`, `SweetCharredMeat`, `WaxSealedBread`
+**Food** (26 recipes)
+`BerryHoneyCake`, `BlueberryCocktail`, `CandiedFruit`, `FruitCake`, `Gingerbread`, `HardHoneyCandy`, `HerbalHoneyTea`, `HoneyBeanCake`, `HoneyBeer`, `HoneyBread`, `HoneyGlazedMushrooms`, `HoneyGlazedVegetables`, `HoneyPastries`, `HoneyRoast`, `HoneyVinegar`, `HoneyWheatRolls`, `HoneycombCandy`, `Mead`, `Madeleine`, `Marshmallow`, `Pancake`, `RoyalCandy`, `RoyalHoneyCake`, `RoyalHoneyTart`, `SalmonHoney`, `SkewerMeatAndHoney`, `SweetCharredFish`, `SweetCharredMeat`, `Tajine`, `WaxSealedBread`
 
-**Décoration & construction**
-- `WaxCandle`, `WaxLumber`, `WaxSealedBread`
-- `BeeStatue`, `SmallMoaiStatue`, `MediumMoaiStatue`, `BigMoaiStatue`
+**Decoration & construction**
+- `WaxCandle`, `WaxLumber`
+- `BeeStatue`, `DecorativeHoneyPot`, `StoneVessel`
+- `SmallMoaiStatue`, `MediumMoaiStatue`, `BigMoaiStatue`
+- `HoneycombShelf` (5 variants, light + dark)
 
-**Ruche craftable**
-- `SmallBeeHive` — ruche placée par le joueur, avec extraction mécanique (`HoneyExtractMechanical`)
-
----
-
-### Arbre de compétences
-
-Compétence `Beekeeping` avec quatre talents :
-
-| Talent | Effet |
-|---|---|
-| `BeekeepingFocusedSpeedTalent` | Vitesse accrue en solo |
-| `BeekeepingParallelSpeedTalent` | Vitesse accrue en parallèle |
-| `BeekeepingFrugalReqTalent` | Réduction des ressources requises |
-| `BeekeepingLavishResourcesTalent` | Bonus de rendement (mode opulence) |
+**Player hives**
+- `BeeHive` — breeds queen bees and crafts royal jelly
+- `SmallBeeHive` — basic honey production with mechanical extraction (`HoneyExtractMechanical`)
 
 ---
 
-### Commandes admin
+### Skill Tree
 
-Accessibles via le chat en jeu, niveau autorisation Admin.
+`Beekeeping` skill with four talents:
 
-| Commande | Description |
+| Talent | Effect |
 |---|---|
-| `/BeekeepingHelp` | Liste toutes les commandes du mod |
-| `/ClusterStatus` | Vue d'ensemble de l'écosystème en temps réel |
-| `/ResetCluster` | Supprime toutes les ruches sauvages et régénère l'écosystème |
-| `/TestRegeneration` | Simule une récolte pour tester la régénération |
+| `Focused Workflow: Beekeeping` | Doubles table speed when working alone |
+| `Parallel Processing: Beekeeping` | +20 % speed when multiple same tables share a room |
+| `Frugal Workspace: Beekeeping` | Lowers tier requirement by 0.2 |
+| `Lavish Workspace: Beekeeping` | +0.2 tier requirement, −5 % resource cost |
+
+---
+
+### Admin Commands
+
+All accessible from in-game chat at Admin authorization level.
+
+| Command | Description |
+|---|---|
+| `/BeekeepingHelp` | Lists all mod commands |
+| `/ClusterStatus` | Real-time ecosystem overview (hive counts, cluster health) |
+| `/ResetCluster confirm` | Destroys all wild hives and regenerates the ecosystem from scratch |
+| `/TestRegeneration` | Simulates a harvest to verify the regeneration system |
+| `/BeekeepingItems` | Gives 1 of every mod item to your inventory |
+
+> `/ResetCluster` requires the `confirm` argument to prevent accidental execution.
+
+---
+
+### Server Configuration
+
+On first startup the mod generates `Configs/Beekeeping.eco`, editable from the web admin UI or directly as JSON.
+
+| Parameter | Default | Description |
+|---|---|---|
+| `ClusterRadius` | 60 | Radius in blocks of each wild hive cluster |
+| `MinClusterSpacing` | 50 | Minimum distance between two cluster centers |
+| `MaxHivesPerCluster` | 5 | Maximum wild hives per cluster |
+| `ClusterDeathThreshold` | 0.08 | Plant fraction below which a cluster stops regenerating |
+| `MinRegenHours` | 1.0 | Minimum hours before a harvested hive slot regenerates |
+| `MaxRegenHours` | 20.0 | Maximum hours before a harvested hive slot regenerates |
+| `MinColonizationHours` | 0.5 | Minimum hours before a vacant swarm colonizes |
+| `MaxColonizationHours` | 6.0 | Maximum hours before a vacant swarm colonizes |
+| `PollinationRadius` | 10 | Radius in blocks for crop growth boost |
+| `GrowthBoostPercent` | 15 | Growth speed boost applied to crops (%) |
+
+---
+
+### Localization
+
+The mod ships with a translation file at `Mods/Translations/Beekeeping.csv`.
+
+| Language | Status |
+|---|---|
+| English | ✅ Full |
+| French | ✅ Full |
+| German | ✅ Full |
+| Russian | ✅ Full |
+| All others | English fallback |
 
 ---
 
 ## Installation
 
-### Prérequis
+### From the release ZIP
 
-- Serveur Eco (version compatible avec le mod — voir `Beekeeping.sln`)
-- SDK Eco (disponible dans `D:\github\Eco\`) pour compiler le projet
-- Unity (pour modifier les assets client dans `D:\github\Beekeeping-Mod_Eco_SLG\Client\`)
+Extract the ZIP at the root of your Eco server. It follows the standard mod folder layout:
 
-### Côté serveur
+```
+Mods/
+├── UserCode/Beekeeping/
+│   ├── Beekeeping.dll
+│   └── Beekeeping.unity3d
+└── Translations/
+    └── Beekeeping.csv
+```
 
-1. Ouvrir `Beekeeping.sln` dans Visual Studio ou Rider
-2. Référencer les DLL Eco depuis votre installation serveur
-3. Compiler le projet — la DLL générée va dans `Mods/` sur le serveur
-4. Démarrer ou redémarrer le serveur
+Restart the server. On first launch the mod auto-generates `Configs/Beekeeping.eco` with default values.
 
-> Au premier lancement sur une carte vierge, le système crée automatiquement les clusters initiaux.  
-> Sur une carte existante sans fichier de sauvegarde, utiliser `/ResetCluster` pour initialiser les clusters.
+> On an existing map with no cluster save file, use `/ResetCluster confirm` to initialize the ecosystem.
 
-### Côté client
+### Building from source
 
-Copier le contenu du dossier `Client/` dans le dossier `Mods/` du client Eco :
-- `BeekeepingScene1.2.1.unity3d` — bundle Unity contenant les modèles 3D et textures
-- Les dossiers `Items/`, `Textures/`, `3D models/` contiennent les sources des assets
+Requirements:
+- .NET SDK (matching the Eco server target)
+- Eco server DLLs as references (see `Beekeeping.csproj`)
 
-### Mode debug
+```bash
+cd Beekeeping-Mod_Eco_SLG
+dotnet build Beekeeping.csproj -c Release
+```
 
-Dans [`Server/BeeHiveGeneration.cs`](Server/BeeHiveGeneration.cs) (ligne 35), passer `DEBUG_MODE` à `true` pour :
-- Recevoir des messages de diagnostic en temps réel dans le chat (admins uniquement)
-- Accélérer les délais de spawn (60 secondes au lieu de 1–20 heures)
+Copy `bin/Beekeeping.dll` to `Mods/UserCode/Beekeeping/` on the server.
+
+### Debug mode
+
+In [`Server/BeeHiveGeneration.cs`](Server/BeeHiveGeneration.cs), set `DEBUG_MODE` to `true` to:
+- Receive real-time diagnostic messages in chat (admins only)
+- Accelerate spawn delays (60 seconds instead of 1–20 hours)
 
 ```csharp
-public const bool DEBUG_MODE = false; // passer à true pour déboguer
+public const bool DEBUG_MODE = false; // set to true to debug
 ```
 
 ---
 
-## Structure du projet
+## Project Structure
 
 ```
 Beekeeping-Mod_Eco_SLG/
 ├── Beekeeping.sln
+├── Beekeeping.csproj
 ├── Server/
-│   ├── PluginModule/       # Point d'entrée du mod (Beekeeping.cs, BeekeepingUpgrade.cs)
-│   ├── BeeHiveGeneration.cs    # Système de clusters et de régénération
-│   ├── ClusterManager.cs       # Gestion des clusters (sauvegarde, reconstruction)
-│   ├── HiveCluster.cs          # Modèle de données d'un cluster
-│   ├── ColonizationComponent.cs # Colonisation automatique des ruches vacantes
-│   ├── HoneyComponent.cs       # Production de miel
-│   ├── QueenBeeComponent.cs    # Logique reine des abeilles
-│   ├── NeighborBeeHiveComponent.cs
-│   ├── BeekeepingCommands.cs   # Commandes admin
-│   ├── Food/                   # Recettes alimentaires (23 fichiers)
-│   ├── Item/                   # Définitions des items
-│   ├── Benefit/                # Talents
-│   └── Tech/                   # Arbre de compétences
-└── Client/
-    ├── BeekeepingScene1.2.1.unity3d
-    ├── Items/
-    ├── Textures/
-    └── 3D models/
+│   ├── BeeHiveGeneration.cs        # Plugin entry point, cluster system & regeneration
+│   ├── BeekeepingConfig.cs         # Admin-configurable parameters
+│   ├── Core/
+│   │   ├── ClusterManager.cs       # Cluster persistence and reconstruction
+│   │   ├── HiveCluster.cs          # Cluster data model
+│   │   ├── ColonizationComponent.cs # Automatic colonization of vacant swarms
+│   │   ├── HoneyComponent.cs       # Honey production
+│   │   ├── PollinationComponent.cs # Crop growth boost
+│   │   ├── QueenBeeComponent.cs    # Queen bee attraction logic
+│   │   ├── NeighborBeeHiveComponent.cs # Hive spacing enforcement
+│   │   └── BeekeepingCommands.cs   # Admin commands
+│   ├── Food/                       # Food recipes (30 files)
+│   ├── Item/                       # Item definitions
+│   ├── Benefit/                    # Talents
+│   ├── Tech/                       # Skill tree
+│   └── PluginModule/               # Plugin upgrade module
+├── Client/
+│   └── Beekeeping.unity3d          # Unity asset bundle (3D models, textures, icons)
+└── Mods/
+    └── Translations/
+        └── Beekeeping.csv          # Localization (EN/FR/DE/RU + EN fallback)
 ```
