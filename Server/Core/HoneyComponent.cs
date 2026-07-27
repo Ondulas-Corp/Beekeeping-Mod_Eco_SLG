@@ -89,8 +89,8 @@ namespace Beekeeping.Server
                 Parent.UpdateEnabledAndOperating();
             }
 
-            // Age the queen only while the hive is actively producing (plants present)
-            if (IsFlowered)
+            // Age the queen only while the hive is actively crafting a recipe
+            if (Parent.GetComponent<CraftingComponent>()?.Operating == true)
                 Parent.GetComponent<PartsComponent>()?.ConsumeDurabilityAccumulated(null, 0.1);
         }
 
