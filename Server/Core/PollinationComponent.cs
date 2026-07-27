@@ -315,14 +315,14 @@ namespace Beekeeping.Server
             }
             else if (lastCropsAffected > 0)
             {
-                statusMessage = $"Pollinating {lastCropsAffected} crops nearby (+{boostPercent:F0}% growth speed)";
-                
+                statusMessage = $"Pollinating {lastCropsAffected} crops within {POLLINATION_RADIUS} blocks (+{boostPercent:F0}% growth)";
+
                 if (DEBUG_MODE)
                     statusMessage += " [DEBUG MODE]";
             }
             else
             {
-                statusMessage = "Active but no growing crops found within 10 blocks";
+                statusMessage = $"Active — no growing crops within {POLLINATION_RADIUS} blocks";
             }
 
             status.SetStatusMessage(Enabled && lastCropsAffected > 0, Localizer.DoStr(statusMessage));
