@@ -282,31 +282,24 @@ public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin
             // Update hive counts first
             ClusterManager.UpdateExistingHives(cluster);
 
-            // Check if cluster has 0 hives and is alive
-            if (cluster.CurrentHiveCount == 0 && cluster.IsAlive)
+            if (!cluster.IsAlive) continue;
+
+            int availableSlots = MAX_HIVES_PER_CLUSTER - cluster.CurrentHiveCount;
+            if (availableSlots <= 0) continue;
+
+            // Check plant health for regeneration eligibility
+            var plantPercentage = cluster.MaxPlantCount > 0 ? (float)cluster.CurrentPlantCount / cluster.MaxPlantCount : 0f;
+            if (plantPercentage < 0.17f) continue;
+
+            // Schedule one spawn per missing hive, staggered to avoid burst
+            for (int i = 0; i < availableSlots; i++)
             {
-                // Check plant health for regeneration eligibility
-                var plantPercentage = cluster.MaxPlantCount > 0 ? (float)cluster.CurrentPlantCount / cluster.MaxPlantCount : 0f;
-                if (plantPercentage < 0.17f)
-                    continue; // Skip dead clusters
-
-                // Calculate available slots (should be 5 since cluster is empty)
-                int availableSlots = MAX_HIVES_PER_CLUSTER;
-
-                // Randomly choose how many hives to spawn (1-5)
-                int toSpawn = random.Next(1, Math.Min(5, availableSlots) + 1);
-
-                // Schedule spawns with production delays (1-20 hours)
-                for (int i = 0; i < toSpawn; i++)
-                {
-                    var regenDelay = MIN_REGEN_HOURS + (random.NextDouble() * (MAX_REGEN_HOURS - MIN_REGEN_HOURS));
-                    var delaySeconds = regenDelay * 3600.0; // Convert hours to seconds
-                    ScheduleSpawn(delaySeconds, cluster, new List<Vector3i>(cluster.ExistingHivePositions));
-                }
-
-                // Update last harvest time to prevent immediate re-triggering
-                cluster.LastHarvestTime = WorldTime.Seconds;
+                var regenDelay = MIN_REGEN_HOURS + (random.NextDouble() * (MAX_REGEN_HOURS - MIN_REGEN_HOURS));
+                var delaySeconds = regenDelay * 3600.0;
+                ScheduleSpawn(delaySeconds, cluster, new List<Vector3i>(cluster.ExistingHivePositions));
             }
+
+            cluster.LastHarvestTime = WorldTime.Seconds;
         }
     }
 
