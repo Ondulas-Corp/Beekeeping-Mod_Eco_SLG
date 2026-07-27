@@ -1,49 +1,56 @@
 ﻿using Beekeeping.Server;
+using Eco.Core.Plugins;
 using Eco.Core.Plugins.Interfaces;
 using Eco.Core.Utils;
 using Eco.Gameplay;
 using Eco.Gameplay.Objects;
+using Eco.Gameplay.Players;
 using Eco.Gameplay.Property;
 using Eco.Shared.IoC;
+using Eco.Shared.Localization;
 using Eco.Shared.Math;
-using Eco.World.Blocks;
+using Eco.Shared.Serialization;
+using Eco.Shared.Services;
+using Eco.Shared.Utils;
 using Eco.Simulation;
 using Eco.Simulation.Time;
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using Eco.Shared.Utils;
-using Eco.Shared.Serialization;
+using Eco.World.Blocks;
 using Beekeeping.Server.Module;
-using Eco.Core.Plugins;
-using Eco.Gameplay.Players;
-using Eco.Shared.Localization;
-using Eco.Shared.Services;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
-public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin
+public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin, IConfigurablePlugin
 {
-    public const int CLUSTER_RADIUS = 60;
-    public const int MIN_CLUSTER_SPACING = 50;
-    private const int SPAWN_RADIUS = 40;
-    public const float CLUSTER_DEATH_THRESHOLD = 0.08f;
-    private const float MIN_REGEN_HOURS = 1.0f;
-    private const float MAX_REGEN_HOURS = 20.0f;
-    private const int MAX_HIVES_PER_CLUSTER = 5;
-
-    // Debug MODE enable debug messages in chat and faster spawn
+    // Debug mode — set to true to enable verbose chat messages and fast spawns (requires recompile)
     public const bool DEBUG_MODE = false;
+
+    // Backwards-compat statics for ClusterManager (delegates to config)
+    public static int   CLUSTER_RADIUS        => Config.ClusterRadius;
+    public static int   MIN_CLUSTER_SPACING   => Config.MinClusterSpacing;
+    public static float CLUSTER_DEATH_THRESHOLD => Config.ClusterDeathThreshold;
+
+    private PluginConfig<Beekeeping.Server.BeekeepingConfig> config;
+    public IPluginConfig PluginConfig => config;
+    public static Beekeeping.Server.BeekeepingConfig Config => instance?.config?.Config ?? new Beekeeping.Server.BeekeepingConfig();
+    public Eco.Core.Utils.ThreadSafeAction<object, string> ParamChanged { get; set; } = new Eco.Core.Utils.ThreadSafeAction<object, string>();
 
     private List<HiveCluster> hiveClusters = new List<HiveCluster>();
     private static BeeHiveGeneration instance;
     private static Random random = new Random();
 
+    public BeeHiveGeneration() => config = new PluginConfig<Beekeeping.Server.BeekeepingConfig>("Beekeeping");
+
     public string GetCategory() => "Beekeeping Cluster System";
     public string GetStatus() => $"Managing {hiveClusters.Count} hive clusters";
+    public object GetEditObject() => config.Config;
+    public void OnEditObjectChanged(object o, string param) => this.SaveConfig();
 
 	public void Initialize(TimedTask timer)
 	{
 		instance = this;
+		config.SaveAsync().Wait(); // Write Configs/Beekeeping.eco with defaults on first run
 
 		if (DEBUG_MODE)
 		{
@@ -284,7 +291,7 @@ public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin
 
             if (!cluster.IsAlive) continue;
 
-            int availableSlots = MAX_HIVES_PER_CLUSTER - cluster.CurrentHiveCount;
+            int availableSlots = Config.MaxHivesPerCluster - cluster.CurrentHiveCount;
             if (availableSlots <= 0) continue;
 
             // Check plant health for regeneration eligibility
@@ -294,7 +301,7 @@ public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin
             // Schedule one spawn per missing hive, staggered to avoid burst
             for (int i = 0; i < availableSlots; i++)
             {
-                var regenDelay = MIN_REGEN_HOURS + (random.NextDouble() * (MAX_REGEN_HOURS - MIN_REGEN_HOURS));
+                var regenDelay = Config.MinRegenHours + (random.NextDouble() * (Config.MaxRegenHours - Config.MinRegenHours));
                 var delaySeconds = regenDelay * 3600.0;
                 ScheduleSpawn(delaySeconds, cluster, new List<Vector3i>(cluster.ExistingHivePositions));
             }
@@ -331,7 +338,7 @@ public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin
 
             // Refresh hive count from world state before spawning (guards against overlapping batches)
             ClusterManager.UpdateExistingHives(targetCluster);
-            if (targetCluster.CurrentHiveCount >= MAX_HIVES_PER_CLUSTER)
+            if (targetCluster.CurrentHiveCount >= Config.MaxHivesPerCluster)
             {
                 targetCluster.RegenerationInProgress = false;
                 return;
@@ -446,7 +453,7 @@ public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin
             attempts++;
 
             var angle = random.NextDouble() * 2 * System.Math.PI;
-            var distance = random.NextDouble() * CLUSTER_RADIUS;
+            var distance = random.NextDouble() * Config.ClusterRadius;
 
             var x = (int)(clusterCenter.X + System.Math.Cos(angle) * distance);
             var z = (int)(clusterCenter.Z + System.Math.Sin(angle) * distance);
@@ -689,7 +696,7 @@ public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin
             catch { }
 
             // Calculate available slots
-            int availableSlots = MAX_HIVES_PER_CLUSTER - cluster.CurrentHiveCount;
+            int availableSlots = Config.MaxHivesPerCluster - cluster.CurrentHiveCount;
 
             if (availableSlots > 0)
             {
@@ -714,7 +721,7 @@ public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin
                 // Schedule spawns with async delays
                 for (int i = 0; i < toSpawn; i++)
                 {
-                    var delay = DEBUG_MODE ? 60.0 + (i * 5.0) : (MIN_REGEN_HOURS + (random.NextDouble() * (MAX_REGEN_HOURS - MIN_REGEN_HOURS))) * 3600.0;
+                    var delay = DEBUG_MODE ? 60.0 + (i * 5.0) : (Config.MinRegenHours + (random.NextDouble() * (Config.MaxRegenHours - Config.MinRegenHours))) * 3600.0;
                     ScheduleSpawn(delay, cluster, new List<Vector3i>(cluster.ExistingHivePositions));
 
                     try

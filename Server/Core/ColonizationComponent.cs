@@ -76,7 +76,9 @@ public class ColonizationComponent : WorldObjectComponent
 	private void ScheduleColonization()
 	{
 		var random = new Random();
-		var delaySeconds = 1800 + (random.NextDouble() * 19800);
+		var cfg = BeeHiveGeneration.Config;
+		var minSec = cfg.MinColonizationHours * 3600.0;
+		var delaySeconds = minSec + (random.NextDouble() * (cfg.MaxColonizationHours - cfg.MinColonizationHours) * 3600.0);
 		
 		ColonizationTime = WorldTime.Seconds + delaySeconds;
 		_ = ConvertToOccupiedAsync(delaySeconds);
