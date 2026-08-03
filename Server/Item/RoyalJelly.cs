@@ -10,6 +10,7 @@ namespace Beekeeping.Server
     using Eco.Gameplay.Blocks;
     using Eco.Gameplay.Components;
     using Eco.Gameplay.DynamicValues;
+    using Eco.Simulation.WorldLayers;
     using Eco.Gameplay.Items;
     using Eco.Gameplay.Objects;
     using Eco.Gameplay.Players;
@@ -29,30 +30,29 @@ namespace Beekeeping.Server
     using Eco.Mods.TechTree;
     using Eco.Mods.TechTree;
 
+
     /// <summary>
-    /// <para>Server side recipe definition for "Wax".</para>
+    /// <para>Server side recipe definition for "RoyalJelly".</para>
     /// <para>More information about RecipeFamily objects can be found at https://docs.play.eco/api/server/eco.gameplay/Eco.Gameplay.Items.RecipeFamily.html</para>
     /// </summary>
     /// <remarks>
     /// This is an auto-generated class. Don't modify it! All your changes will be wiped with next update! Use Mods* partial methods instead for customization. 
     /// If you wish to modify this class, please create a new partial class or follow the instructions in the "UserCode" folder to override the entire file.
     /// </remarks>
-    [RequiresSkill(typeof(BeekeepingSkill), 1)]
-    [Ecopedia("Items", "Products", subPageName: "Beewax Item")]
-    public partial class BeewaxRecipe : RecipeFamily
+    [RequiresSkill(typeof(BeekeepingSkill), 2)]
+    [Ecopedia("Items", "Products", subPageName: "Royal Jelly Item")]
+    public partial class RoyalJellyRecipe : RecipeFamily
     {
-        public BeewaxRecipe()
+        public RoyalJellyRecipe()
         {
             var recipe = new Recipe();
             recipe.Init(
-                name: "Beewax",  //noloc
-                displayName: Localizer.DoStr("Beewax"),
-
-                // Defines the ingredients needed to craft this recipe. An ingredient items takes the following inputs
-                // type of the item, the amount of the item, the skill required, and the talent used.
+                name: "RoyalJelly",  //noloc
+                displayName: Localizer.DoStr("Royal Jelly"),
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(WaxFrameItem), 2, typeof(BeekeepingSkill), typeof(BeekeepingLavishResourcesTalent))
+                    new IngredientElement(typeof(WorkerBeeItem), 3, typeof(BeekeepingSkill)),
+                    new IngredientElement(typeof(HoneyItem), 1, typeof(BeekeepingSkill))
                 },
 
                 // Define our recipe output items.
@@ -60,25 +60,28 @@ namespace Beekeeping.Server
                 // to create.
                 items: new List<CraftingElement>
                 {
-                    new CraftingElement<BeewaxItem>(2),
-                    new CraftingElement<FrameItem>(1)
+                    new CraftingElement<RoyalJellyItem>()
                 });
             this.Recipes = new List<Recipe> { recipe };
-            this.ExperienceOnCraft = 0.5f; // Defines how much experience is gained when crafted.
+            this.ExperienceOnCraft = 5; // Defines how much experience is gained when crafted.
             
             // Defines the amount of labor required and the required skill to add labor
             this.LaborInCalories = CreateLaborInCaloriesValue(30, typeof(BeekeepingSkill));
 
             // Defines our crafting time for the recipe
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(BeewaxRecipe), start: 0.5f, skillType: typeof(BeekeepingSkill), typeof(BeekeepingFocusedSpeedTalent), typeof(BeekeepingParallelSpeedTalent));
+            this.CraftMinutes = new MultiDynamicValue(MultiDynamicOps.Multiply,
+                CreateCraftTimeValue(beneficiary: typeof(RoyalJellyRecipe), start: 0.5f, skillType: typeof(BeekeepingSkill)),
+                new MultiDynamicValue(MultiDynamicOps.Maximum,
+                    new LayerModifiedValue(LayerNames.OccupiedFertileGround, BeeHiveGeneration.Config.HiveCraftLayerRadius),
+                    CreateCraftTimeValue(BeeHiveGeneration.Config.HiveCraftSpeedFloor)));
 
-            // Perform pre/post initialization for user mods and initialize our recipe instance with the display name "Wax"
+            // Perform pre/post initialization for user mods and initialize our recipe instance with the display name "Royal Jelly"
             this.ModsPreInitialize();
-            this.Initialize(displayText: Localizer.DoStr("Beewax"), recipeType: typeof(BeewaxRecipe));
+            this.Initialize(displayText: Localizer.DoStr("Royal Jelly"), recipeType: typeof(RoyalJellyRecipe));
             this.ModsPostInitialize();
 
             // Register our RecipeFamily instance with the crafting system so it can be crafted.
-            CraftingComponent.AddRecipe(tableType: typeof(HoneyExtractMechanicalObject), recipeFamily: this);
+            CraftingComponent.AddRecipe(tableType: typeof(BeeHiveObject), recipeFamily: this);
         }
 
         /// <summary>Hook for mods to customize RecipeFamily before initialization. You can change recipes, xp, labor, time here.</summary>
@@ -89,7 +92,7 @@ namespace Beekeeping.Server
     }
 
     /// <summary>
-    /// <para>Server side item definition for the "Wax" item.</para>
+    /// <para>Server side item definition for the "RoyalJelly" item.</para>
     /// <para>More information about Item objects can be found at https://docs.play.eco/api/server/eco.gameplay/Eco.Gameplay.Items.Item.html</para>
     /// </summary>
     /// <remarks>
@@ -97,12 +100,13 @@ namespace Beekeeping.Server
     /// If you wish to modify this class, please create a new partial class or follow the instructions in the "UserCode" folder to override the entire file.
     /// </remarks>
     [Serialized] // Tells the save/load system this object needs to be serialized. 
-    [LocDisplayName("Beewax")] // Defines the localized name of the item.
-    [Weight(100)] // Defines how heavy Wax is.
+    [LocDisplayName("Royal Jelly")] // Defines the localized name of the item.
+    [Weight(1)] // Defines how heavy RoyalJelly is.
     [Ecopedia("Items", "Products", createAsSubPage: true)]
-    [LocDescription("Bee wax.")] //The tooltip description for the item.
-    public partial class BeewaxItem : Item
+    [LocDescription("A secretion produced by worker bees to nourish larvae and the queen. Essential for queen bee rearing.")] //The tooltip description for the item.
+    public partial class RoyalJellyItem : Item
     {
     }
+
 
 }

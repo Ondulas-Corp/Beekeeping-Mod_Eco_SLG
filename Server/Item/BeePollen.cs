@@ -1,4 +1,4 @@
-// Copyright (c) Strange Loop Games. All rights reserved.
+﻿// Copyright (c) Strange Loop Games. All rights reserved.
 // See LICENSE file in the project root for full license information.
 // Bee Pollen fertilizer for beekeeping mod
 
@@ -10,6 +10,7 @@ namespace Beekeeping.Server
     using Eco.Gameplay.Blocks;
     using Eco.Gameplay.Components;
     using Eco.Gameplay.DynamicValues;
+    using Eco.Simulation.WorldLayers;
     using Eco.Gameplay.Items;
     using Eco.Gameplay.Objects;
     using Eco.Gameplay.Players;
@@ -70,7 +71,7 @@ namespace Beekeeping.Server
                 displayName: Localizer.DoStr("Bee Pollen"),
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(WorkerBeeItem), 1, typeof(BeekeepingSkill), typeof(BeekeepingLavishResourcesTalent)),
+                    new IngredientElement(typeof(WorkerBeeItem), 1, typeof(BeekeepingSkill)),
                     new IngredientElement("Petals", 3, typeof(BeekeepingSkill)) //noloc
                 },
                 items: new List<CraftingElement>
@@ -80,7 +81,11 @@ namespace Beekeeping.Server
             this.Recipes = new List<Recipe> { recipe };
             this.ExperienceOnCraft = 0.4f;
             this.LaborInCalories = CreateLaborInCaloriesValue(80, typeof(BeekeepingSkill));
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(BeePollenFromPetalsRecipe), start: 2f, skillType: typeof(BeekeepingSkill), typeof(BeekeepingFocusedSpeedTalent), typeof(BeekeepingParallelSpeedTalent));
+            this.CraftMinutes = new MultiDynamicValue(MultiDynamicOps.Multiply,
+                CreateCraftTimeValue(beneficiary: typeof(BeePollenFromPetalsRecipe), start: 2f, skillType: typeof(BeekeepingSkill)),
+                new MultiDynamicValue(MultiDynamicOps.Maximum,
+                    new LayerModifiedValue(LayerNames.OccupiedFertileGround, BeeHiveGeneration.Config.HiveCraftLayerRadius),
+                    CreateCraftTimeValue(BeeHiveGeneration.Config.HiveCraftSpeedFloor)));
             this.ModsPreInitialize();
             this.Initialize(displayText: Localizer.DoStr("Bee Pollen"), recipeType: typeof(BeePollenFromPetalsRecipe));
             this.ModsPostInitialize();
@@ -103,7 +108,7 @@ namespace Beekeeping.Server
                 displayName: Localizer.DoStr("Bee Pollen (Advanced)"),
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(ForagerBeeItem), 1, typeof(BeekeepingSkill), typeof(BeekeepingLavishResourcesTalent)),
+                    new IngredientElement(typeof(ForagerBeeItem), 1, typeof(BeekeepingSkill)),
                     new IngredientElement("Petals", 3, typeof(BeekeepingSkill)) //noloc
                 },
                 items: new List<CraftingElement>
@@ -113,7 +118,11 @@ namespace Beekeeping.Server
             this.Recipes = new List<Recipe> { recipe };
             this.ExperienceOnCraft = 0.6f;
             this.LaborInCalories = CreateLaborInCaloriesValue(60, typeof(BeekeepingSkill));
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(BeePollenAdvancedRecipe), start: 2f, skillType: typeof(BeekeepingSkill), typeof(BeekeepingFocusedSpeedTalent), typeof(BeekeepingParallelSpeedTalent));
+            this.CraftMinutes = new MultiDynamicValue(MultiDynamicOps.Multiply,
+                CreateCraftTimeValue(beneficiary: typeof(BeePollenAdvancedRecipe), start: 2f, skillType: typeof(BeekeepingSkill)),
+                new MultiDynamicValue(MultiDynamicOps.Maximum,
+                    new LayerModifiedValue(LayerNames.OccupiedFertileGround, BeeHiveGeneration.Config.HiveCraftLayerRadius),
+                    CreateCraftTimeValue(BeeHiveGeneration.Config.HiveCraftSpeedFloor)));
             this.ModsPreInitialize();
             this.Initialize(displayText: Localizer.DoStr("Bee Pollen (Advanced)"), recipeType: typeof(BeePollenAdvancedRecipe));
             this.ModsPostInitialize();

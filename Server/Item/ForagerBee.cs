@@ -1,4 +1,4 @@
-using Eco.Core.Items;
+﻿using Eco.Core.Items;
 using Eco.Gameplay.Components;
 using Eco.Gameplay.Items;
 using Eco.Gameplay.Items.Recipes;
@@ -9,6 +9,8 @@ using Eco.Core.Controller;
 using Eco.Gameplay.Players;
 using Eco.Shared.Utils;
 using Eco.Shared.Time;
+using Eco.Gameplay.DynamicValues;
+using Eco.Simulation.WorldLayers;
 using System;
 using System.Collections.Generic;
 
@@ -47,7 +49,7 @@ namespace Beekeeping.Server
                 new Recipe("ForagerBee", Localizer.DoStr("Forager Bee"), new IngredientElement[2]
                 {
                     new IngredientElement(typeof(WorkerBeeItem), 1f, false),
-                    new IngredientElement(typeof(BeePollenItem), 1f, typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingLavishResourcesTalent))
+                    new IngredientElement(typeof(BeePollenItem), 1f, typeof(Eco.Mods.TechTree.BeekeepingSkill))
                 }, new CraftingElement[1]
                 {
                     new CraftingElement<ForagerBeeItem>(1f)
@@ -55,11 +57,11 @@ namespace Beekeeping.Server
             };
             ExperienceOnCraft = 0.6f;
             LaborInCalories = CreateLaborInCaloriesValue(30f, typeof(Eco.Mods.TechTree.BeekeepingSkill));
-            CraftMinutes = CreateCraftTimeValue(typeof(ForagerBeeRecipe), 6f, typeof(Eco.Mods.TechTree.BeekeepingSkill), new Type[2]
-            {
-                typeof(Eco.Mods.TechTree.BeekeepingFocusedSpeedTalent),
-                typeof(Eco.Mods.TechTree.BeekeepingParallelSpeedTalent)
-            });
+            CraftMinutes = new MultiDynamicValue(MultiDynamicOps.Multiply,
+                CreateCraftTimeValue(typeof(ForagerBeeRecipe), 6f, typeof(Eco.Mods.TechTree.BeekeepingSkill)),
+                new MultiDynamicValue(MultiDynamicOps.Maximum,
+                    new LayerModifiedValue(LayerNames.OccupiedFertileGround, BeeHiveGeneration.Config.HiveCraftLayerRadius),
+                    CreateCraftTimeValue(BeeHiveGeneration.Config.HiveCraftSpeedFloor)));
             Initialize(Localizer.DoStr("Forager Bee"), typeof(ForagerBeeRecipe));
             CraftingComponent.AddRecipe(typeof(BeeHiveObject), this);
         }

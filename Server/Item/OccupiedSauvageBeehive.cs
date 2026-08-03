@@ -25,6 +25,7 @@ namespace Beekeeping.Server
     using Eco.Shared.SharedTypes;
     using Eco.Shared.Utils;
     using Beekeeping.Server.Module;
+    using Eco.Mods.TechTree;
 
     // Occupied Swarm (OccupiedSauvageBeehive)
     [Serialized]
@@ -53,25 +54,33 @@ namespace Beekeeping.Server
 					
 					var itemsObtained = new List<string>();
 					
-                    // Always get 1-2 Bee Eggs
+                    var talentset = player.User.Talentset;
+
+                    // Always get 1-2 Bee Eggs; +1 with Nimble Hands talent
                     int eggCount = RandomUtil.Range(1, 3);
+                    if (talentset.HasTalent(typeof(BeekeepingNimbleHandsTalent))) eggCount += 1;
                     changeSet.AddItemsNonUnique(typeof(BeeEggsItem), eggCount);
 					itemsObtained.Add($"{eggCount} {Item.Get<BeeEggsItem>().DisplayName}");
-					
-					// 45% chance to get 1 Bee Colony Core
+
+					// 45% chance to get 1 Bee Colony Core; Wild Harvest talent always grants +1
 					if (RandomUtil.Range(1, 101) <= 45)
 					{
 						changeSet.AddItemsNonUnique(typeof(BeeColonyCoreItem), 1);
 						itemsObtained.Add($"1 {Item.Get<BeeColonyCoreItem>().DisplayName}");
 					}
-                    
+					else if (talentset.HasTalent(typeof(BeekeepingWildHarvestTalent)))
+					{
+						changeSet.AddItemsNonUnique(typeof(BeeColonyCoreItem), 1);
+						itemsObtained.Add($"1 {Item.Get<BeeColonyCoreItem>().DisplayName}");
+					}
+
                     // 5% chance to get 1 Worker Bee
                     if (RandomUtil.Range(1, 101) <= 5)
                     {
                         changeSet.AddItemsNonUnique(typeof(WorkerBeeItem), 1);
 						itemsObtained.Add($"1 {Item.Get<WorkerBeeItem>().DisplayName}");
                     }
-                    
+
                     // 5% chance to get 1-2 Wax
                     if (RandomUtil.Range(1, 101) <= 5)
                     {
@@ -80,8 +89,9 @@ namespace Beekeeping.Server
 						itemsObtained.Add($"{waxCount} {Item.Get<BeewaxItem>().DisplayName}");
                     }
 
-                    // 17% chance to get 1 Queen Bee
-                    if (RandomUtil.Range(1, 101) <= 17)
+                    // 17% chance to get 1 Queen Bee; +8% with Queen's Luck talent (25% total)
+                    int queenChance = talentset.HasTalent(typeof(BeekeepingQueensLuckTalent)) ? 25 : 17;
+                    if (RandomUtil.Range(1, 101) <= queenChance)
                     {
                         changeSet.AddItemsNonUnique(typeof(QueenBeeItem), 1);
                         itemsObtained.Add($"1 {Item.Get<QueenBeeItem>().DisplayName}");
@@ -94,13 +104,6 @@ namespace Beekeeping.Server
 				
 				BeeHiveGeneration.OnHiveDestroyed(this.Position3i);
                 this.Destroy();
-                
-                // Random chance to spawn vacant hive (prevents farming)
-                var random = new Random();
-                if (random.NextDouble() < 0.20) // 20% chance to spawn vacant
-                {
-                    WorldObjectManager.ForceAdd(typeof(VacantSauvageBeehiveObject), player.User, position, rotation);
-                }
             }
             else
             {

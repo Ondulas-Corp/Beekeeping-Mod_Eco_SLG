@@ -1,4 +1,4 @@
-// Copyright (c) Strange Loop Games. All rights reserved.
+﻿// Copyright (c) Strange Loop Games. All rights reserved.
 // See LICENSE file in the project root for full license information.
 // Alternative Wax recipe for existing Tallow Candle
 
@@ -51,7 +51,7 @@ namespace Beekeeping.Server
                 // type of the item, the amount of the item, the skill required, and the talent used.
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(BeewaxItem), 3, typeof(BeekeepingSkill), typeof(BeekeepingLavishResourcesTalent)),
+                    new IngredientElement(typeof(BeewaxItem), 3, typeof(BeekeepingSkill)),
                     new IngredientElement(typeof(CottonThreadItem), 1, true),
                 },
 
@@ -69,7 +69,7 @@ namespace Beekeeping.Server
             this.LaborInCalories = CreateLaborInCaloriesValue(30, typeof(BeekeepingSkill));
 
             // Defines our crafting time for the recipe
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(WaxCandleAlternativeRecipe), start: 1.5f, skillType: typeof(BeekeepingSkill), typeof(BeekeepingFocusedSpeedTalent), typeof(BeekeepingParallelSpeedTalent));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(WaxCandleAlternativeRecipe), start: 1.5f, skillType: typeof(BeekeepingSkill));
 
             // Perform pre/post initialization for user mods and initialize our recipe instance with the display name "Wax Candle"
             this.ModsPreInitialize();

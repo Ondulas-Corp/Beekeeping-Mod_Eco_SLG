@@ -1,6 +1,7 @@
 using Eco.Core.Items;
 using Eco.Gameplay.Components;
 using Eco.Gameplay.DynamicValues;
+using Eco.Simulation.WorldLayers;
 using Eco.Gameplay.Items;
 using Eco.Gameplay.Items.Recipes;
 using Eco.Gameplay.Skills;
@@ -50,11 +51,11 @@ namespace Beekeeping.Server
             };
             ExperienceOnCraft = 2.0f;
             LaborInCalories = CreateLaborInCaloriesValue(60f, typeof(Eco.Mods.TechTree.BeekeepingSkill));
-            CraftMinutes = CreateCraftTimeValue(typeof(QueenBeeRecipe), 10f, typeof(Eco.Mods.TechTree.BeekeepingSkill), new Type[2]
-            {
-                typeof(Eco.Mods.TechTree.BeekeepingFocusedSpeedTalent),
-                typeof(Eco.Mods.TechTree.BeekeepingParallelSpeedTalent)
-            });
+            CraftMinutes = new MultiDynamicValue(MultiDynamicOps.Multiply,
+                CreateCraftTimeValue(typeof(QueenBeeRecipe), 10f, typeof(Eco.Mods.TechTree.BeekeepingSkill)),
+                new MultiDynamicValue(MultiDynamicOps.Maximum,
+                    new LayerModifiedValue(LayerNames.OccupiedFertileGround, BeeHiveGeneration.Config.HiveCraftLayerRadius),
+                    CreateCraftTimeValue(BeeHiveGeneration.Config.HiveCraftSpeedFloor)));
             Initialize(Localizer.DoStr("Queen Bee"), typeof(QueenBeeRecipe));
             CraftingComponent.AddRecipe(typeof(BeeHiveObject), this);
         }

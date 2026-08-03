@@ -1,5 +1,7 @@
-using Eco.Core.Items;
+﻿using Eco.Core.Items;
 using Eco.Gameplay.Components;
+using Eco.Gameplay.DynamicValues;
+using Eco.Simulation.WorldLayers;
 using Eco.Gameplay.Items;
 using Eco.Gameplay.Items.Recipes;
 using Eco.Gameplay.Skills;
@@ -39,7 +41,7 @@ namespace Beekeeping.Server
                 new Recipe("Propolis", Localizer.DoStr("Propolis"), new IngredientElement[2]
                 {
                     new IngredientElement(typeof(ForagerBeeItem), 1f, true),
-                    new IngredientElement("NaturalFiber", 2f, typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingLavishResourcesTalent))
+                    new IngredientElement("NaturalFiber", 2f, typeof(Eco.Mods.TechTree.BeekeepingSkill))
                 }, new CraftingElement[1]
                 {
                     new CraftingElement<PropolisItem>(1f)
@@ -47,11 +49,11 @@ namespace Beekeeping.Server
             };
             ExperienceOnCraft = 0.6f;
             LaborInCalories = CreateLaborInCaloriesValue(600f, typeof(Eco.Mods.TechTree.BeekeepingSkill));
-            CraftMinutes = CreateCraftTimeValue(typeof(PropolisRecipe), 6f, typeof(Eco.Mods.TechTree.BeekeepingSkill), new Type[2]
-            {
-                typeof(Eco.Mods.TechTree.BeekeepingFocusedSpeedTalent),
-                typeof(Eco.Mods.TechTree.BeekeepingParallelSpeedTalent)
-            });
+            CraftMinutes = new MultiDynamicValue(MultiDynamicOps.Multiply,
+                CreateCraftTimeValue(typeof(PropolisRecipe), 6f, typeof(Eco.Mods.TechTree.BeekeepingSkill)),
+                new MultiDynamicValue(MultiDynamicOps.Maximum,
+                    new LayerModifiedValue(LayerNames.OccupiedFertileGround, BeeHiveGeneration.Config.HiveCraftLayerRadius),
+                    CreateCraftTimeValue(BeeHiveGeneration.Config.HiveCraftSpeedFloor)));
             Initialize(Localizer.DoStr("Propolis"), typeof(PropolisRecipe));
             // Use the correct hive name that you mentioned
             CraftingComponent.AddRecipe(typeof(BeeHiveObject), this);

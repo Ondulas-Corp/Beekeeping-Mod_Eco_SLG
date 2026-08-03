@@ -23,15 +23,10 @@ namespace Beekeeping.Server
     using Eco.Shared.Services;
 	using Eco.Shared.SharedTypes;
 	using Eco.Shared.Utils;
-    using Beekeeping.Server.Module;
-
-    // Vacant Swarm (InnocupiedSauvageBeehive)
+    // Vacant Swarm — kept for save compatibility, no longer spawned
     [Serialized]
     [RequireComponent(typeof(StatusComponent))]
-    [RequireComponent(typeof(QueenBeeComponent))]
-    [RequireComponent(typeof(PluginModulesComponent))]
 	[RequireComponent(typeof(OccupancyRequirementComponent))]
-	[RequireComponent(typeof(ColonizationComponent))]
 	[Tag("WorldGenerated")]
     [Tag("Usable")]
     [Ecopedia("Items", "Products", subPageName: "Vacant Swarm Item")]

@@ -1,4 +1,4 @@
-// Copyright (c) Strange Loop Games. All rights reserved.
+﻿// Copyright (c) Strange Loop Games. All rights reserved.
 // See LICENSE file in the project root for full license information.
 // Bee Statue recipe for beekeeping mod
 
@@ -59,10 +59,10 @@ namespace Beekeeping.Server
                 // type of the item, the amount of the item, the skill required, and the talent used.
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(PureWaxItem), 4, typeof(BeekeepingSkill), typeof(BeekeepingLavishResourcesTalent)),
-                    new IngredientElement(typeof(RoyalJellyItem), 1, typeof(BeekeepingSkill), typeof(BeekeepingLavishResourcesTalent)),
-                    new IngredientElement(typeof(PropolisItem), 2, typeof(BeekeepingSkill), typeof(BeekeepingLavishResourcesTalent)),
-                    new IngredientElement(typeof(BeewaxItem), 2, typeof(BeekeepingSkill), typeof(BeekeepingLavishResourcesTalent))
+                    new IngredientElement(typeof(PureWaxItem), 4, typeof(BeekeepingSkill)),
+                    new IngredientElement(typeof(RoyalJellyItem), 1, typeof(BeekeepingSkill)),
+                    new IngredientElement(typeof(PropolisItem), 2, typeof(BeekeepingSkill)),
+                    new IngredientElement(typeof(BeewaxItem), 2, typeof(BeekeepingSkill))
                 },
 
                 // Define our recipe output items.
@@ -79,7 +79,7 @@ namespace Beekeeping.Server
             this.LaborInCalories = CreateLaborInCaloriesValue(250, typeof(BeekeepingSkill));
 
             // Defines our crafting time for the recipe
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(BeeStatueRecipe), start: 15f, skillType: typeof(BeekeepingSkill), typeof(BeekeepingFocusedSpeedTalent), typeof(BeekeepingParallelSpeedTalent));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(BeeStatueRecipe), start: 15f, skillType: typeof(BeekeepingSkill));
 
             // Perform pre/post initialization for user mods and initialize our recipe instance with the display name "Bee Statue"
             this.ModsPreInitialize();

@@ -1,4 +1,4 @@
-using Eco.Core.Items;
+﻿using Eco.Core.Items;
 using Eco.Gameplay.Components;
 using Eco.Gameplay.Items;
 using Eco.Gameplay.Items.Recipes;
@@ -9,6 +9,8 @@ using Eco.Core.Controller;
 using Eco.Gameplay.Players;
 using Eco.Shared.Utils;
 using Eco.Shared.Time;
+using Eco.Gameplay.DynamicValues;
+using Eco.Simulation.WorldLayers;
 using System;
 using System.Collections.Generic;
 
@@ -30,7 +32,7 @@ namespace Beekeeping.Server
         public override float BaseShelfLife => (float)TimeUtil.HoursToSeconds(48);
     }
 
-    // Bootstrap: needs a BeeColonyCore (from wild hive) to seed the colony — one-time dependency on the wild ecosystem
+    // Bootstrap: needs a BeeColonyCore (from wild hive) to seed the colony â€” one-time dependency on the wild ecosystem
     [RequiresSkill(typeof(Eco.Mods.TechTree.BeekeepingSkill), 1)]
     public class BeeEggsBootstrapRecipe : RecipeFamily
     {
@@ -41,7 +43,7 @@ namespace Beekeeping.Server
                 new Recipe("BeeEggsBootstrap", Localizer.DoStr("Bee Eggs (Bootstrap)"), new IngredientElement[2]
                 {
                     new IngredientElement(typeof(BeeColonyCoreItem), 1f, false),
-                    new IngredientElement("Petals", 4f, typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingLavishResourcesTalent))
+                    new IngredientElement("Petals", 4f, typeof(Eco.Mods.TechTree.BeekeepingSkill))
                 }, new CraftingElement[1]
                 {
                     new CraftingElement<BeeEggsItem>(6f)
@@ -49,11 +51,11 @@ namespace Beekeeping.Server
             };
             ExperienceOnCraft = 0.5f;
             LaborInCalories = CreateLaborInCaloriesValue(60f, typeof(Eco.Mods.TechTree.BeekeepingSkill));
-            CraftMinutes = CreateCraftTimeValue(typeof(BeeEggsBootstrapRecipe), 8f, typeof(Eco.Mods.TechTree.BeekeepingSkill), new Type[2]
-            {
-                typeof(Eco.Mods.TechTree.BeekeepingFocusedSpeedTalent),
-                typeof(Eco.Mods.TechTree.BeekeepingParallelSpeedTalent)
-            });
+            CraftMinutes = new MultiDynamicValue(MultiDynamicOps.Multiply,
+                CreateCraftTimeValue(typeof(BeeEggsBootstrapRecipe), 8f, typeof(Eco.Mods.TechTree.BeekeepingSkill)),
+                new MultiDynamicValue(MultiDynamicOps.Maximum,
+                    new LayerModifiedValue(LayerNames.OccupiedFertileGround, BeeHiveGeneration.Config.HiveCraftLayerRadius),
+                    CreateCraftTimeValue(BeeHiveGeneration.Config.HiveCraftSpeedFloor)));
             Initialize(Localizer.DoStr("Bee Eggs (Bootstrap)"), typeof(BeeEggsBootstrapRecipe));
             CraftingComponent.AddRecipe(typeof(SmallBeeHiveObject), this);
         }
@@ -69,7 +71,7 @@ namespace Beekeeping.Server
             {
                 new Recipe("BeeEggs", Localizer.DoStr("Bee Eggs"), new IngredientElement[1]
                 {
-                    new IngredientElement("Petals", 4f, typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingLavishResourcesTalent))
+                    new IngredientElement("Petals", 4f, typeof(Eco.Mods.TechTree.BeekeepingSkill))
                 }, new CraftingElement[1]
                 {
                     new CraftingElement<BeeEggsItem>(2f)
@@ -77,11 +79,11 @@ namespace Beekeeping.Server
             };
             ExperienceOnCraft = 0.2f;
             LaborInCalories = CreateLaborInCaloriesValue(50f, typeof(Eco.Mods.TechTree.BeekeepingSkill));
-            CraftMinutes = CreateCraftTimeValue(typeof(BeeEggsRecipe), 5f, typeof(Eco.Mods.TechTree.BeekeepingSkill), new Type[2]
-            {
-                typeof(Eco.Mods.TechTree.BeekeepingFocusedSpeedTalent),
-                typeof(Eco.Mods.TechTree.BeekeepingParallelSpeedTalent)
-            });
+            CraftMinutes = new MultiDynamicValue(MultiDynamicOps.Multiply,
+                CreateCraftTimeValue(typeof(BeeEggsRecipe), 5f, typeof(Eco.Mods.TechTree.BeekeepingSkill)),
+                new MultiDynamicValue(MultiDynamicOps.Maximum,
+                    new LayerModifiedValue(LayerNames.OccupiedFertileGround, BeeHiveGeneration.Config.HiveCraftLayerRadius),
+                    CreateCraftTimeValue(BeeHiveGeneration.Config.HiveCraftSpeedFloor)));
             Initialize(Localizer.DoStr("Bee Eggs"), typeof(BeeEggsRecipe));
             CraftingComponent.AddRecipe(typeof(SmallBeeHiveObject), this);
         }

@@ -1,6 +1,6 @@
-// Copyright (c) Strange Loop Games. All rights reserved.
+﻿// Copyright (c) Strange Loop Games. All rights reserved.
 // See LICENSE file in the project root for full license information.
-// Honeycomb Shelf 2 Right - A decorative shelf displaying 2 honeycombs on the right
+// Decorative Honey Pot - A beautiful pot filled with golden honey
 
 namespace Beekeeping.Server
 {
@@ -48,27 +48,26 @@ namespace Beekeeping.Server
     using Eco.Mods.TechTree;
 
     /// <summary>
-    /// <para>Server side recipe definition for "Honeycomb Shelf 2 Right".</para>
+    /// <para>Server side recipe definition for "Decorative Honey Pot".</para>
     /// <para>More information about RecipeFamily objects can be found at https://docs.play.eco/api/server/eco.gameplay/Eco.Gameplay.Items.RecipeFamily.html</para>
     /// </summary>
-    [RequiresSkill(typeof(CarpentrySkill), 2)]
-    [Ecopedia("Housing Objects", "Living Room", subPageName: "Honeycomb Shelf 2 Right Item")]
-    public partial class HoneycombShelf2RightRecipe : RecipeFamily
+    [RequiresSkill(typeof(BeekeepingSkill), 3)]
+    [Ecopedia("Housing Objects", "Kitchen", subPageName: "Decorative Honey Pot Item")]
+    public partial class DecorativeHoneyPotRecipe : RecipeFamily
     {
-        public HoneycombShelf2RightRecipe()
+        public DecorativeHoneyPotRecipe()
         {
             var recipe = new Recipe();
             recipe.Init(
-                name: "HoneycombShelf2Right",  //noloc
-                displayName: Localizer.DoStr("Honeycomb Shelf 2 Right"),
+                name: "DecorativeHoneyPot",  //noloc
+                displayName: Localizer.DoStr("Decorative Honey Pot"),
 
                 // Defines the ingredients needed to craft this recipe. An ingredient items takes the following inputs
                 // type of the item, the amount of the item, the skill required, and the talent used.
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement("WoodBoard", 6, typeof(CarpentrySkill)),
-					new IngredientElement(typeof(MediumMoaiStatueItem), 2, true),
-                    new IngredientElement(typeof(BeewaxItem), 3, true)
+                    new IngredientElement(typeof(EmptyPotItem), 1, true),
+                    new IngredientElement(typeof(HoneyItem), 4, typeof(BeekeepingSkill))
                 },
 
                 // Define our recipe output items.
@@ -76,40 +75,24 @@ namespace Beekeeping.Server
                 // to create.
                 items: new List<CraftingElement>
                 {
-                    new CraftingElement<HoneycombShelf2RightItem>()
+                    new CraftingElement<DecorativeHoneyPotItem>()
                 });
-				
-			var recipeDark = new Recipe();
-			recipeDark.Init(
-				name: "HoneycombShelf2RightDark",
-				displayName: Localizer.DoStr("Honeycomb Shelf 2 Right Dark"),
-				ingredients: new List<IngredientElement>
-				{
-					new IngredientElement(typeof(HardwoodBoardItem), 6, typeof(CarpentrySkill)),
-					new IngredientElement(typeof(MediumMoaiStatueItem), 2, true),
-					new IngredientElement(typeof(BeewaxItem), 2, true)
-				},
-				items: new List<CraftingElement>
-				{
-					new CraftingElement<HoneycombShelf2RightDarkItem>()
-				});
-				
-            this.Recipes = new List<Recipe> { recipe, recipeDark };
-            this.ExperienceOnCraft = 0.8f; // Defines how much experience is gained when crafted.
+            this.Recipes = new List<Recipe> { recipe };
+            this.ExperienceOnCraft = 1f; // Defines how much experience is gained when crafted.
             
             // Defines the amount of labor required and the required skill to add labor
-            this.LaborInCalories = CreateLaborInCaloriesValue(60, typeof(CarpenterSkill));
+            this.LaborInCalories = CreateLaborInCaloriesValue(50, typeof(BeekeepingSkill));
 
             // Defines our crafting time for the recipe
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(HoneycombShelf2RightRecipe), start: 1, skillType: typeof(CarpentrySkill));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(DecorativeHoneyPotRecipe), start: 0.5f, skillType: typeof(BeekeepingSkill));
 
-            // Perform pre/post initialization for user mods and initialize our recipe instance with the display name "Honeycomb Shelf 2 Right"
+            // Perform pre/post initialization for user mods and initialize our recipe instance with the display name "Decorative Honey Pot"
             this.ModsPreInitialize();
-            this.Initialize(displayText: Localizer.DoStr("Honeycomb Shelf 2 Right"), recipeType: typeof(HoneycombShelf2RightRecipe));
+            this.Initialize(displayText: Localizer.DoStr("Decorative Honey Pot"), recipeType: typeof(DecorativeHoneyPotRecipe));
             this.ModsPostInitialize();
 
             // Register our RecipeFamily instance with the crafting system so it can be crafted.
-            CraftingComponent.AddRecipe(tableType: typeof(CarpentryTableObject), recipeFamily: this);
+            CraftingComponent.AddRecipe(tableType: typeof(HoneyExtractMechanicalObject), recipeFamily: this);
         }
 
         /// <summary>Hook for mods to customize RecipeFamily before initialization. You can change recipes, xp, labor, time here.</summary>
@@ -125,16 +108,16 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(ForSaleComponent))]
     [RequireComponent(typeof(HousingComponent))]
     [Tag("Usable")]
-    [Ecopedia("Housing Objects", "Living Room", subPageName: "Honeycomb Shelf 2 Right Item")]
-    public partial class HoneycombShelf2RightObject : WorldObject, IRepresentsItem
+    [Ecopedia("Housing Objects", "Kitchen", subPageName: "Decorative Honey Pot Item")]
+    public partial class DecorativeHoneyPotObject : WorldObject, IRepresentsItem
     {
-        public virtual Type RepresentedItemType => typeof(HoneycombShelf2RightItem);
-        public override LocString DisplayName => Localizer.DoStr("Honeycomb Shelf 2 Right");
+        public virtual Type RepresentedItemType => typeof(DecorativeHoneyPotItem);
+        public override LocString DisplayName => Localizer.DoStr("Decorative Honey Pot");
 
         protected override void Initialize()
         {
             this.ModsPreInitialize();
-            this.GetComponent<HousingComponent>().HomeValue = HoneycombShelf2RightItem.homeValue;
+            this.GetComponent<HousingComponent>().HomeValue = DecorativeHoneyPotItem.homeValue;
             base.Initialize();
             this.ModsPostInitialize();
         }
@@ -146,22 +129,24 @@ namespace Beekeeping.Server
     }
 
     [Serialized]
-    [LocDisplayName("Honeycomb Shelf 2 Right")]
-    [LocDescription("A compact wooden shelf with 2 hexagonal compartments on the right, displaying golden honeycombs.")]
-    [Ecopedia("Housing Objects", "Living Room", createAsSubPage: true)]
-    [Weight(250)] // Defines how heavy Honeycomb Shelf 2 Right is - smaller than the 5-shelf version
-    public partial class HoneycombShelf2RightItem : WorldObjectItem<HoneycombShelf2RightObject>
+    [LocDisplayName("Decorative Honey Pot")]
+    [LocDescription("A beautiful glass pot filled with golden honey. The sweet aroma and warm glow make it perfect for kitchen decoration.")]
+    [Ecopedia("Housing Objects", "Kitchen", createAsSubPage: true)]
+    [Weight(150)] // Defines how heavy Decorative Honey Pot is - heavier than empty pot due to honey
+	[Tag(nameof(SurfaceTags.CanBeOnSurface))]
+    public partial class DecorativeHoneyPotItem : WorldObjectItem<DecorativeHoneyPotObject>
     {
-		protected override OccupancyContext GetOccupancyContext => new SideAttachedContext( 0  | DirectionAxisFlags.Backward , WorldObject.GetOccupancyInfo(this.WorldObjectType));
+		protected override OccupancyContext GetOccupancyContext => new SideAttachedContext(DirectionAxisFlags.Down, WorldObject.GetOccupancyInfo(this.WorldObjectType));
+
         public override HomeFurnishingValue HomeValue => homeValue;
 
         public static readonly HomeFurnishingValue homeValue = new HomeFurnishingValue()
         {
-            ObjectName = typeof(HoneycombShelf2RightObject).UILink(),
-            Category = HousingConfig.GetRoomCategory("Living Room"),
-            BaseValue = 1.2f,
+            ObjectName = typeof(DecorativeHoneyPotObject).UILink(),
+            Category = HousingConfig.GetRoomCategory("Kitchen"),
             TypeForRoomLimit = Localizer.DoStr("Decoration"),
-            DiminishingReturnMultiplier = 0.5f
+			BaseValue = 1,
+            DiminishingReturnMultiplier = 0.6f,
         };
     }
 }
