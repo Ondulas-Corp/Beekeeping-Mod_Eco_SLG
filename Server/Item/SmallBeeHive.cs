@@ -149,15 +149,25 @@ namespace Beekeeping.Server
             this.GetComponent<FuelConsumptionComponent>().Initialize(10);
 
             var storage = this.GetComponent<PublicStorageComponent>();
-            storage.Initialize(5);
-            storage.Storage.AddInvRestriction(new StackLimitRestriction(20));
+            storage.Initialize(5); // Bee Hive doubles this to 10
+            storage.Storage.AddInvRestriction(new StackLimitRestriction(100));
             storage.Storage.AddInvRestriction(new NotCarriedRestriction());
             storage.Storage.AddInvRestriction(new SpecificItemTypesRestriction(new Type[] {
+                typeof(BeeColonyCoreItem),
                 typeof(BeeEggsItem),
                 typeof(WorkerBeeItem),
                 typeof(ForagerBeeItem),
+                typeof(QueenBeeItem),
                 typeof(FrameItem),
-                typeof(BeeColonyCoreItem)
+                typeof(WaxFrameItem),
+                typeof(BeePollenItem),
+                typeof(PropolisItem),
+                typeof(BeewaxItem),
+                typeof(PureWaxItem),
+                typeof(RoyalJellyItem),
+                typeof(HoneyItem),
+                typeof(EmptyPotItem),
+                typeof(StoneVesselItem)
             }));
             storage.ShelfLifeMultiplier = 1.7f;
 

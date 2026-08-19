@@ -55,6 +55,7 @@ namespace Eco.Mods.TechTree
                     new IngredientElement(typeof(HoneyItem), 20, typeof(BeekeepingSkill)),
                     new IngredientElement(typeof(ForagerBeeItem), 5, typeof(BeekeepingSkill)),
                     new IngredientElement("Petals", 20, typeof(BeekeepingSkill)), //noloc
+                    new IngredientElement(typeof(AgricultureResearchPaperBasicItem), 1, true),
                 },
                 items: new List<CraftingElement>
                 {
@@ -93,6 +94,7 @@ namespace Eco.Mods.TechTree
                     new IngredientElement("Raw Food", 200, typeof(BeekeepingSkill)), //noloc
                     new IngredientElement(typeof(InkItem), 4, true),
                     new IngredientElement(typeof(PaperItem), 20, true),
+                    new IngredientElement(typeof(AgricultureResearchPaperAdvancedItem), 1, true),
                 },
                 items: new List<CraftingElement>
                 {

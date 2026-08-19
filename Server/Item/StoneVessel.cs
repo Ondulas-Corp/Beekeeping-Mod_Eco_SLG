@@ -70,7 +70,7 @@ namespace Beekeeping.Server
                 // type of the item, the amount of the item, the skill required, and the talent used.
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(LimestoneItem), 20, typeof(MasonrySkill)),
+                    new IngredientElement("Rock", 20, typeof(MasonrySkill)), //noloc — accepts any stone type (Granite, Basalt, Gneiss, Limestone, Sandstone, Shale...), matching vanilla's MortaredStone convention
                     new IngredientElement(typeof(SandItem), 3, true)
                 },
 
