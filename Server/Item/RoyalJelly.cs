@@ -10,6 +10,7 @@ namespace Beekeeping.Server
     using Eco.Gameplay.Blocks;
     using Eco.Gameplay.Components;
     using Eco.Gameplay.DynamicValues;
+    using Eco.Simulation.WorldLayers;
     using Eco.Gameplay.Items;
     using Eco.Gameplay.Objects;
     using Eco.Gameplay.Players;
@@ -48,13 +49,11 @@ namespace Beekeeping.Server
             recipe.Init(
                 name: "RoyalJelly",  //noloc
                 displayName: Localizer.DoStr("Royal Jelly"),
-
-                // Defines the ingredients needed to craft this recipe. An ingredient items takes the following inputs
-                // type of the item, the amount of the item, the skill required, and the talent used.
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(PureWaxItem), 1, typeof(BeekeepingSkill), typeof(BeekeepingLavishResourcesTalent)),
-                    new IngredientElement(typeof(HoneyItem), 1, typeof(BeekeepingSkill), typeof(BeekeepingLavishResourcesTalent))
+                    new IngredientElement(typeof(ForagerBeeItem), 2, typeof(BeekeepingSkill)),
+                    new IngredientElement(typeof(BeePollenItem), 2, typeof(BeekeepingSkill)),
+                    new IngredientElement(typeof(HoneyItem), 1, typeof(BeekeepingSkill))
                 },
 
                 // Define our recipe output items.
@@ -71,7 +70,11 @@ namespace Beekeeping.Server
             this.LaborInCalories = CreateLaborInCaloriesValue(30, typeof(BeekeepingSkill));
 
             // Defines our crafting time for the recipe
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(RoyalJellyRecipe), start: 0.5f, skillType: typeof(BeekeepingSkill), typeof(BeekeepingFocusedSpeedTalent), typeof(BeekeepingParallelSpeedTalent));
+            this.CraftMinutes = new MultiDynamicValue(MultiDynamicOps.Multiply,
+                CreateCraftTimeValue(beneficiary: typeof(RoyalJellyRecipe), start: 0.5f, skillType: typeof(BeekeepingSkill)),
+                new MultiDynamicValue(MultiDynamicOps.Maximum,
+                    new LayerModifiedValue(LayerNames.OccupiedFertileGround, BeeHiveGeneration.Config.HiveCraftLayerRadius),
+                    CreateCraftTimeValue(BeeHiveGeneration.Config.HiveCraftSpeedFloor)));
 
             // Perform pre/post initialization for user mods and initialize our recipe instance with the display name "Royal Jelly"
             this.ModsPreInitialize();
@@ -101,7 +104,7 @@ namespace Beekeeping.Server
     [LocDisplayName("Royal Jelly")] // Defines the localized name of the item.
     [Weight(1)] // Defines how heavy RoyalJelly is.
     [Ecopedia("Items", "Products", createAsSubPage: true)]
-    [LocDescription("Premium ingredient made from wax and honey. Used in high-end confectionery and baking recipes.")] //The tooltip description for the item.
+    [LocDescription("A secretion produced by forager bees to nourish larvae and the queen. Essential for queen bee rearing.")] //The tooltip description for the item.
     public partial class RoyalJellyItem : Item
     {
     }

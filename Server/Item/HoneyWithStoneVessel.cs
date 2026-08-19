@@ -1,4 +1,4 @@
-// Copyright (c) Strange Loop Games. All rights reserved.
+﻿// Copyright (c) Strange Loop Games. All rights reserved.
 // See LICENSE file in the project root for full license information.
 // Honey recipe - Alternative using Stone Vessel
 
@@ -52,7 +52,7 @@ namespace Beekeeping.Server
                 // type of the item, the amount of the item, the skill required, and the talent used.
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(WaxFrameItem), 3, typeof(BeekeepingSkill), typeof(BeekeepingLavishResourcesTalent)),
+                    new IngredientElement(typeof(WaxFrameItem), 3, typeof(BeekeepingSkill)),
                     new IngredientElement(typeof(StoneVesselItem), 3, true)
                 },
 
@@ -61,8 +61,7 @@ namespace Beekeeping.Server
                 // to create.
                 items: new List<CraftingElement>
                 {
-                    new CraftingElement<HoneyItem>(3),
-                    new CraftingElement<FrameItem>(1)
+                    new CraftingElement<HoneyItem>(3)
                 });
             this.Recipes = new List<Recipe> { recipe };
             this.ExperienceOnCraft = 2f; // Defines how much experience is gained when crafted.
@@ -71,7 +70,7 @@ namespace Beekeeping.Server
             this.LaborInCalories = CreateLaborInCaloriesValue(50, typeof(BeekeepingSkill));
 
             // Defines our crafting time for the recipe
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(HoneyStoneVesselRecipe), start: 4f, skillType: typeof(BeekeepingSkill), typeof(BeekeepingFocusedSpeedTalent), typeof(BeekeepingParallelSpeedTalent));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(HoneyStoneVesselRecipe), start: 4f, skillType: typeof(BeekeepingSkill));
 
             // Perform pre/post initialization for user mods and initialize our recipe instance with the display name "Honey (Stone Vessel)"
             this.ModsPreInitialize();

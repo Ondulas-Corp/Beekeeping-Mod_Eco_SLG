@@ -1,5 +1,7 @@
-using Eco.Core.Items;
+﻿using Eco.Core.Items;
 using Eco.Gameplay.Components;
+using Eco.Gameplay.DynamicValues;
+using Eco.Simulation.WorldLayers;
 using Eco.Gameplay.Items;
 using Eco.Gameplay.Items.Recipes;
 using Eco.Gameplay.Skills;
@@ -34,25 +36,27 @@ namespace Beekeeping.Server
     {
         public PropolisRecipe()
         {
-            Recipes = new List<Recipe>()
-            {
-                new Recipe("Propolis", Localizer.DoStr("Propolis"), new IngredientElement[3]
+            var recipe = new Recipe();
+            recipe.Init(
+                name: "Propolis",
+                displayName: Localizer.DoStr("Propolis"),
+                ingredients: new List<IngredientElement>
                 {
                     new IngredientElement(typeof(ForagerBeeItem), 1f, true),
-					new IngredientElement(typeof(BeewaxItem), 2f, typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingLavishResourcesTalent)),
-                    new IngredientElement("NaturalFiber", 3f, typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingLavishResourcesTalent))
-                }, new CraftingElement[1]
+                    new IngredientElement("NaturalFiber", 20f, typeof(Eco.Mods.TechTree.BeekeepingSkill))
+                },
+                items: new List<CraftingElement>
                 {
-                    new CraftingElement<PropolisItem>(2f)
-                })
-            };
+                    new CraftingElement<PropolisItem>(1f)
+                });
+            Recipes = new List<Recipe> { recipe };
             ExperienceOnCraft = 0.6f;
             LaborInCalories = CreateLaborInCaloriesValue(600f, typeof(Eco.Mods.TechTree.BeekeepingSkill));
-            CraftMinutes = CreateCraftTimeValue(typeof(PropolisRecipe), 6f, typeof(Eco.Mods.TechTree.BeekeepingSkill), new Type[2]
-            {
-                typeof(Eco.Mods.TechTree.BeekeepingFocusedSpeedTalent),
-                typeof(Eco.Mods.TechTree.BeekeepingParallelSpeedTalent)
-            });
+            CraftMinutes = new MultiDynamicValue(MultiDynamicOps.Multiply,
+                CreateCraftTimeValue(typeof(PropolisRecipe), 6f, typeof(Eco.Mods.TechTree.BeekeepingSkill)),
+                new MultiDynamicValue(MultiDynamicOps.Maximum,
+                    new LayerModifiedValue(LayerNames.OccupiedFertileGround, BeeHiveGeneration.Config.HiveCraftLayerRadius),
+                    CreateCraftTimeValue(BeeHiveGeneration.Config.HiveCraftSpeedFloor)));
             Initialize(Localizer.DoStr("Propolis"), typeof(PropolisRecipe));
             // Use the correct hive name that you mentioned
             CraftingComponent.AddRecipe(typeof(BeeHiveObject), this);

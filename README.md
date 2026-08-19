@@ -42,9 +42,25 @@ The core of the mod is a cluster system that autonomously manages the wild hive 
 
 ### Items & Crafting
 
+**Bee lifecycle chain**
+
+```
+Wild Hive harvest
+  → BeeEggs (bootstrap: BeeColonyCore + Petals ×90 → ×6 | entretien: Petals ×40 → ×2)
+  → WorkerBee (BeeEggs ×1 → WorkerBee)
+  → BeePollen (WorkerBee + Petals ×10 → ×1 | ForagerBee + Petals ×15 → ×4 [BeeHive])
+  → ForagerBee (WorkerBee + BeePollen → ForagerBee [BeeHive])
+  → RoyalJelly (ForagerBee ×2 + BeePollen ×2 + Honey → RoyalJelly [BeeHive])
+  → QueenBee (BeeEggs ×3 + RoyalJelly ×2 → QueenBee [BeeHive, skill 6])
+  → WaxFrame (WorkerBee + Frame → ×1 | ForagerBee + Frame ×3 → ×3 [BeeHive])
+  → Propolis (ForagerBee + NaturalFiber ×20 → Propolis [BeeHive])
+```
+
+> QueenBee also drops from `OccupiedSwarm` at a 17 % rate.
+
 **Raw materials**
 - `Honey`, `BeeWax`, `BeePollen`, `Propolis`, `RoyalJelly`, `BeeColonyCore`
-- `QueenBee`, `WorkerBee`, `ForagerBee`, `BeeEggs`
+- `QueenBee` *(also a spare part for hives)*, `WorkerBee`, `ForagerBee`, `BeeEggs`
 - `Frame`, `WaxFrame`, `EmptyPot`
 
 **Processed goods**
@@ -56,12 +72,18 @@ The core of the mod is a cluster system that autonomously manages the wild hive 
 **Decoration & construction**
 - `WaxCandle`, `WaxLumber`
 - `BeeStatue`, `DecorativeHoneyPot`, `StoneVessel`
-- `SmallMoaiStatue`, `MediumMoaiStatue`, `BigMoaiStatue`
 - `HoneycombShelf` (5 variants, light + dark)
 
 **Player hives**
-- `BeeHive` — breeds queen bees and crafts royal jelly
-- `SmallBeeHive` — basic honey production with mechanical extraction (`HoneyExtractMechanical`)
+
+Both hives require two resources to operate:
+- **Queen Bee** (spare part) — ages while the hive produces; the hive stops when she dies. Replace her before she reaches 0 % durability. Requires `Beekeeping 1` or `Self Improvement 5` to swap.
+- **Bee Colony Core** (fuel) — day-to-day energy source; consumed over time.
+
+| Hive | Skill | Craft ingredients | Specialty |
+|---|---|---|---|
+| `SmallBeeHive` | Carpentry 2 | WoodBoard ×10, IronBar ×1, Nail ×8, **QueenBee ×1** | Honey production, basic breeding |
+| `BeeHive` | Carpentry 6 | WoodBoard ×14, IronBar ×2, HewnLog ×5, **QueenBee ×1** | Advanced breeding, RoyalJelly, ForagerBee training |
 
 ---
 
@@ -157,7 +179,7 @@ cd Beekeeping-Mod_Eco_SLG
 dotnet build Beekeeping.csproj -c Release
 ```
 
-Copy `bin/Beekeeping.dll` to `Mods/UserCode/Beekeeping/` on the server.
+Copy `bin/Beekeeping.dll` to `Mods/UserCode/Beekeeping/Beekeeping.dll` on the server.
 
 ### Debug mode
 

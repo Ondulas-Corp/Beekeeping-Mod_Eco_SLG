@@ -1,4 +1,4 @@
-// Copyright (c) Strange Loop Games. All rights reserved.
+﻿// Copyright (c) Strange Loop Games. All rights reserved.
 // See LICENSE file in the project root for full license information.
 // Bee Pollen fertilizer for beekeeping mod
 
@@ -10,6 +10,7 @@ namespace Beekeeping.Server
     using Eco.Gameplay.Blocks;
     using Eco.Gameplay.Components;
     using Eco.Gameplay.DynamicValues;
+    using Eco.Simulation.WorldLayers;
     using Eco.Gameplay.Items;
     using Eco.Gameplay.Objects;
     using Eco.Gameplay.Players;
@@ -58,8 +59,8 @@ namespace Beekeeping.Server
     /// This is an auto-generated class. Don't modify it! All your changes will be wiped with next update! Use Mods* partial methods instead for customization. 
     /// If you wish to modify this class, please create a new partial class or follow the instructions in the "UserCode" folder to override the entire file.
     /// </remarks>
-    [RequiresSkill(typeof(FertilizersSkill), 2)]
-    [Ecopedia("Items", "Fertilizers", subPageName: "Bee Pollen from Petals")]
+    [RequiresSkill(typeof(BeekeepingSkill), 1)]
+    [Ecopedia("Items", "Fertilizers", subPageName: "Bee Pollen")]
     public partial class BeePollenFromPetalsRecipe : RecipeFamily
     {
         public BeePollenFromPetalsRecipe()
@@ -68,44 +69,67 @@ namespace Beekeeping.Server
             recipe.Init(
                 name: "BeePollenFromPetals",  //noloc
                 displayName: Localizer.DoStr("Bee Pollen"),
-
-                // Defines the ingredients needed to craft this recipe. An ingredient items takes the following inputs
-                // type of the item, the amount of the item, the skill required, and the talent used.
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(WorkerBeeItem), 1, typeof(FertilizersSkill)),
-                    new IngredientElement("Petals", 4, typeof(FertilizersSkill)) //noloc
+                    new IngredientElement(typeof(WorkerBeeItem), 1, typeof(BeekeepingSkill)),
+                    new IngredientElement("Petals", 10, typeof(BeekeepingSkill)) //noloc
                 },
-
-                // Define our recipe output items.
-                // For every output item there needs to be one CraftingElement entry with the type of the final item and the amount
-                // to create.
                 items: new List<CraftingElement>
                 {
-                    new CraftingElement<BeePollenItem>(3)
+                    new CraftingElement<BeePollenItem>(1)
                 });
             this.Recipes = new List<Recipe> { recipe };
-            this.ExperienceOnCraft = 0.4f; // Defines how much experience is gained when crafted.
-            
-            // Defines the amount of labor required and the required skill to add labor
-            this.LaborInCalories = CreateLaborInCaloriesValue(80, typeof(FertilizersSkill));
-
-            // Defines our crafting time for the recipe
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(BeePollenFromPetalsRecipe), start: 2f, skillType: typeof(FertilizersSkill));
-
-            // Perform pre/post initialization for user mods and initialize our recipe instance with the display name "Bee Pollen"
+            this.ExperienceOnCraft = 0.4f;
+            this.LaborInCalories = CreateLaborInCaloriesValue(80, typeof(BeekeepingSkill));
+            this.CraftMinutes = new MultiDynamicValue(MultiDynamicOps.Multiply,
+                CreateCraftTimeValue(beneficiary: typeof(BeePollenFromPetalsRecipe), start: 2f, skillType: typeof(BeekeepingSkill)),
+                new MultiDynamicValue(MultiDynamicOps.Maximum,
+                    new LayerModifiedValue(LayerNames.OccupiedFertileGround, BeeHiveGeneration.Config.HiveCraftLayerRadius),
+                    CreateCraftTimeValue(BeeHiveGeneration.Config.HiveCraftSpeedFloor)));
             this.ModsPreInitialize();
             this.Initialize(displayText: Localizer.DoStr("Bee Pollen"), recipeType: typeof(BeePollenFromPetalsRecipe));
             this.ModsPostInitialize();
-
-            // Register our RecipeFamily instance with the crafting system so it can be crafted.
-            CraftingComponent.AddRecipe(tableType: typeof(FarmersTableObject), recipeFamily: this);
+            CraftingComponent.AddRecipe(tableType: typeof(SmallBeeHiveObject), recipeFamily: this);
         }
 
-        /// <summary>Hook for mods to customize RecipeFamily before initialization. You can change recipes, xp, labor, time here.</summary>
         partial void ModsPreInitialize();
+        partial void ModsPostInitialize();
+    }
 
-        /// <summary>Hook for mods to customize RecipeFamily after initialization, but before registration. You can change skill requirements here.</summary>
+    [RequiresSkill(typeof(BeekeepingSkill), 4)]
+    [Ecopedia("Items", "Fertilizers", subPageName: "Bee Pollen Advanced")]
+    public partial class BeePollenAdvancedRecipe : RecipeFamily
+    {
+        public BeePollenAdvancedRecipe()
+        {
+            var recipe = new Recipe();
+            recipe.Init(
+                name: "BeePollenAdvanced",  //noloc
+                displayName: Localizer.DoStr("Bee Pollen (Advanced)"),
+                ingredients: new List<IngredientElement>
+                {
+                    new IngredientElement(typeof(ForagerBeeItem), 1, typeof(BeekeepingSkill)),
+                    new IngredientElement("Petals", 15, typeof(BeekeepingSkill)) //noloc
+                },
+                items: new List<CraftingElement>
+                {
+                    new CraftingElement<BeePollenItem>(4)
+                });
+            this.Recipes = new List<Recipe> { recipe };
+            this.ExperienceOnCraft = 0.6f;
+            this.LaborInCalories = CreateLaborInCaloriesValue(60, typeof(BeekeepingSkill));
+            this.CraftMinutes = new MultiDynamicValue(MultiDynamicOps.Multiply,
+                CreateCraftTimeValue(beneficiary: typeof(BeePollenAdvancedRecipe), start: 2f, skillType: typeof(BeekeepingSkill)),
+                new MultiDynamicValue(MultiDynamicOps.Maximum,
+                    new LayerModifiedValue(LayerNames.OccupiedFertileGround, BeeHiveGeneration.Config.HiveCraftLayerRadius),
+                    CreateCraftTimeValue(BeeHiveGeneration.Config.HiveCraftSpeedFloor)));
+            this.ModsPreInitialize();
+            this.Initialize(displayText: Localizer.DoStr("Bee Pollen (Advanced)"), recipeType: typeof(BeePollenAdvancedRecipe));
+            this.ModsPostInitialize();
+            CraftingComponent.AddRecipe(tableType: typeof(BeeHiveObject), recipeFamily: this);
+        }
+
+        partial void ModsPreInitialize();
         partial void ModsPostInitialize();
     }
 }

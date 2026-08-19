@@ -108,9 +108,9 @@ namespace Beekeeping.Server
         public override LocString DisplayNamePlural     => Localizer.DoStr("Honey Beer");
 
         /// <summary>The amount of calories awarded for eating the food item.</summary>
-        public override float Calories                  => 200;
+        public override float Calories                  => 400;
         /// <summary>The nutritional value of the food item.</summary>
-        public override Nutrients Nutrition             => new Nutrients() { Carbs = 16, Fat = 0, Protein = 3, Vitamins = 6};
+        public override Nutrients Nutrition             => new Nutrients() { Carbs = 10, Fat = 0, Protein = 3, Vitamins = 4};
 
         /// <summary>Defines the default time it takes for this item to spoil. This value can be modified by the inventory this item currently resides in.</summary>
         public override float BaseShelfLife            => (float)TimeUtil.HoursToSeconds(120); // 5 days shelf life

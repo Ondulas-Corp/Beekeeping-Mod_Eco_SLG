@@ -1,6 +1,6 @@
-// Copyright (c) Strange Loop Games. All rights reserved.
+﻿// Copyright (c) Strange Loop Games. All rights reserved.
 // See LICENSE file in the project root for full license information.
-// Alternative Wax recipe for existing Tallow Candle
+// Pure Wax-related items and recipes
 
 namespace Beekeeping.Server
 {
@@ -29,7 +29,7 @@ namespace Beekeeping.Server
     using Eco.Mods.TechTree;
 
     /// <summary>
-    /// <para>Alternative wax-based recipe for creating Tallow Candles using bee wax instead of tallow.</para>
+    /// <para>Server side recipe definition for "Pure Wax".</para>
     /// <para>More information about RecipeFamily objects can be found at https://docs.play.eco/api/server/eco.gameplay/Eco.Gameplay.Items.RecipeFamily.html</para>
     /// </summary>
     /// <remarks>
@@ -37,22 +37,21 @@ namespace Beekeeping.Server
     /// If you wish to modify this class, please create a new partial class or follow the instructions in the "UserCode" folder to override the entire file.
     /// </remarks>
     [RequiresSkill(typeof(BeekeepingSkill), 2)]
-    [Ecopedia("Housing Objects", "Lighting", subPageName: "Wax Candle")]
-    public partial class WaxCandleAlternativeRecipe : RecipeFamily
+    [Ecopedia("Items", "Products", subPageName: "Pure Wax Item")]
+    public partial class PureWaxRecipe : RecipeFamily
     {
-        public WaxCandleAlternativeRecipe()
+        public PureWaxRecipe()
         {
             var recipe = new Recipe();
             recipe.Init(
-                name: "WaxCandle",  //noloc
-                displayName: Localizer.DoStr("Wax Candle"),
+                name: "PureWax",  //noloc
+                displayName: Localizer.DoStr("Pure Wax"),
 
                 // Defines the ingredients needed to craft this recipe. An ingredient items takes the following inputs
                 // type of the item, the amount of the item, the skill required, and the talent used.
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(BeewaxItem), 3, typeof(BeekeepingSkill), typeof(BeekeepingLavishResourcesTalent)),
-                    new IngredientElement(typeof(CottonThreadItem), 1, true),
+                    new IngredientElement(typeof(BeewaxItem), 5, typeof(BeekeepingSkill))
                 },
 
                 // Define our recipe output items.
@@ -60,24 +59,24 @@ namespace Beekeeping.Server
                 // to create.
                 items: new List<CraftingElement>
                 {
-                    new CraftingElement<TallowCandleItem>(1) // Uses existing TallowCandleItem
+                    new CraftingElement<PureWaxItem>(1)
                 });
             this.Recipes = new List<Recipe> { recipe };
-            this.ExperienceOnCraft = 0.5f; // Defines how much experience is gained when crafted.
+            this.ExperienceOnCraft = 1.5f; // Defines how much experience is gained when crafted.
             
             // Defines the amount of labor required and the required skill to add labor
-            this.LaborInCalories = CreateLaborInCaloriesValue(30, typeof(BeekeepingSkill));
+            this.LaborInCalories = CreateLaborInCaloriesValue(80, typeof(BeekeepingSkill));
 
             // Defines our crafting time for the recipe
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(WaxCandleAlternativeRecipe), start: 1.5f, skillType: typeof(BeekeepingSkill), typeof(BeekeepingFocusedSpeedTalent), typeof(BeekeepingParallelSpeedTalent));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(PureWaxRecipe), start: 2f, skillType: typeof(BeekeepingSkill));
 
-            // Perform pre/post initialization for user mods and initialize our recipe instance with the display name "Wax Candle"
+            // Perform pre/post initialization for user mods and initialize our recipe instance with the display name "Pure Wax"
             this.ModsPreInitialize();
-            this.Initialize(displayText: Localizer.DoStr("Wax Candle"), recipeType: typeof(WaxCandleAlternativeRecipe));
+            this.Initialize(displayText: Localizer.DoStr("Pure Wax"), recipeType: typeof(PureWaxRecipe));
             this.ModsPostInitialize();
 
             // Register our RecipeFamily instance with the crafting system so it can be crafted.
-            CraftingComponent.AddRecipe(tableType: typeof(FarmersTableObject), recipeFamily: this);
+            CraftingComponent.AddRecipe(tableType: typeof(HoneyExtractMechanicalObject), recipeFamily: this);
         }
 
         /// <summary>Hook for mods to customize RecipeFamily before initialization. You can change recipes, xp, labor, time here.</summary>
@@ -86,4 +85,22 @@ namespace Beekeeping.Server
         /// <summary>Hook for mods to customize RecipeFamily after initialization, but before registration. You can change skill requirements here.</summary>
         partial void ModsPostInitialize();
     }
+
+    /// <summary>
+    /// <para>Server side item definition for the "Pure Wax" item.</para>
+    /// <para>More information about Item objects can be found at https://docs.play.eco/api/server/eco.gameplay/Eco.Gameplay.Items.Item.html</para>
+    /// </summary>
+    /// <remarks>
+    /// This is an auto-generated class. Don't modify it! All your changes will be wiped with next update! Use Mods* partial methods instead for customization. 
+    /// If you wish to modify this class, please create a new partial class or follow the instructions in the "UserCode" folder to override the entire file.
+    /// </remarks>
+    [Serialized] // Tells the save/load system this object needs to be serialized. 
+    [LocDisplayName("Pure Wax")] // Defines the localized name of the item.
+    [Weight(50)] // Defines how heavy Pure Wax is.
+    [Ecopedia("Items", "Products", createAsSubPage: true)]
+    [LocDescription("High-quality purified wax, perfect for biodiesel production and advanced cooking recipes.")] //The tooltip description for the item.
+    public partial class PureWaxItem : Item
+    {
+    }
+
 }

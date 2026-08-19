@@ -46,10 +46,10 @@ namespace Beekeeping.Server
     using Eco.Gameplay.Items.Recipes;
     using Eco.Mods.TechTree;
     using Beekeeping.Server.Module;
-	using static Eco.Gameplay.Components.PartsComponent;
-	using Eco.Gameplay.Housing;
-	using Eco.Gameplay.Housing.PropertyValues;
-	using static Eco.Gameplay.Housing.PropertyValues.HomeFurnishingValue;
+    using static Eco.Gameplay.Components.PartsComponent;
+    using Eco.Gameplay.Housing;
+    using Eco.Gameplay.Housing.PropertyValues;
+    using static Eco.Gameplay.Housing.PropertyValues.HomeFurnishingValue;
 
     /// <summary>
     /// <para>Server side recipe definition for "SmallBeeHive".</para>
@@ -77,7 +77,8 @@ namespace Beekeeping.Server
                 {
                     new IngredientElement("WoodBoard", 10, typeof(CarpentrySkill)),
                     new IngredientElement(typeof(IronBarItem), 1, typeof(CarpentrySkill)),
-                    new IngredientElement(typeof(NailItem), 8, typeof(CarpentrySkill))
+                    new IngredientElement(typeof(NailItem), 8, typeof(CarpentrySkill)),
+                    new IngredientElement(typeof(QueenBeeItem), 1, true)
                 },
 
                 // Define our recipe output items.
@@ -116,48 +117,53 @@ namespace Beekeeping.Server
     [RequireComponent(typeof(PropertyAuthComponent))]
     [RequireComponent(typeof(LinkComponent))]
     [RequireComponent(typeof(CraftingComponent))]
-	[RequireComponent(typeof(FuelSupplyComponent))]
-	[RequireComponent(typeof(FuelConsumptionComponent))]
+    [RequireComponent(typeof(PartsComponent))]
+    [RequireComponent(typeof(SmokeComponent))]
+    [RequireComponent(typeof(RepairBountyComponent))]
+    [RequireComponent(typeof(FuelSupplyComponent))]
+    [RequireComponent(typeof(FuelConsumptionComponent))]
     [RequireComponent(typeof(HoneyComponent))]
     [RequireComponent(typeof(NeighborBeeHiveComponent))]
     [RequireComponent(typeof(OccupancyRequirementComponent))]
     [RequireComponent(typeof(ForSaleComponent))]
-	[RequireComponent(typeof(PluginModulesComponent))]
-	[RequireComponent(typeof(PublicStorageComponent))]
-	[RequireComponent(typeof(PollinationComponent))]
+    [RequireComponent(typeof(PublicStorageComponent))]
+    [RequireComponent(typeof(PollinationComponent))]
     [Tag("Usable")]
+    [RepairRequiresSkill(typeof(BeekeepingSkill), 1)]
+    [RepairRequiresSkill(typeof(SelfImprovementSkill), 5)]
     [Ecopedia("Work Stations", "Beekeeping", subPageName: "Small Bee Hive Item")]
     public partial class SmallBeeHiveObject : WorldObject, IRepresentsItem
     {
         public virtual Type RepresentedItemType => typeof(SmallBeeHiveItem);
         public override LocString DisplayName => Localizer.DoStr("Small Bee Hive");
 
-		protected override void Initialize()
-		{
-			this.ModsPreInitialize();
-			
-			// Initialize fuel system for Bee Colony Cores
-			this.GetComponent<FuelSupplyComponent>().Initialize(1, new string[] { "BeeColonyCore" });
-			this.GetComponent<FuelConsumptionComponent>().Initialize(10);
-			
-			// Initialize storage for bees
-			var storage = this.GetComponent<PublicStorageComponent>();
-			storage.Initialize(5); // 5 slots for bee storage
-			storage.Storage.AddInvRestriction(new StackLimitRestriction(20)); // 20 per slot
-			storage.Storage.AddInvRestriction(new NotCarriedRestriction()); // can't store blocks or large items
-			storage.Storage.AddInvRestriction(new SpecificItemTypesRestriction(new Type[] { 
-				typeof(BeeEggsItem), 
-				typeof(WorkerBeeItem), 
-				typeof(ForagerBeeItem), 
-				typeof(QueenBeeItem),
-				typeof(FrameItem),
-				typeof(BeeColonyCoreItem) 
-			}));
-			storage.ShelfLifeMultiplier = 1.7f; // Increases bee duration by 70%
-			
-			base.Initialize();
-			this.ModsPostInitialize();
-		}
+        protected override void Initialize()
+        {
+            this.ModsPreInitialize();
+
+            this.GetComponent<PartsComponent>().Config(
+                () => Localizer.DoStr("The queen bee ages while the hive produces. Replace her when she dies."),
+                new PartInfo[] { new() { TypeName = nameof(QueenBeeItem), Quantity = 1 } });
+
+            this.GetComponent<FuelSupplyComponent>().Initialize(1, new string[] { "BeeColonyCore" });
+            this.GetComponent<FuelConsumptionComponent>().Initialize(10);
+
+            var storage = this.GetComponent<PublicStorageComponent>();
+            storage.Initialize(5);
+            storage.Storage.AddInvRestriction(new StackLimitRestriction(20));
+            storage.Storage.AddInvRestriction(new NotCarriedRestriction());
+            storage.Storage.AddInvRestriction(new SpecificItemTypesRestriction(new Type[] {
+                typeof(BeeEggsItem),
+                typeof(WorkerBeeItem),
+                typeof(ForagerBeeItem),
+                typeof(FrameItem),
+                typeof(BeeColonyCoreItem)
+            }));
+            storage.ShelfLifeMultiplier = 1.7f;
+
+            base.Initialize();
+            this.ModsPostInitialize();
+        }
 
         /// <summary>Hook for mods to customize WorldObject before initialization. You can change housing values here.</summary>
         partial void ModsPreInitialize();
@@ -171,19 +177,20 @@ namespace Beekeeping.Server
 	[Tag("Housing")]
     [Ecopedia("Work Stations", "Beekeeping", createAsSubPage: true)]
     [Weight(1000)] // Defines how heavy SmallBeeHive is.
-	[AllowPluginModules(Tags = new[] { "BasicUpgrade" }, ItemTypes = new[] { typeof(BeekeepingUpgradeItem) })]
-    public partial class SmallBeeHiveItem : WorldObjectItem<SmallBeeHiveObject>
+    public partial class SmallBeeHiveItem : WorldObjectItem<SmallBeeHiveObject>, IPersistentData
     {
-		[NewTooltip(CacheAs.SubType, 50)] public static LocString UpdateTooltip() => Localizer.Do($"Can store bees and Increases their lifespan by: {Text.InfoLight(Text.Percent(0.8f))}").Dash();
-        protected override OccupancyContext GetOccupancyContext => new SideAttachedContext( 0  | DirectionAxisFlags.Down , WorldObject.GetOccupancyInfo(this.WorldObjectType));
-		
-		public override HomeFurnishingValue HomeValue => homeValue;
+        [NewTooltip(CacheAs.SubType, 50)] public static LocString UpdateTooltip() => Localizer.Do($"Can store bees and Increases their lifespan by: {Text.InfoLight(Text.Percent(0.8f))}").Dash();
+        protected override OccupancyContext GetOccupancyContext => new SideAttachedContext(0 | DirectionAxisFlags.Down, WorldObject.GetOccupancyInfo(this.WorldObjectType));
+
+        [Serialized, SyncToView, NewTooltipChildren(CacheAs.Instance, flags: TTFlags.AllowNonControllerTypeForChildren)] public object PersistentData { get; set; }
+
+        public override HomeFurnishingValue HomeValue => homeValue;
         public static readonly HomeFurnishingValue homeValue = new HomeFurnishingValue()
         {
-            ObjectName = typeof(SmallBeeHiveObject).UILink(),
-            Category = HousingConfig.GetRoomCategory("Outdoor"),
-			BaseValue                               = 2,
-            TypeForRoomLimit = Localizer.DoStr("Beehive"),
+            ObjectName                  = typeof(SmallBeeHiveObject).UILink(),
+            Category                    = HousingConfig.GetRoomCategory("Outdoor"),
+            BaseValue                   = 2,
+            TypeForRoomLimit            = Localizer.DoStr("Beehive"),
             DiminishingReturnMultiplier = 0.3f
         };
     }

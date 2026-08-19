@@ -38,7 +38,6 @@ namespace Beekeeping.Server
                 typeof(BeeHiveItem), typeof(SmallBeeHiveItem),
                 // Decorative
                 typeof(BeeStatueItem), typeof(DecorativeHoneyPotItem),
-                typeof(BigMoaiStatueItem), typeof(MediumMoaiStatueItem), typeof(SmallMoaiStatueItem),
                 typeof(StoneVesselItem),
                 // Honeycomb shelves (light)
                 typeof(HoneycombShelfItem), typeof(HoneycombShelf1Item),
