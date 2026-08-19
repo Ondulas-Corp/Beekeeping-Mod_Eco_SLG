@@ -44,17 +44,20 @@ namespace Beekeeping.Server
     {
         public ForagerBeeRecipe()
         {
-            Recipes = new List<Recipe>()
-            {
-                new Recipe("ForagerBee", Localizer.DoStr("Forager Bee"), new IngredientElement[2]
+            var recipe = new Recipe();
+            recipe.Init(
+                name: "ForagerBee",
+                displayName: Localizer.DoStr("Forager Bee"),
+                ingredients: new List<IngredientElement>
                 {
                     new IngredientElement(typeof(WorkerBeeItem), 1f, false),
                     new IngredientElement(typeof(BeePollenItem), 1f, typeof(Eco.Mods.TechTree.BeekeepingSkill))
-                }, new CraftingElement[1]
+                },
+                items: new List<CraftingElement>
                 {
                     new CraftingElement<ForagerBeeItem>(1f)
-                })
-            };
+                });
+            Recipes = new List<Recipe> { recipe };
             ExperienceOnCraft = 0.6f;
             LaborInCalories = CreateLaborInCaloriesValue(30f, typeof(Eco.Mods.TechTree.BeekeepingSkill));
             CraftMinutes = new MultiDynamicValue(MultiDynamicOps.Multiply,

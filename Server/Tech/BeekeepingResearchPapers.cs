@@ -53,7 +53,7 @@ namespace Eco.Mods.TechTree
                 ingredients: new List<IngredientElement>
                 {
                     new IngredientElement(typeof(HoneyItem), 20, typeof(BeekeepingSkill)),
-                    new IngredientElement(typeof(WorkerBeeItem), 5, typeof(BeekeepingSkill)),
+                    new IngredientElement(typeof(ForagerBeeItem), 5, typeof(BeekeepingSkill)),
                     new IngredientElement("Petals", 20, typeof(BeekeepingSkill)), //noloc
                 },
                 items: new List<CraftingElement>

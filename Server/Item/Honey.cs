@@ -52,7 +52,7 @@ namespace Beekeeping.Server
                 ingredients: new List<IngredientElement>
                 {
                     new IngredientElement(typeof(WaxFrameItem), 3, typeof(BeekeepingSkill)),
-                    new IngredientElement(typeof(EmptyPotItem), 3, typeof(BeekeepingSkill))
+                    new IngredientElement(typeof(EmptyPotItem), 3, true)
                 },
 
                 // Define our recipe output items.

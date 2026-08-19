@@ -67,8 +67,8 @@ namespace Beekeeping.Server
                 displayName: Localizer.DoStr("Wax Frame (Advanced)"),
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(WorkerBeeItem), 2, typeof(BeekeepingSkill)),
-                    new IngredientElement(typeof(FrameItem), 2, true)
+                    new IngredientElement(typeof(ForagerBeeItem), 1, typeof(BeekeepingSkill)),
+                    new IngredientElement(typeof(FrameItem), 3, true)
                 },
                 items: new List<CraftingElement>
                 {

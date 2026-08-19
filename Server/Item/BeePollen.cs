@@ -72,7 +72,7 @@ namespace Beekeeping.Server
                 ingredients: new List<IngredientElement>
                 {
                     new IngredientElement(typeof(WorkerBeeItem), 1, typeof(BeekeepingSkill)),
-                    new IngredientElement("Petals", 3, typeof(BeekeepingSkill)) //noloc
+                    new IngredientElement("Petals", 10, typeof(BeekeepingSkill)) //noloc
                 },
                 items: new List<CraftingElement>
                 {
@@ -109,11 +109,11 @@ namespace Beekeeping.Server
                 ingredients: new List<IngredientElement>
                 {
                     new IngredientElement(typeof(ForagerBeeItem), 1, typeof(BeekeepingSkill)),
-                    new IngredientElement("Petals", 3, typeof(BeekeepingSkill)) //noloc
+                    new IngredientElement("Petals", 15, typeof(BeekeepingSkill)) //noloc
                 },
                 items: new List<CraftingElement>
                 {
-                    new CraftingElement<BeePollenItem>(2)
+                    new CraftingElement<BeePollenItem>(4)
                 });
             this.Recipes = new List<Recipe> { recipe };
             this.ExperienceOnCraft = 0.6f;

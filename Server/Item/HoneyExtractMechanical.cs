@@ -147,7 +147,7 @@ namespace Beekeeping.Server
     [LocDescription("Mechanical Extractor. Filters the honey and makes it ripe")]
     [Ecopedia("Work Stations", "Beekeeping", createAsSubPage: true)]
     [Weight(2000)] // Defines how heavy HoneyExtractMechanical is.
-    [AllowPluginModules(Tags = new[] { "BasicUpgrade" }, ItemTypes = new[] { typeof(BeekeepingUpgradeItem) })]
+    [AllowPluginModules(ItemTypes = new[] { typeof(BeekeepingUpgradeItem), typeof(BasicUpgradeItem), typeof(AdvancedUpgradeItem), typeof(ModernUpgradeItem) })]
     public partial class HoneyExtractMechanicalItem : WorldObjectItem<HoneyExtractMechanicalObject>, IPersistentData
     {
         protected override OccupancyContext GetOccupancyContext => new SideAttachedContext( 0  | DirectionAxisFlags.Down , WorldObject.GetOccupancyInfo(this.WorldObjectType));

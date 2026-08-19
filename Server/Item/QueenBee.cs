@@ -38,17 +38,20 @@ namespace Beekeeping.Server
     {
         public QueenBeeRecipe()
         {
-            Recipes = new List<Recipe>()
-            {
-                new Recipe("QueenBee", Localizer.DoStr("Queen Bee"), new IngredientElement[2]
+            var recipe = new Recipe();
+            recipe.Init(
+                name: "QueenBee",
+                displayName: Localizer.DoStr("Queen Bee"),
+                ingredients: new List<IngredientElement>
                 {
                     new IngredientElement(typeof(BeeEggsItem), 3f, false),
                     new IngredientElement(typeof(RoyalJellyItem), 2f, false)
-                }, new CraftingElement[1]
+                },
+                items: new List<CraftingElement>
                 {
                     new CraftingElement<QueenBeeItem>(1f)
-                })
-            };
+                });
+            Recipes = new List<Recipe> { recipe };
             ExperienceOnCraft = 2.0f;
             LaborInCalories = CreateLaborInCaloriesValue(60f, typeof(Eco.Mods.TechTree.BeekeepingSkill));
             CraftMinutes = new MultiDynamicValue(MultiDynamicOps.Multiply,

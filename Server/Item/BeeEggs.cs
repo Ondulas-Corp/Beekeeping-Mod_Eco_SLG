@@ -38,17 +38,20 @@ namespace Beekeeping.Server
     {
         public BeeEggsBootstrapRecipe()
         {
-            Recipes = new List<Recipe>()
-            {
-                new Recipe("BeeEggsBootstrap", Localizer.DoStr("Bee Eggs (Bootstrap)"), new IngredientElement[2]
+            var recipe = new Recipe();
+            recipe.Init(
+                name: "BeeEggsBootstrap",
+                displayName: Localizer.DoStr("Bee Eggs (Bootstrap)"),
+                ingredients: new List<IngredientElement>
                 {
                     new IngredientElement(typeof(BeeColonyCoreItem), 1f, false),
-                    new IngredientElement("Petals", 4f, typeof(Eco.Mods.TechTree.BeekeepingSkill))
-                }, new CraftingElement[1]
+                    new IngredientElement("Petals", 90f, typeof(Eco.Mods.TechTree.BeekeepingSkill))
+                },
+                items: new List<CraftingElement>
                 {
                     new CraftingElement<BeeEggsItem>(6f)
-                })
-            };
+                });
+            Recipes = new List<Recipe> { recipe };
             ExperienceOnCraft = 0.5f;
             LaborInCalories = CreateLaborInCaloriesValue(60f, typeof(Eco.Mods.TechTree.BeekeepingSkill));
             CraftMinutes = new MultiDynamicValue(MultiDynamicOps.Multiply,
@@ -67,16 +70,19 @@ namespace Beekeeping.Server
     {
         public BeeEggsRecipe()
         {
-            Recipes = new List<Recipe>()
-            {
-                new Recipe("BeeEggs", Localizer.DoStr("Bee Eggs"), new IngredientElement[1]
+            var recipe = new Recipe();
+            recipe.Init(
+                name: "BeeEggs",
+                displayName: Localizer.DoStr("Bee Eggs"),
+                ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement("Petals", 4f, typeof(Eco.Mods.TechTree.BeekeepingSkill))
-                }, new CraftingElement[1]
+                    new IngredientElement("Petals", 40f, typeof(Eco.Mods.TechTree.BeekeepingSkill))
+                },
+                items: new List<CraftingElement>
                 {
                     new CraftingElement<BeeEggsItem>(2f)
-                })
-            };
+                });
+            Recipes = new List<Recipe> { recipe };
             ExperienceOnCraft = 0.2f;
             LaborInCalories = CreateLaborInCaloriesValue(50f, typeof(Eco.Mods.TechTree.BeekeepingSkill));
             CraftMinutes = new MultiDynamicValue(MultiDynamicOps.Multiply,

@@ -46,14 +46,14 @@ The core of the mod is a cluster system that autonomously manages the wild hive 
 
 ```
 Wild Hive harvest
-  → BeeEggs (bootstrap: BeeColonyCore + Petals ×4 → ×6 | entretien: Petals ×4 → ×2)
+  → BeeEggs (bootstrap: BeeColonyCore + Petals ×90 → ×6 | entretien: Petals ×40 → ×2)
   → WorkerBee (BeeEggs ×1 → WorkerBee)
-  → BeePollen (WorkerBee + Petals ×3 → ×1 | ForagerBee + Petals ×3 → ×2 [BeeHive])
+  → BeePollen (WorkerBee + Petals ×10 → ×1 | ForagerBee + Petals ×15 → ×4 [BeeHive])
   → ForagerBee (WorkerBee + BeePollen → ForagerBee [BeeHive])
-  → RoyalJelly (WorkerBee ×3 + Honey → RoyalJelly [BeeHive])
+  → RoyalJelly (ForagerBee ×2 + BeePollen ×2 + Honey → RoyalJelly [BeeHive])
   → QueenBee (BeeEggs ×3 + RoyalJelly ×2 → QueenBee [BeeHive, skill 6])
-  → WaxFrame (WorkerBee + Frame → ×1 | WorkerBee ×2 + Frame ×2 → ×3 [BeeHive])
-  → Propolis (ForagerBee + NaturalFiber ×2 → Propolis [BeeHive])
+  → WaxFrame (WorkerBee + Frame → ×1 | ForagerBee + Frame ×3 → ×3 [BeeHive])
+  → Propolis (ForagerBee + NaturalFiber ×20 → Propolis [BeeHive])
 ```
 
 > QueenBee also drops from `OccupiedSwarm` at a 17 % rate.

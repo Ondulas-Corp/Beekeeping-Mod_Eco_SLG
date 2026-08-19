@@ -51,7 +51,8 @@ namespace Beekeeping.Server
                 displayName: Localizer.DoStr("Royal Jelly"),
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(WorkerBeeItem), 3, typeof(BeekeepingSkill)),
+                    new IngredientElement(typeof(ForagerBeeItem), 2, typeof(BeekeepingSkill)),
+                    new IngredientElement(typeof(BeePollenItem), 2, typeof(BeekeepingSkill)),
                     new IngredientElement(typeof(HoneyItem), 1, typeof(BeekeepingSkill))
                 },
 
@@ -103,7 +104,7 @@ namespace Beekeeping.Server
     [LocDisplayName("Royal Jelly")] // Defines the localized name of the item.
     [Weight(1)] // Defines how heavy RoyalJelly is.
     [Ecopedia("Items", "Products", createAsSubPage: true)]
-    [LocDescription("A secretion produced by worker bees to nourish larvae and the queen. Essential for queen bee rearing.")] //The tooltip description for the item.
+    [LocDescription("A secretion produced by forager bees to nourish larvae and the queen. Essential for queen bee rearing.")] //The tooltip description for the item.
     public partial class RoyalJellyItem : Item
     {
     }
