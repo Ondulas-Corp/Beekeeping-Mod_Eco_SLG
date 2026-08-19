@@ -1,4 +1,4 @@
-﻿using Eco.Core.Controller;
+using Eco.Core.Controller;
 using Eco.Gameplay.Components;
 using Eco.Gameplay.Objects;
 using Eco.Gameplay.Plants;
@@ -113,7 +113,7 @@ namespace Beekeeping.Server
                     {
                         var pos = center + new Vector3i(x, y, z);
                         var plant = EcoSim.PlantSim.GetPlant(pos);
-                        
+
                         if (plant != null)
                         {
                             plantCount++;
@@ -123,7 +123,7 @@ namespace Beekeeping.Server
             }
 
             lastPlantCount = plantCount;
-            
+
             // Minimum 100 plants needed for pollen
             IsFlowered = plantCount >= 100;
         }
@@ -133,19 +133,19 @@ namespace Beekeeping.Server
             if (status == null) return;
 
             string statusMessage;
-            
+
             if (IsFlowered)
             {
                 statusMessage = $"Sufficient pollen sources: {lastPlantCount} plants found (100+ required)";
             }
             else if (lastPlantCount == 0)
             {
-                statusMessage = "No plants found nearby! Plant flowers or other vegetation within 10 blocks for honey production.";
+                statusMessage = "No plants found nearby! Plant flowers or other vegetation within 10 blocks.";
             }
             else
             {
                 int needed = 100 - lastPlantCount;
-                statusMessage = $"Insufficient pollen: {lastPlantCount}/100 plants found. Plant {needed} more flowers or plants within 10 blocks.";
+                statusMessage = $"Insufficient flora: {lastPlantCount}/100 plants. Need {needed} more within 10 blocks.";
             }
 
             status.SetStatusMessage(IsFlowered, Localizer.DoStr(statusMessage));

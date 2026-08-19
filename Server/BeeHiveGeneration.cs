@@ -1,4 +1,4 @@
-﻿using Beekeeping.Server;
+using Beekeeping.Server;
 using Eco.Core.Plugins;
 using Eco.Core.Plugins.Interfaces;
 using Eco.Core.Utils;
@@ -23,9 +23,6 @@ using System.Linq;
 
 public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin, IConfigurablePlugin
 {
-    // Debug mode — set to true to enable verbose chat messages and fast spawns (requires recompile)
-    public const bool DEBUG_MODE = false;
-
     // Backwards-compat statics for ClusterManager (delegates to config)
     public static int   CLUSTER_RADIUS        => Config.ClusterRadius;
     public static int   MIN_CLUSTER_SPACING   => Config.MinClusterSpacing;
@@ -47,243 +44,62 @@ public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin, IConfigura
     public object GetEditObject() => config.Config;
     public void OnEditObjectChanged(object o, string param) => this.SaveConfig();
 
-	public void Initialize(TimedTask timer)
-	{
-		instance = this;
-		config.SaveAsync().Wait(); // Write Configs/Beekeeping.eco with defaults on first run
+    public void Initialize(TimedTask timer)
+    {
+        instance = this;
+        config.SaveAsync().Wait(); // Write Configs/Beekeeping.eco with defaults on first run
 
-		if (DEBUG_MODE)
-		{
-			try
-			{
-				var allUsers = Eco.Gameplay.Players.UserManager.Users;
-				foreach (var user in allUsers)
-				{
-					if (DEBUG_MODE && user.IsAdmin && user.Player != null)
-					{
-						user.Player.MsgLocStr($"[BEEKEEPING] === BEEHIVE SYSTEM INITIALIZATION ===");
-					}
-				}
-			}
-			catch { }
-		}
+        // Load cluster centers from file
+        var savedCenters = ClusterManager.LoadClusterCenters();
 
-		// Load cluster centers from file
-		var savedCenters = ClusterManager.LoadClusterCenters();
+        // Destroy any leftover vacant swarms (system removed)
+        var worldObjectManager = ServiceHolder<IWorldObjectManager>.Obj;
+        var vacantHives = worldObjectManager.All
+            .Where(obj => obj.GetType() == typeof(VacantSauvageBeehiveObject))
+            .ToList();
+        foreach (var vacant in vacantHives)
+            vacant.Destroy();
 
-		if (DEBUG_MODE)
-		{
-			try
-			{
-				var allUsers = Eco.Gameplay.Players.UserManager.Users;
-				foreach (var user in allUsers)
-				{
-					if (user.IsAdmin && user.Player != null)
-					{
-						user.Player.MsgLocStr($"[BEEKEEPING] Loaded {savedCenters.Count} cluster centers from saved file");
-					}
-				}
-			}
-			catch { }
-		}
+        // Check if wild hives exist in world
+        var existingWildHives = worldObjectManager.All.Count(obj =>
+            obj.GetType() == typeof(OccupiedSauvageBeehiveObject));
 
-		// Check if wild hives exist in world
-		var worldObjectManager = ServiceHolder<IWorldObjectManager>.Obj;
-		var existingWildHives = worldObjectManager.All.Count(obj => 
-			obj.GetType() == typeof(OccupiedSauvageBeehiveObject) || 
-			obj.GetType() == typeof(VacantSauvageBeehiveObject));
+        if (savedCenters.Count > 0)
+        {
+            // Rebuild clusters from saved centers
+            hiveClusters = ClusterManager.RebuildClustersFromCenters(savedCenters);
 
-		if (DEBUG_MODE)
-		{
-			try
-			{
-				var allUsers = Eco.Gameplay.Players.UserManager.Users;
-				foreach (var user in allUsers)
-				{
-					if (user.IsAdmin && user.Player != null)
-					{
-						user.Player.MsgLocStr($"[BEEKEEPING] Found {existingWildHives} existing wild hives in world");
-					}
-				}
-			}
-			catch { }
-		}
+            // Check: If save file exists but no wild hives found, do a reset
+            if (existingWildHives == 0)
+            {
+                hiveClusters.Clear();
+                hiveClusters = ClusterManager.CreateInitialClusters();
+                ClusterManager.SaveClusterCenters(hiveClusters);
+            }
+            else
+            {
+                // Normal case - check for empty clusters and schedule regeneration
+                CheckAndRegenerateEmptyClusters();
+            }
+        }
+        else
+        {
+            // NO SAVE FILE - perform full reset
+            var allWildHives = worldObjectManager.All
+                .Where(obj => obj.GetType() == typeof(OccupiedSauvageBeehiveObject))
+                .ToList();
 
-		if (savedCenters.Count > 0)
-		{
-			if (DEBUG_MODE)
-			{
-				try
-				{
-					var allUsers = Eco.Gameplay.Players.UserManager.Users;
-					foreach (var user in allUsers)
-					{
-						if (user.IsAdmin && user.Player != null)
-						{
-							user.Player.MsgLocStr($"[BEEKEEPING] Rebuilding clusters from saved centers...");
-						}
-					}
-				}
-				catch { }
-			}
+            foreach (var hive in allWildHives)
+                hive.Destroy();
 
-			// Rebuild clusters from saved centers
-			hiveClusters = ClusterManager.RebuildClustersFromCenters(savedCenters);
-
-			if (DEBUG_MODE)
-			{
-				try
-				{
-					var allUsers = Eco.Gameplay.Players.UserManager.Users;
-					foreach (var user in allUsers)
-					{
-						if (user.IsAdmin && user.Player != null)
-						{
-							user.Player.MsgLocStr($"[BEEKEEPING] Rebuilt {hiveClusters.Count} clusters");
-						}
-					}
-				}
-				catch { }
-			}
-
-			// Check: If save file exists but no wild hives found, do a reset
-			if (existingWildHives == 0)
-			{
-				if (DEBUG_MODE)
-				{
-					try
-					{
-						var allUsers = Eco.Gameplay.Players.UserManager.Users;
-						foreach (var user in allUsers)
-						{
-							if (user.IsAdmin && user.Player != null)
-							{
-								user.Player.MsgLocStr($"[BEEKEEPING] Save file exists but no hives found - performing reset...");
-							}
-						}
-					}
-					catch { }
-				}
-				
-				// Clear old clusters and create fresh ones
-				hiveClusters.Clear();
-				hiveClusters = ClusterManager.CreateInitialClusters();
-				ClusterManager.SaveClusterCenters(hiveClusters);
-				
-				if (DEBUG_MODE)
-				{
-					try
-					{
-						var allUsers = Eco.Gameplay.Players.UserManager.Users;
-						foreach (var user in allUsers)
-						{
-							if (user.IsAdmin && user.Player != null)
-							{
-								user.Player.MsgLocStr($"[BEEKEEPING] Created {hiveClusters.Count} new clusters");
-							}
-						}
-					}
-					catch { }
-				}
-			}
-			else
-			{
-				// Normal case - check for empty clusters and schedule regeneration
-				CheckAndRegenerateEmptyClusters();
-			}
-		}
-		else
-		{
-			// NO SAVE FILE - perform full reset
-			if (DEBUG_MODE)
-			{
-				try
-				{
-					var allUsers = Eco.Gameplay.Players.UserManager.Users;
-					foreach (var user in allUsers)
-					{
-						if (user.IsAdmin && user.Player != null)
-						{
-							user.Player.MsgLocStr($"[BEEKEEPING] No save file found - performing full reset...");
-						}
-					}
-				}
-				catch { }
-			}
-			
-			// Remove all existing wild hives
-			var allWildHives = worldObjectManager.All
-				.Where(obj => obj.GetType() == typeof(OccupiedSauvageBeehiveObject) || 
-							 obj.GetType() == typeof(VacantSauvageBeehiveObject))
-				.ToList();
-			
-			foreach (var hive in allWildHives)
-			{
-				hive.Destroy();
-			}
-			
-			if (DEBUG_MODE)
-			{
-				try
-				{
-					var allUsers = Eco.Gameplay.Players.UserManager.Users;
-					foreach (var user in allUsers)
-					{
-						if (user.IsAdmin && user.Player != null)
-						{
-							user.Player.MsgLocStr($"[BEEKEEPING] Removed {allWildHives.Count} wild hives");
-						}
-					}
-				}
-				catch { }
-			}
-			
-			// Create fresh clusters
-			hiveClusters = ClusterManager.CreateInitialClusters();
-			ClusterManager.SaveClusterCenters(hiveClusters);
-			
-			if (DEBUG_MODE)
-			{
-				try
-				{
-					var allUsers = Eco.Gameplay.Players.UserManager.Users;
-					foreach (var user in allUsers)
-					{
-						if (user.IsAdmin && user.Player != null)
-						{
-							user.Player.MsgLocStr($"[BEEKEEPING] Created {hiveClusters.Count} new clusters");
-						}
-					}
-				}
-				catch { }
-			}
-		}
-
-		// Simple health check timer (no AddRepeating needed for async spawns)
-		if (DEBUG_MODE)
-		{
-			try
-			{
-				var allUsers = Eco.Gameplay.Players.UserManager.Users;
-				foreach (var user in allUsers)
-				{
-					if (user.IsAdmin && user.Player != null)
-					{
-						user.Player.MsgLocStr($"[BEEKEEPING] === INITIALIZATION COMPLETE ===");
-						user.Player.MsgLocStr($"[BEEKEEPING] System: Async regeneration with direct spawning");
-						user.Player.MsgLocStr($"[BEEKEEPING] Active clusters: {hiveClusters.Count}");
-						user.Player.MsgLocStr($"[BEEKEEPING] Debug mode: {DEBUG_MODE}");
-					}
-				}
-			}
-			catch { }
-		}
-	}
+            // Create fresh clusters
+            hiveClusters = ClusterManager.CreateInitialClusters();
+            ClusterManager.SaveClusterCenters(hiveClusters);
+        }
+    }
 
     private void CheckAndRegenerateEmptyClusters()
     {
-        if (DEBUG_MODE) return; // Skip in debug mode
-
         foreach (var cluster in hiveClusters)
         {
             // Update hive counts first
@@ -320,21 +136,7 @@ public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin, IConfigura
 
             // Use the actual cluster reference instead of searching for it
             if (targetCluster == null || !targetCluster.IsAlive)
-            {
-                try
-                {
-                    var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                    foreach (var user in allUsers)
-                    {
-                        if (DEBUG_MODE && user.IsAdmin && user.Player != null)
-                        {
-                            user.Player.MsgLocStr($"[BEEKEEPING] ✗ SPAWN CANCELLED: Target cluster is null or dead");
-                        }
-                    }
-                }
-                catch { }
                 return;
-            }
 
             // Refresh hive count from world state before spawning (guards against overlapping batches)
             ClusterManager.UpdateExistingHives(targetCluster);
@@ -344,100 +146,46 @@ public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin, IConfigura
                 return;
             }
 
+            // Global world cap check
+            if (Config.MaxTotalWildHives > 0)
+            {
+                var worldObjectManager = ServiceHolder<IWorldObjectManager>.Obj;
+                var globalCount = worldObjectManager.All.Count(obj => obj.GetType() == typeof(OccupiedSauvageBeehiveObject));
+                if (globalCount >= Config.MaxTotalWildHives)
+                {
+                    targetCluster.RegenerationInProgress = false;
+                    return;
+                }
+            }
+
             var hivePos = instance.FindSuitableHivePosition(targetCluster.CenterPosition, existingHives);
             if (hivePos.HasValue)
             {
-                var hiveType = random.NextDouble() < 0.7 ? "OccupiedSauvageBeehiveObject" : "VacantSauvageBeehiveObject";
-
-                // Use proper spawning method
-                var hiveTypeClass = hiveType == "OccupiedSauvageBeehiveObject" ? typeof(OccupiedSauvageBeehiveObject) : typeof(VacantSauvageBeehiveObject);
-                var spawnedHive = WorldObjectManager.ForceAdd(hiveTypeClass, null, hivePos.Value, Quaternion.Identity);
+                var spawnedHive = WorldObjectManager.ForceAdd(typeof(OccupiedSauvageBeehiveObject), null, hivePos.Value, Quaternion.Identity);
 
                 if (spawnedHive != null)
                 {
                     targetCluster.ExistingHivePositions.Add(hivePos.Value);
                     targetCluster.RegenerationInProgress = false;
-
-                    // Enhanced spawn notification with cluster info
-                    try
-                    {
-                        var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                        foreach (var user in allUsers)
-                        {
-                            if (user.IsAdmin && user.Player != null)
-                            {
-                                var clusterIndex = instance.hiveClusters.IndexOf(targetCluster);
-                                var distanceFromCenter = Vector3i.Distance(hivePos.Value, targetCluster.CenterPosition);
-								if (DEBUG_MODE)
-								{
-									user.Player.MsgLocStr($"[BEEKEEPING] ✓ HIVE SPAWNED: {hiveType}");
-									user.Player.MsgLocStr($"[BEEKEEPING] Location: {hivePos.Value}");
-									user.Player.MsgLocStr($"[BEEKEEPING] Cluster #{clusterIndex} center: {targetCluster.CenterPosition}");
-									user.Player.MsgLocStr($"[BEEKEEPING] Distance from center: {distanceFromCenter} blocks");
-									user.Player.MsgLocStr($"[BEEKEEPING] Cluster now has {targetCluster.CurrentHiveCount} hives");
-								}
-                            }
-                        }
-                    }
-                    catch { }
                 }
                 else
                 {
                     targetCluster.RegenerationInProgress = false;
-                    try
-                    {
-                        var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                        foreach (var user in allUsers)
-                        {
-                            if (DEBUG_MODE && user.IsAdmin && user.Player != null)
-                            {
-                                user.Player.MsgLocStr($"[BEEKEEPING] ✗ SPAWN FAILED: WorldObjectManager.ForceAdd returned null");
-                            }
-                        }
-                    }
-                    catch { }
                 }
             }
             else
             {
                 // Clear flag even if spawn failed (CASCADE PREVENTION)
                 targetCluster.RegenerationInProgress = false;
-
-                try
-                {
-                    var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                    foreach (var user in allUsers)
-                    {
-                        if (user.IsAdmin && user.Player != null)
-                        {
-                            var clusterIndex = instance.hiveClusters.IndexOf(targetCluster);
-                            user.Player.MsgLocStr($"[BEEKEEPING] ✗ SPAWN FAILED: No suitable position found for cluster #{clusterIndex} near {targetCluster.CenterPosition}");
-                        }
-                    }
-                }
-                catch { }
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // Clear flag on any error (CASCADE PREVENTION)
             try
             {
                 if (targetCluster != null)
                     targetCluster.RegenerationInProgress = false;
-            }
-            catch { }
-
-            try
-            {
-                var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                foreach (var user in allUsers)
-                {
-                    if (user.IsAdmin && user.Player != null)
-                    {
-                        user.Player.MsgLocStr($"[BEEKEEPING] Spawn error for cluster: {ex.Message}");
-                    }
-                }
             }
             catch { }
         }
@@ -489,207 +237,45 @@ public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin, IConfigura
     // Single method to handle all hive destruction/harvest events
     public static void OnHiveDestroyed(Vector3i hivePosition)
     {
-        if (instance == null)
-        {
-            try
-            {
-                var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                foreach (var user in allUsers)
-                {
-                    if (DEBUG_MODE && user.IsAdmin && user.Player != null)
-                    {
-                        user.Player.MsgLocStr($"[BEEKEEPING] System error: Instance is NULL at {hivePosition}");
-                    }
-                }
-            }
-            catch { }
-            return;
-        }
+        if (instance == null) return;
 
         try
         {
-            // Notify of hive destruction
-            try
-            {
-                var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                foreach (var user in allUsers)
-                {
-                    if (DEBUG_MODE && user.IsAdmin && user.Player != null)
-                    {
-                        user.Player.MsgLocStr($"[BEEKEEPING] Hive destroyed at {hivePosition}");
-                    }
-                }
-            }
-            catch { }
-
             var cluster = ClusterManager.FindClusterContaining(hivePosition, instance.hiveClusters);
-
-            if (cluster == null)
-            {
-                try
-                {
-                    var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                    foreach (var user in allUsers)
-                    {
-                        if (DEBUG_MODE && user.IsAdmin && user.Player != null)
-                        {
-                            user.Player.MsgLocStr($"[BEEKEEPING] Warning: No cluster found for hive at {hivePosition}");
-                        }
-                    }
-                }
-                catch { }
-                return;
-            }
+            if (cluster == null) return;
 
             if (!cluster.IsAlive)
             {
                 cluster.ExistingHivePositions.Remove(hivePosition);
-                try
-                {
-                    var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                    foreach (var user in allUsers)
-                    {
-                        if (DEBUG_MODE && user.IsAdmin && user.Player != null)
-                        {
-                            user.Player.MsgLocStr($"[BEEKEEPING] Cluster at {cluster.CenterPosition} is DEAD - no regeneration possible");
-                        }
-                    }
-                }
-                catch { }
                 return;
             }
 
             var currentTime = WorldTime.Seconds;
-            var clusterIndex = instance.hiveClusters.IndexOf(cluster);
-            var distanceToCenter = Vector3i.Distance(hivePosition, cluster.CenterPosition);
-
-            // Detailed cluster information
-            try
-            {
-                var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                foreach (var user in allUsers)
-                {
-                    if (DEBUG_MODE && user.IsAdmin && user.Player != null)
-                    {
-                        user.Player.MsgLocStr($"[BEEKEEPING] === CLUSTER ANALYSIS ===");
-                        user.Player.MsgLocStr($"[BEEKEEPING] Cluster #{clusterIndex} center: {cluster.CenterPosition}");
-                        user.Player.MsgLocStr($"[BEEKEEPING] Distance from center: {distanceToCenter} blocks");
-                        user.Player.MsgLocStr($"[BEEKEEPING] Hives before removal: {cluster.CurrentHiveCount}");
-                    }
-                }
-            }
-            catch { }
 
             // Force update existing hives to ensure accurate count before removal
             ClusterManager.UpdateExistingHives(cluster);
-
-            // Count hives before removal
-            int hivesBeforeRemoval = cluster.CurrentHiveCount;
 
             // Try to remove the destroyed hive from tracking
             bool wasRemoved = cluster.ExistingHivePositions.Remove(hivePosition);
 
             // If removal failed due to coordinate mismatch, just decrement the count by removing any hive
             if (!wasRemoved && cluster.ExistingHivePositions.Count > 0)
-            {
                 cluster.ExistingHivePositions.RemoveAt(cluster.ExistingHivePositions.Count - 1);
-                wasRemoved = true;
-            }
 
-            // Count hives after removal
             int hivesAfterRemoval = cluster.CurrentHiveCount;
 
-            try
-            {
-                var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                foreach (var user in allUsers)
-                {
-                    if (DEBUG_MODE && user.IsAdmin && user.Player != null)
-                    {
-                        user.Player.MsgLocStr($"[BEEKEEPING] Hives after removal: {hivesAfterRemoval}");
-                        if (!wasRemoved)
-                        {
-                            user.Player.MsgLocStr($"[BEEKEEPING] Warning: Failed to remove hive from tracking");
-                        }
-                    }
-                }
-            }
-            catch { }
-
             // Check if cluster needs regeneration - REGENERATE ONLY if ≤2 hives remaining
-            if (hivesAfterRemoval > 2)
-            {
-                try
-                {
-                    var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                    foreach (var user in allUsers)
-                    {
-                        if (DEBUG_MODE && user.IsAdmin && user.Player != null)
-                        {
-                            user.Player.MsgLocStr($"[BEEKEEPING] Cluster #{clusterIndex} is healthy ({hivesAfterRemoval} hives) - no regeneration needed");
-                        }
-                    }
-                }
-                catch { }
-                return;
-            }
+            if (hivesAfterRemoval > 2) return;
 
             // Check plant health for regeneration eligibility
             var plantPercentage = cluster.MaxPlantCount > 0 ? (float)cluster.CurrentPlantCount / cluster.MaxPlantCount : 0f;
-            if (plantPercentage < 0.17f)
-            {
-                try
-                {
-                    var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                    foreach (var user in allUsers)
-                    {
-                        if (DEBUG_MODE && user.IsAdmin && user.Player != null)
-                        {
-                            user.Player.MsgLocStr($"[BEEKEEPING] Cluster #{clusterIndex} plant health too low ({plantPercentage:P1}) - regeneration blocked");
-                        }
-                    }
-                }
-                catch { }
-                return;
-            }
+            if (plantPercentage < 0.17f) return;
 
             // Check if regeneration is already in progress (CASCADE PREVENTION)
-            if (cluster.RegenerationInProgress)
-            {
-                try
-                {
-                    var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                    foreach (var user in allUsers)
-                    {
-                        if (DEBUG_MODE && user.IsAdmin && user.Player != null)
-                        {
-                            user.Player.MsgLocStr($"[BEEKEEPING] Cluster #{clusterIndex} regeneration already in progress - skipping");
-                        }
-                    }
-                }
-                catch { }
-                return;
-            }
+            if (cluster.RegenerationInProgress) return;
 
             // Set regeneration flag BEFORE spawning (CASCADE PREVENTION)
             cluster.RegenerationInProgress = true;
-
-            // REGENERATION APPROVED
-            try
-            {
-                var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                foreach (var user in allUsers)
-                {
-                    if (DEBUG_MODE && user.IsAdmin && user.Player != null)
-                    {
-                        user.Player.MsgLocStr($"[BEEKEEPING] === REGENERATION APPROVED ===");
-                        user.Player.MsgLocStr($"[BEEKEEPING] Cluster #{clusterIndex} at {cluster.CenterPosition}");
-                        user.Player.MsgLocStr($"[BEEKEEPING] Condition: {hivesAfterRemoval} hives ≤ 2");
-                        user.Player.MsgLocStr($"[BEEKEEPING] Plant health: {plantPercentage:P1} ≥ 17%");
-                    }
-                }
-            }
-            catch { }
 
             // Calculate available slots
             int availableSlots = Config.MaxHivesPerCluster - cluster.CurrentHiveCount;
@@ -700,90 +286,23 @@ public class BeeHiveGeneration : IModKitPlugin, IInitializablePlugin, IConfigura
                 int maxToSpawn = Math.Min(5, availableSlots);
                 int toSpawn = random.Next(1, maxToSpawn + 1);
 
-                try
-                {
-                    var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                    foreach (var user in allUsers)
-                    {
-                        if (DEBUG_MODE && user.IsAdmin && user.Player != null)
-                        {
-                            user.Player.MsgLocStr($"[BEEKEEPING] Scheduling {toSpawn} hives for cluster #{clusterIndex}");
-                            user.Player.MsgLocStr($"[BEEKEEPING] Available slots: {availableSlots}, Max possible: {maxToSpawn}");
-                        }
-                    }
-                }
-                catch { }
-
                 // Schedule spawns with async delays
                 for (int i = 0; i < toSpawn; i++)
                 {
-                    var delay = DEBUG_MODE ? 60.0 + (i * 5.0) : (Config.MinRegenHours + (random.NextDouble() * (Config.MaxRegenHours - Config.MinRegenHours))) * 3600.0;
+                    var delay = (Config.MinRegenHours + (random.NextDouble() * (Config.MaxRegenHours - Config.MinRegenHours))) * 3600.0;
                     ScheduleSpawn(delay, cluster, new List<Vector3i>(cluster.ExistingHivePositions));
-
-                    try
-                    {
-                        var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                        foreach (var user in allUsers)
-                        {
-                            if (DEBUG_MODE && user.IsAdmin && user.Player != null)
-                            {
-                                var timeText = DEBUG_MODE ? $"{delay:F0} seconds" : $"{delay / 3600.0:F1} hours";
-                                user.Player.MsgLocStr($"[BEEKEEPING] Hive #{i + 1} scheduled for cluster #{clusterIndex} in {timeText}");
-                            }
-                        }
-                    }
-                    catch { }
                 }
 
-                // Update last harvest time
                 cluster.LastHarvestTime = currentTime;
-
-                try
-                {
-                    var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                    foreach (var user in allUsers)
-                    {
-                        if (DEBUG_MODE && user.IsAdmin && user.Player != null)
-                        {
-                            user.Player.MsgLocStr($"[BEEKEEPING] === REGENERATION SCHEDULED ===");
-                        }
-                    }
-                }
-                catch { }
             }
             else
             {
-                // Clear flag if no slots available
                 cluster.RegenerationInProgress = false;
-
-                try
-                {
-                    var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                    foreach (var user in allUsers)
-                    {
-                        if (DEBUG_MODE && user.IsAdmin && user.Player != null)
-                        {
-                            user.Player.MsgLocStr($"[BEEKEEPING] Cluster #{clusterIndex} at maximum capacity - no regeneration needed");
-                        }
-                    }
-                }
-                catch { }
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            try
-            {
-                var allUsers = Eco.Gameplay.Players.UserManager.Users;
-                foreach (var user in allUsers)
-                {
-                    if (DEBUG_MODE && user.IsAdmin && user.Player != null)
-                    {
-                        user.Player.MsgLocStr($"[BEEKEEPING] System error: {ex.Message}");
-                    }
-                }
-            }
-            catch { }
+            // Swallow - regeneration is best-effort
         }
     }
 

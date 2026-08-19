@@ -80,10 +80,9 @@ namespace Beekeeping.Server
             var newClusters = new List<HiveCluster>();
             var worldObjectManager = ServiceHolder<IWorldObjectManager>.Obj;
             
-            // Get ALL wild hives in the world first
+            // Get all occupied wild hives in the world
             var allWildHives = worldObjectManager.All
-                .Where(obj => obj.GetType().Name == "OccupiedSauvageBeehiveObject" || 
-                             obj.GetType().Name == "VacantSauvageBeehiveObject")
+                .Where(obj => obj.GetType() == typeof(OccupiedSauvageBeehiveObject))
                 .ToList();
             
             // Create all clusters first
@@ -283,20 +282,25 @@ namespace Beekeeping.Server
 		private static void SpawnInitialHivesInCluster(HiveCluster cluster)
 		{
 			int initialHives = random.Next(1, 6);
-			
+			var worldObjectManager = ServiceHolder<IWorldObjectManager>.Obj;
+
 			for (int i = 0; i < initialHives; i++)
 			{
+				// Global cap check before each spawn
+				var cfg = BeeHiveGeneration.Config;
+				if (cfg.MaxTotalWildHives > 0)
+				{
+					var globalCount = worldObjectManager.All.Count(obj => obj.GetType() == typeof(OccupiedSauvageBeehiveObject));
+					if (globalCount >= cfg.MaxTotalWildHives)
+						return;
+				}
+
 				var hivePos = FindSuitableHivePosition(cluster.CenterPosition, cluster.ExistingHivePositions);
 				if (hivePos.HasValue)
 				{
 					try
 					{
-						// Spawn swarms
-						var hiveTypeClass = random.NextDouble() < 0.7 
-							? typeof(OccupiedSauvageBeehiveObject) 
-							: typeof(VacantSauvageBeehiveObject);
-							
-						WorldObjectManager.ForceAdd(hiveTypeClass, null, hivePos.Value, Quaternion.Identity);
+						WorldObjectManager.ForceAdd(typeof(OccupiedSauvageBeehiveObject), null, hivePos.Value, Quaternion.Identity);
 						cluster.ExistingHivePositions.Add(hivePos.Value);
 					}
 					catch
@@ -317,7 +321,7 @@ namespace Beekeeping.Server
                 if (block is WorldObjectBlock worldObjBlock)
                 {
                     var obj = worldObjBlock.WorldObjectHandle.Object;
-                    if (obj != null && (obj.GetType().Name == "OccupiedSauvageBeehiveObject" || obj.GetType().Name == "VacantSauvageBeehiveObject"))
+                    if (obj != null && obj.GetType() == typeof(OccupiedSauvageBeehiveObject))
                     {
                         existingHives.Add(hivePos);
                     }

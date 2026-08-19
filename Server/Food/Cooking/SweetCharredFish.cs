@@ -109,7 +109,7 @@ namespace Beekeeping.Server
         /// <summary>The amount of calories awarded for eating the food item.</summary>
         public override float Calories                  => 560;
         /// <summary>The nutritional value of the food item.</summary>
-        public override Nutrients Nutrition             => new Nutrients() { Carbs = 7, Fat = 6, Protein = 18, Vitamins = 4};
+        public override Nutrients Nutrition             => new Nutrients() { Carbs = 7, Fat = 6, Protein = 14, Vitamins = 4};
 
         /// <summary>Defines the default time it takes for this item to spoil. This value can be modified by the inventory this item currently resides in.</summary>
         public override float BaseShelfLife            => (float)TimeUtil.HoursToSeconds(30); // 1.25 days shelf life

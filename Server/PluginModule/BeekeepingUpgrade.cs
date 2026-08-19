@@ -44,7 +44,7 @@ namespace Beekeeping.Server.Module
             this.LaborInCalories = CreateLaborInCaloriesValue(3000, typeof(Eco.Mods.TechTree.BeekeepingSkill));
 
             // Crafting time
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(BeekeepingUpgradeRecipe), start: 8, skillType: typeof(Eco.Mods.TechTree.BeekeepingSkill), typeof(Eco.Mods.TechTree.BeekeepingFocusedSpeedTalent), typeof(Eco.Mods.TechTree.BeekeepingParallelSpeedTalent));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(BeekeepingUpgradeRecipe), start: 8, skillType: typeof(Eco.Mods.TechTree.BeekeepingSkill));
 
             // Initialize the recipe
             this.ModsPreInitialize();

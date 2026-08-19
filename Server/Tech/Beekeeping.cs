@@ -29,7 +29,7 @@
     [LocDisplayName("Beekeeping")]
     [LocDescription("A skill for the breeding of bees and honey production. Levels up by crafting related beekeeping recipes.")]
     [Ecopedia("Professions", "Farmer", createAsSubPage: true)]
-    [RequiresSkill(typeof(FarmerSkill), 0), Tag("Farmer Specialty")]
+    [RequiresSkill(typeof(FarmerSkill), 0), Tag("Farmer Specialty"), Tier(2)]
     [Tag("Specialty")]
     [Tag("Teachable")]
     public partial class BeekeepingSkill : Skill
@@ -42,32 +42,33 @@
 
 
         public static MultiplicativeStrategy MultiplicativeStrategy =
-            new MultiplicativeStrategy(new float[] { 
+            new MultiplicativeStrategy(new float[] {
                 1,
+                1 - 0.2f,
+                1 - 0.25f,
+                1 - 0.3f,
+                1 - 0.35f,
+                1 - 0.4f,
+                1 - 0.45f,
                 1 - 0.5f,
-                1 - 0.55f,
-                1 - 0.6f,
-                1 - 0.65f,
-                1 - 0.7f,
-                1 - 0.75f,
-                1 - 0.8f,
             });
         public override MultiplicativeStrategy MultiStrategy => MultiplicativeStrategy;
 
         public static AdditiveStrategy AdditiveStrategy =
-            new AdditiveStrategy(new float[] { 
+            new AdditiveStrategy(new float[] {
                 0,
-                0.2f,
-                0.25f,
-                0.3f,
-                0.35f,
-                0.4f,
-                0.45f,
                 0.5f,
+                0.55f,
+                0.6f,
+                0.65f,
+                0.7f,
+                0.75f,
+                0.8f,
             });
         public override AdditiveStrategy AddStrategy => AdditiveStrategy;
         public override int MaxLevel { get { return 7; } }
-        public override int Tier { get { return 1; } }
+        public override int Tier { get { return 2; } }
+        public override int SpecialtyCost => 2;
     }
 
     [Serialized]
@@ -86,7 +87,7 @@
     /// <para>Server side recipe definition for "Beekeeping".</para>
     /// <para>More information about RecipeFamily objects can be found at https://docs.play.eco/api/server/eco.gameplay/Eco.Gameplay.Items.RecipeFamily.html</para>
     /// </summary>
-    [RequiresSkill(typeof(GatheringSkill), 1)]
+    [RequiresSkill(typeof(FarmingSkill), 1)]
     [Ecopedia("Professions", "Farmer", subPageName: "Beekeeping Skill Book Item")]
     public partial class BeekeepingSkillBookRecipe : RecipeFamily
     {
@@ -101,9 +102,9 @@
                 // type of the item, the amount of the item, the skill required, and the talent used.
                 ingredients: new List<IngredientElement>
                 {
-                    new IngredientElement(typeof(GatheringResearchPaperBasicItem), 2, typeof(GatheringSkill)),
-                    new IngredientElement(typeof(DendrologyResearchPaperBasicItem), 5, typeof(GatheringSkill)),
-                    new IngredientElement("Basic Research", 5, typeof(GatheringSkill)), //noloc
+                    new IngredientElement(typeof(AgricultureResearchPaperAdvancedItem), 5, typeof(FarmingSkill)),
+                    new IngredientElement(typeof(GatheringResearchPaperBasicItem), 10, typeof(FarmingSkill)),
+                    new IngredientElement("Basic Research", 15, typeof(FarmingSkill)), //noloc
                 },
 
                 // Define our recipe output items.
@@ -114,12 +115,12 @@
                     new CraftingElement<BeekeepingSkillBook>()
                 });
             this.Recipes = new List<Recipe> { recipe };
-            
+
             // Defines the amount of labor required and the required skill to add labor
-            this.LaborInCalories = CreateLaborInCaloriesValue(2000, typeof(GatheringSkill));
+            this.LaborInCalories = CreateLaborInCaloriesValue(2000, typeof(FarmingSkill));
 
             // Defines our crafting time for the recipe
-            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(BeekeepingSkillBookRecipe), start: 15, skillType: typeof(GatheringSkill));
+            this.CraftMinutes = CreateCraftTimeValue(beneficiary: typeof(BeekeepingSkillBookRecipe), start: 5, skillType: typeof(FarmingSkill));
 
             // Perform pre/post initialization for user mods and initialize our recipe instance with the display name "Beekeeping Skill Book"
             this.ModsPreInitialize();

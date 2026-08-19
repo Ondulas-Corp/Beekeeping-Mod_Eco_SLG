@@ -72,7 +72,6 @@ Wild Hive harvest
 **Decoration & construction**
 - `WaxCandle`, `WaxLumber`
 - `BeeStatue`, `DecorativeHoneyPot`, `StoneVessel`
-- `SmallMoaiStatue`, `MediumMoaiStatue`, `BigMoaiStatue`
 - `HoneycombShelf` (5 variants, light + dark)
 
 **Player hives**

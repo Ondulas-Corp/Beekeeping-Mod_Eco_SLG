@@ -16,6 +16,9 @@ namespace Beekeeping.Server
         [LocDescription("Maximum number of wild hives allowed per cluster.")]
         public int MaxHivesPerCluster { get; set; } = 5;
 
+        [LocDescription("Maximum total number of occupied wild hives allowed simultaneously across the entire world. Set to 0 for no limit.")]
+        public int MaxTotalWildHives { get; set; } = 50;
+
         [LocDescription("Plant coverage fraction below which a cluster is considered dead and stops regenerating (e.g. 0.08 = 8%).")]
         public float ClusterDeathThreshold { get; set; } = 0.08f;
 
@@ -27,13 +30,13 @@ namespace Beekeeping.Server
         [LocDescription("Maximum hours before a destroyed/harvested hive slot regenerates.")]
         public float MaxRegenHours { get; set; } = 20.0f;
 
-        // --- Colonization (vacant swarm → occupied beehive) ---
+        // --- Player hive crafting speed ---
 
-        [LocDescription("Minimum hours before a vacant wild swarm becomes an occupied beehive.")]
-        public float MinColonizationHours { get; set; } = 0.5f;
+        [LocDescription("Radius in blocks over which the OccupiedFertileGround layer is averaged to compute the crafting speed bonus for player hives.")]
+        public float HiveCraftLayerRadius { get; set; } = 20f;
 
-        [LocDescription("Maximum hours before a vacant wild swarm becomes an occupied beehive.")]
-        public float MaxColonizationHours { get; set; } = 6.0f;
+        [LocDescription("Minimum craft time multiplier for hive recipes as a fraction of the base time (e.g. 0.5 = never faster than 50% of base time). Must be between 0.1 and 1.0.")]
+        public float HiveCraftSpeedFloor { get; set; } = 0.5f;
 
         // --- Player hive pollination ---
 
